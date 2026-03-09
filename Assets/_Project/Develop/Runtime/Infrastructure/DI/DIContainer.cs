@@ -8,7 +8,7 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
         private readonly Dictionary<Type, Registration> _container = new();
         
         private readonly DIContainer _parent;
-        
+
         private readonly List<Type> _requests = new();
 
         public DIContainer() : this(null)

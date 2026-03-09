@@ -2,6 +2,7 @@ using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateCoroutinesPerformer);
             container.RegisterAsSingle(CreateSceneLoaderService);
             container.RegisterAsSingle(CreateSceneSwitcherService);
+            container.RegisterAsSingle<IInputService>(CreateKeyboardInputService);
         }
         
         private static ResuorcesAssetsLoader CreateResuorcesAssetsLoader(DIContainer container) 
@@ -37,7 +39,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
 
         private static ResourcesConfigsLoader CreateResourcesConfigsLoader(DIContainer container)
         {
-            ResuorcesAssetsLoader assetsLoader =  container.Resolve<ResuorcesAssetsLoader>();
+            ResuorcesAssetsLoader assetsLoader = container.Resolve<ResuorcesAssetsLoader>();
             
             return new ResourcesConfigsLoader(assetsLoader);
         }
@@ -50,5 +52,8 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             
             return Object.Instantiate(coroutinesPerformerPrefab);
         }
+        
+        private static KeyboardInputService CreateKeyboardInputService(DIContainer container)
+            => new KeyboardInputService();
     }
 }

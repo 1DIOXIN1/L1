@@ -13,7 +13,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
 
         private readonly Dictionary<Type, string> _configsResourcesPath = new()
         {
-            {typeof(GameplayNumbersPreset), "NumbersPreset"}
+            {typeof(GameplayPreset), "GameplayPresets/GameplayPreset"}
         };
 
         public ResourcesConfigsLoader(ResuorcesAssetsLoader resources)

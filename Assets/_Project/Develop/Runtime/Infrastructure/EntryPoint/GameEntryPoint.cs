@@ -11,17 +11,14 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
 {
     public class GameEntryPoint : MonoBehaviour
     {
-        private ConfigsProviderService _configsProviderService;
         private void Awake()
         {
             DIContainer projectContainer = new DIContainer();
-        
+
             SetupAppSettings();
-            
+
             ProjectContextRegistrations.Process(projectContainer);
-            
-            _configsProviderService = projectContainer.Resolve<ConfigsProviderService>();
-            
+
             projectContainer.Resolve<CoroutinesPerformer>().StartCoroutine(StartGame(projectContainer));
         }
     
@@ -35,12 +32,11 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
         {
             Debug.Log("Start load");
             
-            yield return  projectContainer.Resolve<ConfigsProviderService>().LoadAsync();
+            yield return projectContainer.Resolve<ConfigsProviderService>().LoadAsync();
             
             Debug.Log("End load");
             
-            yield return projectContainer.Resolve<SceneSwitcherService>().ProcessSwitchTo(Scenes.GamePlay, 
-                new GameplayInputArgs(projectContainer.Resolve<ConfigsProviderService>().GetConfig<GameplayNumbersPreset>().GameplayType));
+            yield return projectContainer.Resolve<SceneSwitcherService>().ProcessSwitchTo(Scenes.MainMenu);
         }
     }
 }
