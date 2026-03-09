@@ -1,7 +1,6 @@
 using System.Collections;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace _Project.Develop.Runtime.Utilities.SceneManagement

@@ -1,6 +1,5 @@
 using System;
 using _Project.Develop.Runtime.Gameplay.Main;
-using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {

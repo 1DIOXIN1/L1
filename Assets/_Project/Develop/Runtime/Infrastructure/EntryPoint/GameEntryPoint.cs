@@ -1,6 +1,4 @@
 using System.Collections;
-using _Project.Develop.Runtime.Configs;
-using _Project.Develop.Runtime.Gameplay.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;

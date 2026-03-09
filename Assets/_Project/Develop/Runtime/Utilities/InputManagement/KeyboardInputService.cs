@@ -1,6 +1,4 @@
 using System;
-using _Project.Develop.Runtime.Gameplay.Main;
-using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Utilities.InputManagement
