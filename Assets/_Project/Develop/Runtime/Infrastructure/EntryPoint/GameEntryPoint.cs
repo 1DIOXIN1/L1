@@ -2,6 +2,7 @@ using System.Collections;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
 using UnityEngine;
 
@@ -16,6 +17,8 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             SetupAppSettings();
 
             ProjectContextRegistrations.Process(projectContainer);
+            
+            projectContainer.Initialize();
 
             projectContainer.Resolve<CoroutinesPerformer>().StartCoroutine(StartGame(projectContainer));
         }
@@ -29,9 +32,19 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
         private IEnumerator StartGame(DIContainer projectContainer)
         {
             Debug.Log("Start load");
+            PlayerDataProvider playerDataProvider = projectContainer.Resolve<PlayerDataProvider>();
             
             yield return projectContainer.Resolve<ConfigsProviderService>().LoadAsync();
+
+            bool isPlayerSaveExists = false;
+
+            yield return playerDataProvider.Exists(result => isPlayerSaveExists = result);
             
+            if(isPlayerSaveExists)
+                yield return playerDataProvider.Load();
+            else
+                playerDataProvider.Reset();
+                
             Debug.Log("End load");
             
             yield return projectContainer.Resolve<SceneSwitcherService>().ProcessSwitchTo(Scenes.MainMenu);

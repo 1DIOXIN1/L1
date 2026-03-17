@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs;
+using _Project.Develop.Runtime.Configs.Meta.Wallet;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using UnityEngine;
 
@@ -13,7 +14,8 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
 
         private readonly Dictionary<Type, string> _configsResourcesPath = new()
         {
-            {typeof(GameplayPreset), "GameplayPresets/GameplayPreset"}
+            {typeof(GameplayPreset), "GameplayPresets/GameplayPreset"},
+            {typeof(StartWalletConfig), "Configs/StartWalletConfig"}
         };
 
         public ResourcesConfigsLoader(ResuorcesAssetsLoader resources)
