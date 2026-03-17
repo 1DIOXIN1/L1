@@ -5,6 +5,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 {
     public class KeyboardInputService : Controller, IInputService
     {
+        public event Action ResetPressed;
         public event Action<char> CharEntered;
         public event Action SelectFirstMode;
         public event Action SelectSecondMode;
@@ -25,6 +26,11 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 SelectSecondMode?.Invoke();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                ResetPressed?.Invoke();
             }
 
             foreach (char c in Input.inputString)

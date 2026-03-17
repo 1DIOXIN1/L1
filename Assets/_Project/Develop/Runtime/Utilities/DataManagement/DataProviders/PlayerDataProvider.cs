@@ -26,10 +26,10 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
         private Dictionary<CurrencyTypes, int> InitWalletData()
         {
             Dictionary<CurrencyTypes, int> walletData = new();
-            StartWalletConfig walletConfig = _configsProviderService.GetConfig<StartWalletConfig>();
+            StartWalletConfig startWalletConfig = _configsProviderService.GetConfig<StartWalletConfig>();
             
             foreach (CurrencyTypes currencyType in Enum.GetValues(typeof(CurrencyTypes)))
-                walletData[currencyType] = walletConfig.GetValueFor((currencyType));
+                walletData[currencyType] = startWalletConfig.GetValueFor((currencyType));
             
             return walletData;
         }

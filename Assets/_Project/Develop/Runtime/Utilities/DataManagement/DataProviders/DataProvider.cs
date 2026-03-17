@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
 {
-    public abstract class DataProvider<TData> where TData : ISaveData
+    public abstract class DataProvider<TData> : IDataProvider where TData : ISaveData
     {
         private readonly ISaveLoadService _saveLoadService;
         private readonly List<IDataWriter<TData>> _writers = new();

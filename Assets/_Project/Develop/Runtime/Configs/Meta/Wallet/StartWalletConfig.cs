@@ -6,10 +6,12 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Configs.Meta.Wallet
 {
-    [CreateAssetMenu(menuName = "Configs/Meta/Wallet/NewStartWalletConfig", fileName = "StartWalletConfig")]
+    [CreateAssetMenu(menuName = "Configs/Meta/Wallet/StartWalletConfig", fileName = "StartWalletConfig")]
     public class StartWalletConfig :ScriptableObject
     {
         [SerializeField] private List<CurrencyConfig> _values;
+        [field: SerializeField] public int ValueToAdd { get; private set; } = 10;
+        [field: SerializeField] public int ValueToSpend { get; private set; } = 10;
 
         public int GetValueFor(CurrencyTypes currencyType)
             => _values.First(config => config.Type == currencyType).Value;

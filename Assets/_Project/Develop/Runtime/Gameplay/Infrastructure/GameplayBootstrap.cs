@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
-using _Project.Develop.Runtime.Configs;
+using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Gameplay.Factories;
 using _Project.Develop.Runtime.Gameplay.Main;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
 using UnityEngine;
@@ -33,12 +34,12 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override IEnumerator Initialize()
         {
+            yield return _container.Resolve<GameplayDataProvider>().Load();
+            
             _input = _container.Resolve<IInputService>();
-
+            
             if (_input is Controller controller)
                 controller.Enable();
-            
-            yield break;
         }
 
         public void Update()
@@ -52,7 +53,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public override void Run()
         {
             var generator = _container.Resolve<GameplaySequenceGeneratorService>();
-            var config = _container.Resolve<ConfigsProviderService>().GetConfig<GameplayPreset>();
+            var config = _container.Resolve<ConfigsProviderService>().GetConfig<StartGameplayConfig>();
             var checker = _container.Resolve<CorrectSequenceChecker>();
 
             checker.StartCheck(generator.Generate(config.LenghtSequence, _gameplayInputArgs.GameplayType), _input);

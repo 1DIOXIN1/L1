@@ -30,12 +30,26 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateSceneSwitcherService);
             container.RegisterAsSingle(CreateWalletService).NonLazy();
             container.RegisterAsSingle(CreatePlayerDataProvider);
+            container.RegisterAsSingle(CreateGameplayDataProvider);
             container.RegisterAsSingle<IInputService>(CreateKeyboardInputService);
             container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
         }
         
         private static PlayerDataProvider CreatePlayerDataProvider(DIContainer container)
-            => new PlayerDataProvider(container.Resolve<ISaveLoadService>(), container.Resolve<ConfigsProviderService>());
+        {
+            ISaveLoadService saveLoadService = container.Resolve<ISaveLoadService>();
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            
+            return new PlayerDataProvider(saveLoadService, configsProviderService);
+        }
+        
+        private static GameplayDataProvider CreateGameplayDataProvider(DIContainer container)
+        {
+            ISaveLoadService saveLoadService = container.Resolve<ISaveLoadService>();
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            
+            return new GameplayDataProvider(saveLoadService, configsProviderService);
+        }
         
         private static SaveLoadService CreateSaveLoadService(DIContainer container)
         {

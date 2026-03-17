@@ -7,6 +7,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action SelectFirstMode;
         event Action SelectSecondMode;
         event Action ConfirmPressed;
+        event Action ResetPressed;
         event Action<char> CharEntered;
         void Update(float deltaTime);
     }

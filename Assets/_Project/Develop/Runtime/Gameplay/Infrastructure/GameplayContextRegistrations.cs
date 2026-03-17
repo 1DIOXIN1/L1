@@ -1,9 +1,14 @@
 using _Project.Develop.Runtime.Gameplay.Factories;
 using _Project.Develop.Runtime.Gameplay.Main;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.Utilities;
+using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using _Project.Develop.Runtime.Utilities.DataManagement;
+using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
+using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
@@ -13,7 +18,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         {
             container.RegisterAsSingle(CreateGameplaySequenceGeneratorService);
             container.RegisterAsSingle(CreateGameMode);
-            container.RegisterAsSingle(CreateGameplayCycle);
+            container.RegisterAsSingle(CreateGameplayCycle).NonLazy();
             container.RegisterAsSingle(CreateCorrectSequenceChecker);
         }
 
@@ -26,8 +31,10 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public static GameMode CreateGameMode(DIContainer container)
         {
             CorrectSequenceChecker checker = container.Resolve<CorrectSequenceChecker>();
+            WalletService walletService = container.Resolve<WalletService>();
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             
-            return new GameMode(checker);
+            return new GameMode(checker, walletService, configsProviderService);
         }
         
         public static GameplayCycle CreateGameplayCycle(DIContainer container)
@@ -36,8 +43,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             IInputService input = container.Resolve<IInputService>();
             SceneSwitcherService sceneSwitcher = container.Resolve<SceneSwitcherService>();
             CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
+            GameplayDataProvider gameplayDataProvider = container.Resolve<GameplayDataProvider>();
             
-            return new GameplayCycle(gameMode, input, sceneSwitcher, coroutinesPerformer);
+            return new GameplayCycle(gameMode, input, sceneSwitcher, coroutinesPerformer, gameplayDataProvider);
         }
     }
 }
