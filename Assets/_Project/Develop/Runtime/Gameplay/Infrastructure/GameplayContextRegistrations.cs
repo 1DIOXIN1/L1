@@ -1,6 +1,7 @@
 using _Project.Develop.Runtime.Gameplay.Factories;
 using _Project.Develop.Runtime.Gameplay.Main;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
@@ -44,8 +45,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             SceneSwitcherService sceneSwitcher = container.Resolve<SceneSwitcherService>();
             CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
             GameplayDataProvider gameplayDataProvider = container.Resolve<GameplayDataProvider>();
+            ProgressService progressService = container.Resolve<ProgressService>();
             
-            return new GameplayCycle(gameMode, input, sceneSwitcher, coroutinesPerformer, gameplayDataProvider);
+            return new GameplayCycle(gameMode, input, sceneSwitcher, coroutinesPerformer, gameplayDataProvider, progressService);
         }
     }
 }

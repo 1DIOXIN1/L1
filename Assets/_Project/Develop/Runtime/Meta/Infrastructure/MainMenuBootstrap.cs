@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Meta.Infrastructure
 {
-    public class MainMenuBootstrap : SceneBootstrap, IDataReader<GameplayData>
+    public class MainMenuBootstrap : SceneBootstrap
     {
         private DIContainer _container;
         private CoroutinesPerformer _coroutinesPerformer;
@@ -21,9 +21,8 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         private bool _isRunning = false;
         
         private PlayerDataProvider _playerDataProvider;
-        private GameplayDataProvider _gameplayDataProvider;
         private WalletService _walletService;
-        private ResetProgressService _resetProgressService;
+        private ProgressService _progressService;
 
         private int _countWins;
         private int _countLoss;
@@ -39,11 +38,9 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         {
             _coroutinesPerformer = _container.Resolve<CoroutinesPerformer>();
             _playerDataProvider = _container.Resolve<PlayerDataProvider>();
-            _resetProgressService = _container.Resolve<ResetProgressService>();
+            _progressService = _container.Resolve<ProgressService>();
             _walletService = _container.Resolve<WalletService>();
             _input = _container.Resolve<IInputService>();
-            
-            _container.Resolve<GameplayDataProvider>().RegisterReader(this);
             
             yield return _container.Resolve<GameplayDataProvider>().Load();
             
@@ -70,7 +67,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
             //Костыль для проверки
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                Debug.Log($"Wins: {_countWins}, Losses: {_countLoss}");
+                Debug.Log($"Wins: {_progressService.CountWins}, Losses: {_progressService.CountLoss}");
                 Debug.Log("Gold now:" + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
             }
         }
@@ -93,7 +90,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         
         private void OnResetPressed()
         {
-            _resetProgressService.TryReset();
+            _progressService.TryReset();
         }
 
         private void Disable()
@@ -103,12 +100,6 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
             _input.SelectFirstMode -= OnSelectFirstMode;
             _input.SelectSecondMode -= OnSelectSecondMode;
             _input.ResetPressed -= OnResetPressed;
-        }
-
-        public void ReadFrom(GameplayData data)
-        {
-            _countWins = data.CountWins;
-            _countLoss = data.CountLoss;
         }
     }
 }

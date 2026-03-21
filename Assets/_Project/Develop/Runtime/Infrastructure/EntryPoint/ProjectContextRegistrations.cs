@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
@@ -31,6 +32,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateWalletService).NonLazy();
             container.RegisterAsSingle(CreatePlayerDataProvider);
             container.RegisterAsSingle(CreateGameplayDataProvider);
+            container.RegisterAsSingle(CreateProgressService);
             container.RegisterAsSingle<IInputService>(CreateKeyboardInputService);
             container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
         }
@@ -49,6 +51,16 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             
             return new GameplayDataProvider(saveLoadService, configsProviderService);
+        }
+        
+        private static ProgressService CreateProgressService(DIContainer container)
+        {
+            GameplayDataProvider gameplayDataProvider = container.Resolve<GameplayDataProvider>();
+            WalletService walletService = container.Resolve<WalletService>();
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
+            
+            return new ProgressService(gameplayDataProvider,  walletService, configsProviderService, coroutinesPerformer);
         }
         
         private static SaveLoadService CreateSaveLoadService(DIContainer container)

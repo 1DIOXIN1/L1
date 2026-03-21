@@ -13,18 +13,6 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         public static void Process(DIContainer container)
         {
             Debug.Log("Процесс регистрации сервисов на сцене меню");
-            
-            container.RegisterAsSingle(CreateResetProgressService);
-        }
-
-        private static ResetProgressService CreateResetProgressService(DIContainer container)
-        {
-            GameplayDataProvider gameplayDataProvider = container.Resolve<GameplayDataProvider>();
-            WalletService walletService = container.Resolve<WalletService>();
-            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
-            CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
-            
-            return new ResetProgressService(gameplayDataProvider,  walletService, configsProviderService, coroutinesPerformer);
         }
     }
 }
