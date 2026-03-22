@@ -19,7 +19,7 @@ namespace _Project.Develop.Runtime.Meta.Features.Wallet
             playerDataProvider.RegisterWriter(this);
         }
 
-        public List<CurrencyTypes> AvaliableCurrencies() => _currencies.Keys.ToList();
+        public List<CurrencyTypes> AvaliableCurrencies => _currencies.Keys.ToList();
         
         public IReadOnlyVariable<int> GetCurrency(CurrencyTypes type) => _currencies[type];
 

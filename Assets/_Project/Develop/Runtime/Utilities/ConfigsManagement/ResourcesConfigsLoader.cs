@@ -12,16 +12,17 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
 {
     public class ResourcesConfigsLoader : IConfigsLoader
     {
-        private readonly ResuorcesAssetsLoader _resources;
+        private readonly ResourcesAssetsLoader _resources;
 
         private readonly Dictionary<Type, string> _configsResourcesPath = new()
         {
             {typeof(StartWalletConfig), "Configs/StartWalletConfig"},
             {typeof(StartGameplayConfig), "Configs/StartGameplayConfig"},
             {typeof(ProgressConfig), "Configs/ProgressConfig"},
+            {typeof(CurrencyIconsConfig), "Configs/CurrencyIconsConfig"}
         };
 
-        public ResourcesConfigsLoader(ResuorcesAssetsLoader resources)
+        public ResourcesConfigsLoader(ResourcesAssetsLoader resources)
         {
             _resources = resources;
         }
@@ -36,6 +37,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
                 loadedConfigs.Add(configsResourcesPath.Key, config);
                 yield return  null;
             }
+            
             onConfigsLoaded?.Invoke(loadedConfigs);
         }
     }

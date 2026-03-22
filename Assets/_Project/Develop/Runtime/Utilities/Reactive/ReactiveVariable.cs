@@ -57,7 +57,7 @@ namespace _Project.Develop.Runtime.Utilities.Reactive
             
             if (_toRemove.Count > 0)
             {
-                foreach (Subscriber<T, T> subscriber in _subscribers)
+                foreach (Subscriber<T, T> subscriber in _toRemove)
                 {
                     _subscribers.Remove(subscriber);
                 }

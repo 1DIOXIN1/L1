@@ -4,8 +4,10 @@ using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
+using _Project.Develop.Runtime.UI;
+using _Project.Develop.Runtime.UI.CommonViews;
+using _Project.Develop.Runtime.UI.Wallet;
 using _Project.Develop.Runtime.Utilities;
-using _Project.Develop.Runtime.Utilities.DataManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
@@ -21,11 +23,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         private bool _isRunning = false;
         
         private PlayerDataProvider _playerDataProvider;
-        private WalletService _walletService;
         private ProgressService _progressService;
-
-        private int _countWins;
-        private int _countLoss;
         
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -39,10 +37,10 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
             _coroutinesPerformer = _container.Resolve<CoroutinesPerformer>();
             _playerDataProvider = _container.Resolve<PlayerDataProvider>();
             _progressService = _container.Resolve<ProgressService>();
-            _walletService = _container.Resolve<WalletService>();
             _input = _container.Resolve<IInputService>();
             
             yield return _container.Resolve<GameplayDataProvider>().Load();
+            
             
             _input.SelectFirstMode += OnSelectFirstMode;
             _input.SelectSecondMode += OnSelectSecondMode;
@@ -63,13 +61,6 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
                 return;
             
             _input.Update(Time.deltaTime);
-            
-            //Костыль для проверки
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                Debug.Log($"Wins: {_progressService.CountWins}, Losses: {_progressService.CountLoss}");
-                Debug.Log("Gold now:" + _walletService.GetCurrency(CurrencyTypes.Gold).Value);
-            }
         }
 
         private void OnSelectFirstMode()

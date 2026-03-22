@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
+using _Project.Develop.Runtime.UI;
+using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
@@ -33,9 +35,17 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreatePlayerDataProvider);
             container.RegisterAsSingle(CreateGameplayDataProvider);
             container.RegisterAsSingle(CreateProgressService);
+            container.RegisterAsSingle(CreateProjectPresentersFactory);
+            container.RegisterAsSingle(CreateViewsFactory);
             container.RegisterAsSingle<IInputService>(CreateKeyboardInputService);
             container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
         }
+        
+        private static ViewsFactory CreateViewsFactory(DIContainer container)
+            => new ViewsFactory(container.Resolve<ResourcesAssetsLoader>());
+
+        private static ProjectPresentersFactory CreateProjectPresentersFactory(DIContainer container)
+            => new ProjectPresentersFactory(container);
         
         private static PlayerDataProvider CreatePlayerDataProvider(DIContainer container)
         {
@@ -85,8 +95,8 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             return new WalletService(currencies, container.Resolve<PlayerDataProvider>());
         }
         
-        private static ResuorcesAssetsLoader CreateResuorcesAssetsLoader(DIContainer container) 
-            => new ResuorcesAssetsLoader();
+        private static ResourcesAssetsLoader CreateResuorcesAssetsLoader(DIContainer container) 
+            => new ResourcesAssetsLoader();
         
         private static SceneLoaderService CreateSceneLoaderService(DIContainer container)
             => new SceneLoaderService();
@@ -96,21 +106,21 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
 
         private static ConfigsProviderService CreateConfigsProviderService(DIContainer container)
         {
-            IConfigsLoader loader = new ResourcesConfigsLoader(container.Resolve<ResuorcesAssetsLoader>()); 
+            IConfigsLoader loader = new ResourcesConfigsLoader(container.Resolve<ResourcesAssetsLoader>()); 
             
             return new ConfigsProviderService(loader);
         }
 
         private static ResourcesConfigsLoader CreateResourcesConfigsLoader(DIContainer container)
         {
-            ResuorcesAssetsLoader assetsLoader = container.Resolve<ResuorcesAssetsLoader>();
+            ResourcesAssetsLoader assetsLoader = container.Resolve<ResourcesAssetsLoader>();
             
             return new ResourcesConfigsLoader(assetsLoader);
         }
 
         private static CoroutinesPerformer CreateCoroutinesPerformer(DIContainer container)
         {
-            ResuorcesAssetsLoader assetsLoader = container.Resolve<ResuorcesAssetsLoader>();
+            ResourcesAssetsLoader assetsLoader = container.Resolve<ResourcesAssetsLoader>();
             
             CoroutinesPerformer coroutinesPerformerPrefab = assetsLoader.Load<CoroutinesPerformer>("Utilities/CoroutinesPerformer");
             
