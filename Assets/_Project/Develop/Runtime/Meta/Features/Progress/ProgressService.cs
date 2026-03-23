@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
+using _Project.Develop.Runtime.Utilities.Reactive;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Meta.Features.Progress
@@ -14,11 +16,12 @@ namespace _Project.Develop.Runtime.Meta.Features.Progress
         private WalletService _walletService;
         private ConfigsProviderService _configsProviderService;
         private CoroutinesPerformer _coroutinesPerformer;
-         
-        private int _countWins;
-        private int _countLoss;
         
-        public ProgressService(GameplayDataProvider gameplayDataProvider, 
+        private readonly Dictionary<ProgressTypes, ReactiveVariable<int>> _progressItems;
+        
+        public ProgressService(
+            Dictionary<ProgressTypes, ReactiveVariable<int>> progressItems,
+            GameplayDataProvider gameplayDataProvider, 
             WalletService walletService, 
             ConfigsProviderService configsProviderService, 
             CoroutinesPerformer coroutinesPerformer)
@@ -27,20 +30,20 @@ namespace _Project.Develop.Runtime.Meta.Features.Progress
             _walletService = walletService;
             _configsProviderService = configsProviderService;
             _coroutinesPerformer = coroutinesPerformer;
+
+            _progressItems = new Dictionary<ProgressTypes, ReactiveVariable<int>>(progressItems);
             
             _gameplayDataProvider.RegisterReader(this);
             _gameplayDataProvider.RegisterWriter(this);
         }
         
-        public int CountWins => _countWins;
+        public IReadOnlyVariable<int> GetProgress(ProgressTypes progressType) => _progressItems[progressType];
         
-        public int CountLoss => _countLoss;
+        public void Win() => _progressItems[ProgressTypes.CountWins].Value++;
         
-        public void Win() => _countWins++;
-        
-        public void Lose() => _countLoss++;
+        public void Lose() => _progressItems[ProgressTypes.CountLosses].Value++;
 
-        public void TryReset()
+        public bool TryReset()
         {
             var valueToReset = _configsProviderService.GetConfig<ProgressConfig>().ValueToResetProgress;
 
@@ -49,27 +52,25 @@ namespace _Project.Develop.Runtime.Meta.Features.Progress
                 _walletService.Spend(CurrencyTypes.Gold, valueToReset);
                 _gameplayDataProvider.Reset();
                 _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
-                
 
-                
-                Debug.Log("Сброс");
+                return true;
             }
             else
             {
-                Debug.Log("Не хватает валюты");
+                return false;
             }
         }
 
         public void WriteTo(GameplayData data)
         {
-            data.CountWins = _countWins;
-            data.CountLoss = _countLoss;
+            data.CountWins = _progressItems[ProgressTypes.CountWins].Value;
+            data.CountLoss = _progressItems[ProgressTypes.CountLosses].Value;
         }
 
         public void ReadFrom(GameplayData data)
         {
-            _countWins = data.CountWins;
-            _countLoss = data.CountLoss;
+            _progressItems[ProgressTypes.CountWins].Value = data.CountWins;
+            _progressItems[ProgressTypes.CountLosses].Value = data.CountLoss;
         }
     }
 }

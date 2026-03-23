@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.UI.Progress;
 
 namespace _Project.Develop.Runtime.UI.MainMenu
 {
@@ -11,12 +12,12 @@ namespace _Project.Develop.Runtime.UI.MainMenu
             _container = container;
         }
         
-        public MainMenuScreenPresenter CreateMainMenuScreen(MainMenuScreenView view)
+        public MainMenuScreenPresenter CreateMainMenuScreen(MainMenuScreenView mainMenuScreenView)
         {
             ProjectPresentersFactory projectPresentersFactory = _container.Resolve<ProjectPresentersFactory>();
             MainMenuPopupService popupService = _container.Resolve<MainMenuPopupService>();
             
-            return new MainMenuScreenPresenter(view, projectPresentersFactory, popupService);
+            return new MainMenuScreenPresenter(mainMenuScreenView, projectPresentersFactory, popupService);
         }
     }
 }

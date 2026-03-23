@@ -13,3 +13,8 @@ MonoBehaviour:
   m_Name: ProgressConfig
   m_EditorClassIdentifier: 
   <ValueToResetProgress>k__BackingField: 50
+  _progressCategories:
+  - <Type>k__BackingField: 0
+    <Name>k__BackingField: Wins
+  - <Type>k__BackingField: 1
+    <Name>k__BackingField: Losses

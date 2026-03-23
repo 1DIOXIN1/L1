@@ -28,6 +28,8 @@ namespace _Project.Develop.Runtime.UI.Wallet
             _view = view;
         }
         
+        public IconTextView View => _view;
+        
         public void Initialize()
         {
             UpdateText(_currency.Value);
@@ -40,8 +42,6 @@ namespace _Project.Develop.Runtime.UI.Wallet
         {
             _disposable.Dispose();
         }
-        
-        public IconTextView View => _view;
         
         private void UpdateText(int newValue) => _view.SetText(newValue.ToString());
         

@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.UI.Core;
+using _Project.Develop.Runtime.UI.Progress;
 using _Project.Develop.Runtime.UI.Wallet;
+using UnityEngine;
 
 namespace _Project.Develop.Runtime.UI.MainMenu
 {
     public class MainMenuScreenPresenter : IPresenter
     {
         private readonly MainMenuScreenView _screen;
-        
         private readonly ProjectPresentersFactory _projectPresentersFactory;
-        
         private readonly MainMenuPopupService _popupService;
-        
         private readonly List<IPresenter> _childPresenters = new();
 
         public MainMenuScreenPresenter(
@@ -26,9 +25,10 @@ namespace _Project.Develop.Runtime.UI.MainMenu
 
         public void Initialize()
         {
-            _screen.OpenTestPopupButtonClicked += OnOpenTestPopupButtonClicked;
+            _screen.ResetProgressButtonClicked += OnResetProgressButtonClicked;
             
             CreateWallet();
+            CreateProgressPresenter();
             
             foreach (var childPresenter in _childPresenters)
                 childPresenter.Initialize();
@@ -36,7 +36,7 @@ namespace _Project.Develop.Runtime.UI.MainMenu
 
         public void Dispose()
         {
-            _screen.OpenTestPopupButtonClicked -= OnOpenTestPopupButtonClicked;
+            _screen.ResetProgressButtonClicked -= OnResetProgressButtonClicked;
             
             foreach (var childPresenter in _childPresenters)
                 childPresenter.Dispose();
@@ -50,10 +50,18 @@ namespace _Project.Develop.Runtime.UI.MainMenu
             
             _childPresenters.Add(walletPresenter);
         }
-        
-        private void OnOpenTestPopupButtonClicked()
+
+        private void CreateProgressPresenter()
         {
-            _popupService.OpenTestPopup();
+            ProgressPresenter progressPresenter = _projectPresentersFactory.CreateProgressPresenter(_screen.ProgressItemlistView);
+            
+            _childPresenters.Add(progressPresenter);
+        }
+        
+        private void OnResetProgressButtonClicked()
+        {
+            Debug.Log(123123123);
+            _popupService.OpenResetProgressPopup();
         }
     }
 }

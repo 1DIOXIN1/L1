@@ -12,9 +12,10 @@ namespace _Project.Develop.Runtime.UI.Core
 
         private readonly Dictionary<string, string> _viewIDToResourcePath = new()
         {
-            {ViewIDs.CurrencyView, "UI/Wallet/CurrencyView"},
+            {ViewIDs.Currency, "UI/Wallet/CurrencyView"},
             {ViewIDs.MainMenuScreen, "UI/MainMenu/MainMenuScreenView"},
-            {ViewIDs.TestPopup, "UI/TestPopup"}
+            {ViewIDs.ResetProgressPopup, "UI/Progress/ResetProgressPopup"},
+            {ViewIDs.ProgressItem, "UI/Progress/ProgressItemView"},
         };
 
         public ViewsFactory(ResourcesAssetsLoader resourcesAssetsLoader)

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using _Project.Develop.Runtime.UI.Core.TestPopup;
+using _Project.Develop.Runtime.UI.Progress;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.UI.Core
@@ -23,16 +23,16 @@ namespace _Project.Develop.Runtime.UI.Core
         
         protected abstract Transform PopupLayer { get; }
 
-        public TestPopupPresenter OpenTestPopup(Action closedCallback = null)
+        public ResetProgressPopupPresenter OpenResetProgressPopup(Action closedCallback = null)
         {
-            TestPopupView view = ViewsFactory.Create<TestPopupView>(ViewIDs.TestPopup, PopupLayer);
+            ResetProgressPopupView view = ViewsFactory.Create<ResetProgressPopupView>(ViewIDs.ResetProgressPopup, PopupLayer);
 
-            TestPopupPresenter popup = _presentersFactory.CreateTestPopupPresenter(view);
-
-            OnPopupCreated(popup, view, closedCallback);
+            ResetProgressPopupPresenter popup = _presentersFactory.CreateResetProgressPopupPresenter(view);
             
+            OnPopupCreated(popup, view, closedCallback);
+
             return popup;
-        } 
+        }
         
         public void ClosePopup(PopupPresenterBase popup)
         {
@@ -88,7 +88,6 @@ namespace _Project.Develop.Runtime.UI.Core
 
             public PopupViewBase View { get; }
             public Action ClosedCallback { get; }
-            
         }
     }
 }

@@ -1,9 +1,11 @@
+using _Project.Develop.Runtime.Configs.Meta.Progress;
 using _Project.Develop.Runtime.Configs.Meta.Wallet;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.UI.CommonViews;
 using _Project.Develop.Runtime.UI.Core;
-using _Project.Develop.Runtime.UI.Core.TestPopup;
+using _Project.Develop.Runtime.UI.Progress;
 using _Project.Develop.Runtime.UI.Wallet;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.Reactive;
@@ -41,9 +43,33 @@ namespace _Project.Develop.Runtime.UI
                 iconTextListView);
         }
         
-        public TestPopupPresenter CreateTestPopupPresenter(TestPopupView view)
+        public ProgressItemPresenter CreateProgressItemPresenter(
+            IReadOnlyVariable<int> item, 
+            ProgressTypes type,
+            ProgressItemView view)
         {
-            return new TestPopupPresenter(view);
+            ProgressConfig config = _container.Resolve<ConfigsProviderService>().GetConfig<ProgressConfig>();
+            
+            return new ProgressItemPresenter(item, config, type, view);
+        }
+
+        public ProgressPresenter CreateProgressPresenter(ProgressItemListView progressItemListView)
+        {
+            ProgressService progressService = _container.Resolve<ProgressService>();
+            ViewsFactory viewsFactory = _container.Resolve<ViewsFactory>();
+            
+            return new ProgressPresenter(
+                progressItemListView,
+                progressService,
+                viewsFactory,
+                this);
+        }
+
+        public ResetProgressPopupPresenter CreateResetProgressPopupPresenter(ResetProgressPopupView view)
+        {
+            ProgressService progressService = _container.Resolve<ProgressService>();
+            
+            return new ResetProgressPopupPresenter(view, progressService);
         }
     }
 }

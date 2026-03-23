@@ -30,20 +30,17 @@ namespace _Project.Develop.Runtime.UI.Wallet
 
         public void Initialize()
         {
-            foreach (CurrencyTypes currencyType in _walletService.AvaliableCurrencies)
-            {
-                IconTextView currencyView = _viewsFactory.Create<IconTextView>(ViewIDs.CurrencyView);
+            IconTextView currencyView = _viewsFactory.Create<IconTextView>(ViewIDs.Currency);
                 
-                _view.Add(currencyView);
+            _view.Add(currencyView);
                 
-                CurrencyPresenter currencyPresenter = _projectPresentersFactory.CreateCurrencyPresenter(
-                    currencyView, 
-                    _walletService.GetCurrency(currencyType),
-                    currencyType);
+            CurrencyPresenter currencyPresenter = _projectPresentersFactory.CreateCurrencyPresenter(
+                currencyView, 
+                _walletService.GetCurrency(CurrencyTypes.Gold),
+                CurrencyTypes.Gold);
                 
-                currencyPresenter.Initialize();
-                _currencyPresenters.Add(currencyPresenter);
-            }
+            currencyPresenter.Initialize();
+            _currencyPresenters.Add(currencyPresenter);
         }
 
         public void Dispose()

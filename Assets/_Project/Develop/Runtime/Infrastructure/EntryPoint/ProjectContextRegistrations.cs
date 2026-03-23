@@ -70,7 +70,12 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
             
-            return new ProgressService(gameplayDataProvider,  walletService, configsProviderService, coroutinesPerformer);
+            Dictionary<ProgressTypes, ReactiveVariable<int>> progressItems = new();
+
+            foreach (ProgressTypes type in Enum.GetValues(typeof(ProgressTypes)))
+                progressItems[type] = new ReactiveVariable<int>();
+            
+            return new ProgressService(progressItems, gameplayDataProvider,  walletService, configsProviderService, coroutinesPerformer);
         }
         
         private static SaveLoadService CreateSaveLoadService(DIContainer container)
