@@ -1,7 +1,7 @@
 using _Project.Develop.Runtime.Gameplay.Infrastructure;
 using UnityEngine;
 
-namespace _Project.Develop.Runtime.Gameplay.Factories
+namespace _Project.Develop.Runtime.Gameplay.Main
 {
     public class GameplaySequenceGeneratorService
     {

@@ -16,6 +16,7 @@ namespace _Project.Develop.Runtime.UI.Core
             {ViewIDs.MainMenuScreen, "UI/MainMenu/MainMenuScreenView"},
             {ViewIDs.ResetProgressPopup, "UI/Progress/ResetProgressPopup"},
             {ViewIDs.ProgressItem, "UI/Progress/ProgressItemView"},
+            {ViewIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView"}
         };
 
         public ViewsFactory(ResourcesAssetsLoader resourcesAssetsLoader)

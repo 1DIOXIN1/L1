@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Meta.Features.Progress;
+using _Project.Develop.Runtime.UI.CommonViews;
 using _Project.Develop.Runtime.UI.Core;
 
 namespace _Project.Develop.Runtime.UI.Progress
@@ -30,7 +31,7 @@ namespace _Project.Develop.Runtime.UI.Progress
         {
             foreach (ProgressTypes type in Enum.GetValues(typeof(ProgressTypes)))
             {
-                ProgressItemView itemView = _viewsFactory.Create<ProgressItemView>(ViewIDs.ProgressItem);
+                NameValueTextView itemView = _viewsFactory.Create<NameValueTextView>(ViewIDs.ProgressItem);
                 _view.Add(itemView);
 
                 ProgressItemPresenter itemPresenter = _presentersFactory.CreateProgressItemPresenter(

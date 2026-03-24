@@ -2,7 +2,6 @@ using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.UI;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.MainMenu;
-using _Project.Develop.Runtime.UI.Progress;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
             Debug.Log("Процесс регистрации сервисов на сцене меню");
             
             container.RegisterAsSingle(CreateMainMenuUIRoot).NonLazy();
-            container.RegisterAsSingle(CreateMainMenuScreenPresenter).NonLazy();
+            container.RegisterAsSingle(CreateMainMenuScreen).NonLazy();
             container.RegisterAsSingle(CreateMainMenuPresentersFactory);
             container.RegisterAsSingle(CreateMainMenuPopupService);
         }
@@ -32,8 +31,8 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         private static MainMenuUIRoot CreateMainMenuUIRoot(DIContainer container)
         {
             ResourcesAssetsLoader assetsLoader = container.Resolve<ResourcesAssetsLoader>();
-            MainMenuUIRoot coroutinesPerformerPrefab = assetsLoader.Load<MainMenuUIRoot>("UI/MainMenu/MainMenuUIRoot");
-            return Object.Instantiate(coroutinesPerformerPrefab);
+            MainMenuUIRoot mainMenuUIRoot = assetsLoader.Load<MainMenuUIRoot>("UI/MainMenu/MainMenuUIRoot");
+            return Object.Instantiate(mainMenuUIRoot);
         }
 
         public static MainMenuPresentersFactory CreateMainMenuPresentersFactory(DIContainer container)
@@ -41,7 +40,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
             return new MainMenuPresentersFactory(container);
         }
 
-        public static MainMenuScreenPresenter CreateMainMenuScreenPresenter(DIContainer container)
+        public static MainMenuScreenPresenter CreateMainMenuScreen(DIContainer container)
         {
             MainMenuUIRoot uiRoot = container.Resolve<MainMenuUIRoot>();
             MainMenuScreenView mainMenuScreenView = container.Resolve<ViewsFactory>().Create<MainMenuScreenView>(ViewIDs.MainMenuScreen,  uiRoot.HUDLayer);

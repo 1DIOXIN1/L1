@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
-using _Project.Develop.Runtime.Gameplay.Factories;
 using _Project.Develop.Runtime.Gameplay.Main;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
@@ -54,7 +53,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         {
             var generator = _container.Resolve<GameplaySequenceGeneratorService>();
             var config = _container.Resolve<ConfigsProviderService>().GetConfig<StartGameplayConfig>();
-            var checker = _container.Resolve<CorrectSequenceChecker>();
+            var checker = _container.Resolve<SequenceChecker>();
 
             checker.StartCheck(generator.Generate(config.LenghtSequence, _gameplayInputArgs.GameplayType), _input);
 

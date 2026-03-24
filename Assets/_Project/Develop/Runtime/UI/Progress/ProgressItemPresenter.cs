@@ -1,6 +1,7 @@
 using System;
 using _Project.Develop.Runtime.Configs.Meta.Progress;
 using _Project.Develop.Runtime.Meta.Features.Progress;
+using _Project.Develop.Runtime.UI.CommonViews;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.Utilities.Reactive;
 
@@ -11,7 +12,7 @@ namespace _Project.Develop.Runtime.UI.Progress
         private IReadOnlyVariable<int> _item;
         private ProgressConfig _config;
         private ProgressTypes _type;
-        private ProgressItemView _view;
+        private NameValueTextView _view;
         
         private IDisposable _disposable;
 
@@ -19,7 +20,7 @@ namespace _Project.Develop.Runtime.UI.Progress
             IReadOnlyVariable<int> item,
             ProgressConfig config, 
             ProgressTypes type, 
-            ProgressItemView view)
+            NameValueTextView view)
         {
             _item = item;
             _config = config;
@@ -27,7 +28,7 @@ namespace _Project.Develop.Runtime.UI.Progress
             _view = view;
         }
         
-        public ProgressItemView View => _view;
+        public NameValueTextView View => _view;
 
         public void Initialize()
         {

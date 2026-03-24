@@ -12,21 +12,21 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public event Action Win;
         public event Action Defeat;
 
-        private readonly CorrectSequenceChecker _correctSequenceChecker;
+        private readonly SequenceChecker _sequenceChecker;
         private readonly WalletService _walletService;
         private readonly ConfigsProviderService _configsProviderService;
 
-        public GameMode(CorrectSequenceChecker correctSequenceChecker, WalletService walletService, ConfigsProviderService configsProviderService)
+        public GameMode(SequenceChecker sequenceChecker, WalletService walletService, ConfigsProviderService configsProviderService)
         {
-            _correctSequenceChecker = correctSequenceChecker;
+            _sequenceChecker = sequenceChecker;
             _walletService = walletService;
             _configsProviderService = configsProviderService;
         }
 
         public void Start()
         {
-            _correctSequenceChecker.OnCorrectSequenceCheck += OnRightSequence;
-            _correctSequenceChecker.OnWrongSequenceCheck += OnWrongSequence;
+            _sequenceChecker.OnCorrectSequenceCheck += OnRightSequence;
+            _sequenceChecker.OnWrongSequenceCheck += OnWrongSequence;
         }
 
         private void OnRightSequence()

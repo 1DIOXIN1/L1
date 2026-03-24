@@ -1,15 +1,16 @@
 using System;
 using _Project.Develop.Runtime.Utilities.InputManagement;
-using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Main
 {
-    public class CorrectSequenceChecker
+    public class SequenceChecker
     {
+        public event Action<string> OnCurrentSequenceChanged;
+        public event Action<string> OnRequiredSequenceChanged;
         public event Action OnCorrectSequenceCheck;
         public event Action OnWrongSequenceCheck;
 
-        private string _rightSequence = "";
+        private string _requiredSequence = "";
         private string _currentSequence = "";
         private IInputService _input;
         private bool _isFinished;
@@ -21,7 +22,10 @@ namespace _Project.Develop.Runtime.Gameplay.Main
                 _input.CharEntered -= OnCharEntered;
             }
 
-            _rightSequence = rightSequence ?? "";
+            _requiredSequence = rightSequence ?? "";
+            
+            OnRequiredSequenceChanged?.Invoke(_requiredSequence);
+            
             _currentSequence = "";
             _input = input;
             _isFinished = false;
@@ -37,13 +41,14 @@ namespace _Project.Develop.Runtime.Gameplay.Main
             }
 
             _currentSequence += inputChar;
-
-            if (_currentSequence.Length < _rightSequence.Length)
+            OnCurrentSequenceChanged?.Invoke(_currentSequence);
+            
+            if (_currentSequence.Length < _requiredSequence.Length)
                 return;
 
             _isFinished = true;
 
-            if (_currentSequence == _rightSequence)
+            if (_currentSequence == _requiredSequence)
             {
                 OnCorrectSequenceCheck?.Invoke();
             }

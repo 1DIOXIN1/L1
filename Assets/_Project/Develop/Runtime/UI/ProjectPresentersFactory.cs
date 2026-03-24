@@ -46,7 +46,7 @@ namespace _Project.Develop.Runtime.UI
         public ProgressItemPresenter CreateProgressItemPresenter(
             IReadOnlyVariable<int> item, 
             ProgressTypes type,
-            ProgressItemView view)
+            NameValueTextView view)
         {
             ProgressConfig config = _container.Resolve<ConfigsProviderService>().GetConfig<ProgressConfig>();
             

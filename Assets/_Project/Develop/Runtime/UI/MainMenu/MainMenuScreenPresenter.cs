@@ -60,7 +60,6 @@ namespace _Project.Develop.Runtime.UI.MainMenu
         
         private void OnResetProgressButtonClicked()
         {
-            Debug.Log(123123123);
             _popupService.OpenResetProgressPopup();
         }
     }
