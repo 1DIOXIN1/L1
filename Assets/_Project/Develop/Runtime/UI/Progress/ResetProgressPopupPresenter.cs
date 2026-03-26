@@ -6,12 +6,12 @@ namespace _Project.Develop.Runtime.UI.Progress
     public class ResetProgressPopupPresenter : PopupPresenterBase
     {
         private readonly ResetProgressPopupView _view;
-        private readonly ProgressService _progressService;
+        private readonly ResetProgressService _resetProgressService;
 
-        public ResetProgressPopupPresenter(ResetProgressPopupView view, ProgressService progressService)
+        public ResetProgressPopupPresenter(ResetProgressPopupView view, ResetProgressService progressService)
         {
             _view = view;
-            _progressService = progressService;
+            _resetProgressService = progressService;
         }
 
         protected override PopupViewBase PopupView => _view;
@@ -34,7 +34,7 @@ namespace _Project.Develop.Runtime.UI.Progress
 
         private void OnAgreedButtonClicked()
         {
-            if(_progressService.TryReset())
+            if(_resetProgressService.TryReset())
                 OnCloseRequest();
         }
 

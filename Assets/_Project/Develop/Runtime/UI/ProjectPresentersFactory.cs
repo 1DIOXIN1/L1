@@ -67,9 +67,9 @@ namespace _Project.Develop.Runtime.UI
 
         public ResetProgressPopupPresenter CreateResetProgressPopupPresenter(ResetProgressPopupView view)
         {
-            ProgressService progressService = _container.Resolve<ProgressService>();
+            ResetProgressService resetProgressService = _container.Resolve<ResetProgressService>();
             
-            return new ResetProgressPopupPresenter(view, progressService);
+            return new ResetProgressPopupPresenter(view, resetProgressService);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         private bool _isRunning = false;
         
         private PlayerDataProvider _playerDataProvider;
-        private ProgressService _progressService;
+        private ResetProgressService _resetProgressService;
         
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs = null)
         {
@@ -36,7 +36,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         {
             _coroutinesPerformer = _container.Resolve<CoroutinesPerformer>();
             _playerDataProvider = _container.Resolve<PlayerDataProvider>();
-            _progressService = _container.Resolve<ProgressService>();
+            _resetProgressService = _container.Resolve<ResetProgressService>();
             _input = _container.Resolve<IInputService>();
             
             yield return _container.Resolve<GameplayDataProvider>().Load();
@@ -81,7 +81,7 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         
         private void OnResetPressed()
         {
-            _progressService.TryReset();
+            _resetProgressService.TryReset();
         }
 
         private void Disable()

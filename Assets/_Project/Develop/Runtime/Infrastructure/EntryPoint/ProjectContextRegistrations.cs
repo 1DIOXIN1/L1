@@ -37,6 +37,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateProgressService);
             container.RegisterAsSingle(CreateProjectPresentersFactory);
             container.RegisterAsSingle(CreateViewsFactory);
+            container.RegisterAsSingle(CreateResetProgressService);
             container.RegisterAsSingle<IInputService>(CreateKeyboardInputService);
             container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
         }
@@ -66,8 +67,6 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
         private static ProgressService CreateProgressService(DIContainer container)
         {
             GameplayDataProvider gameplayDataProvider = container.Resolve<GameplayDataProvider>();
-            WalletService walletService = container.Resolve<WalletService>();
-            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
             
             Dictionary<ProgressTypes, ReactiveVariable<int>> progressItems = new();
@@ -75,7 +74,16 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             foreach (ProgressTypes type in Enum.GetValues(typeof(ProgressTypes)))
                 progressItems[type] = new ReactiveVariable<int>();
             
-            return new ProgressService(progressItems, gameplayDataProvider,  walletService, configsProviderService, coroutinesPerformer);
+            return new ProgressService(progressItems, gameplayDataProvider, coroutinesPerformer);
+        }
+
+        private static ResetProgressService CreateResetProgressService(DIContainer container)
+        {
+            ProgressService progressService = container.Resolve<ProgressService>();
+            WalletService walletService = container.Resolve<WalletService>();
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            
+            return new ResetProgressService(progressService, walletService, configsProviderService);
         }
         
         private static SaveLoadService CreateSaveLoadService(DIContainer container)
