@@ -7,6 +7,4 @@ namespace _Project.Develop.Runtime.Utilities.Reactive
         public IDisposable Subscribe(Action<T, T> action);
         public T Value{ get;}
     }
-
-
 }

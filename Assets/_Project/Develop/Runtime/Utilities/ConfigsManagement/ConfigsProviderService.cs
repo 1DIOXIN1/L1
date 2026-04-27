@@ -27,7 +27,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
         public T GetConfig<T>() where T : class
         {
             if (_configs.ContainsKey(typeof(T)) == false)
-                throw new InvalidOperationException($"Not found conffig by {typeof(T)}");
+                throw new InvalidOperationException($"Not found config by {typeof(T)}");
         
             return (T)_configs[typeof(T)];
         }

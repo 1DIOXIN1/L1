@@ -28,7 +28,7 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             Registration registration = new Registration(container => creator.Invoke(container));
             _container.Add(typeof(T), registration);
             
-            return registration;
+            return registration;    
         }
 
         public bool IsAlreadyRegister<T>()

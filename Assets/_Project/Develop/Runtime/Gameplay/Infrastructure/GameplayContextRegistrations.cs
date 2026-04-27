@@ -1,11 +1,14 @@
-using System;
-using _Project.Develop.Runtime.Gameplay.Main;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
+using _Project.Develop.Runtime.Gameplay.Features.Main;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Controllers;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay;
-using _Project.Develop.Runtime.Utilities;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
@@ -20,27 +23,21 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public static void Process(DIContainer container)
         {
             container.RegisterAsSingle(CreateGameplayUIRoot).NonLazy();
-            container.RegisterAsSingle(CreateGameplaySequenceGeneratorService);
             container.RegisterAsSingle(CreateGameMode);
             container.RegisterAsSingle(CreateGameplayCycle).NonLazy();
             container.RegisterAsSingle(CreateGameplayPresentersFactory).NonLazy();
-            container.RegisterAsSingle(CreateSequenceChecker);
             container.RegisterAsSingle(CreateGameplayScreen).NonLazy();
+            container.RegisterAsSingle(CreateCharactersFactory);
+            container.RegisterAsSingle(CreateWeaponFactory);
+            container.RegisterAsSingle(CreatePlayerWeaponInventory);
         }
-
-        private static GameplaySequenceGeneratorService CreateGameplaySequenceGeneratorService(DIContainer container) 
-            =>new GameplaySequenceGeneratorService();
-        
-        private static SequenceChecker CreateSequenceChecker(DIContainer container)
-            => new SequenceChecker();
 
         private static GameMode CreateGameMode(DIContainer container)
         {
-            SequenceChecker checker = container.Resolve<SequenceChecker>();
             WalletService walletService = container.Resolve<WalletService>();
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             
-            return new GameMode(checker, walletService, configsProviderService);
+            return new GameMode(walletService, configsProviderService);
         }
         
         private static GameplayCycle CreateGameplayCycle(DIContainer container)
@@ -71,8 +68,22 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             
             return new GameplayScreenPresenter(screenView, presentersFactory);
         }
-
+    
         private static GameplayPresentersFactory CreateGameplayPresentersFactory(DIContainer container)
             => new GameplayPresentersFactory(container);
+        
+        private static CharactersFactory CreateCharactersFactory(DIContainer container)
+            => new CharactersFactory(container);
+        
+        private static WeaponFactory CreateWeaponFactory(DIContainer container) 
+            => new WeaponFactory(container);
+
+        private static PlayerWeaponInventory CreatePlayerWeaponInventory(DIContainer container)
+        {
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            WeaponFactory factory = container.Resolve<WeaponFactory>();
+            
+            return new PlayerWeaponInventory(configsProviderService, factory);
+        }
     }
 }

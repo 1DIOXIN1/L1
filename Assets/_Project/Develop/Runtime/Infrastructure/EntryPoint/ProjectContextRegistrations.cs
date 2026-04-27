@@ -5,7 +5,7 @@ using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.UI;
 using _Project.Develop.Runtime.UI.Core;
-using _Project.Develop.Runtime.Utilities;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement;
@@ -25,7 +25,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
     {
         public static void Process(DIContainer container)
         {
-            container.RegisterAsSingle(CreateResuorcesAssetsLoader);
+            container.RegisterAsSingle(CreateResourcesAssetsLoader);
             container.RegisterAsSingle(CreateConfigsProviderService);
             container.RegisterAsSingle(CreateResourcesConfigsLoader);
             container.RegisterAsSingle(CreateCoroutinesPerformer);
@@ -108,7 +108,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             return new WalletService(currencies, container.Resolve<PlayerDataProvider>());
         }
         
-        private static ResourcesAssetsLoader CreateResuorcesAssetsLoader(DIContainer container) 
+        private static ResourcesAssetsLoader CreateResourcesAssetsLoader(DIContainer container) 
             => new ResourcesAssetsLoader();
         
         private static SceneLoaderService CreateSceneLoaderService(DIContainer container)
@@ -142,5 +142,5 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
         
         private static KeyboardInputService CreateKeyboardInputService(DIContainer container)
             => new KeyboardInputService();
-    }
+    } 
 }

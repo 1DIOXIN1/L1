@@ -1,5 +1,5 @@
 using _Project.Develop.Runtime.Meta.Features.Progress;
-using _Project.Develop.Runtime.Utilities;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;

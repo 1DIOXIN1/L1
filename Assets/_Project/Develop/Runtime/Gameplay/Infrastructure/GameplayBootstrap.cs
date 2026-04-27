@@ -1,7 +1,8 @@
 using System;
 using System.Collections;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
-using _Project.Develop.Runtime.Gameplay.Main;
+using _Project.Develop.Runtime.Gameplay.Features.Main;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
@@ -51,15 +52,14 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
         public override void Run()
         {
-            var generator = _container.Resolve<GameplaySequenceGeneratorService>();
             var config = _container.Resolve<ConfigsProviderService>().GetConfig<StartGameplayConfig>();
-            var checker = _container.Resolve<SequenceChecker>();
+            var charactersFactory = _container.Resolve<CharactersFactory>();
 
-            checker.StartCheck(generator.Generate(config.LenghtSequence, _gameplayInputArgs.GameplayType), _input);
-
+            charactersFactory.CreatePlayer(new Vector3(0, 0, 0));
+            
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
 
             _isRunning = true;
-        }
+        } 
     }
 }

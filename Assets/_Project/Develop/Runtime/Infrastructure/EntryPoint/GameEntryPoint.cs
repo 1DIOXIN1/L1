@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Infrastructure.DI;
-using _Project.Develop.Runtime.Utilities;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
@@ -43,7 +43,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             Debug.Log("End load");
             
             yield return _projectContainer.Resolve<SceneSwitcherService>().ProcessSwitchTo(Scenes.MainMenu);
-        }
+        }      
 
         private IEnumerator LoadData()
         {
