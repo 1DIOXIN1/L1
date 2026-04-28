@@ -56,6 +56,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             var charactersFactory = _container.Resolve<CharactersFactory>();
 
             charactersFactory.CreatePlayer(new Vector3(0, 0, 0));
+            charactersFactory.CreateEnemy(new Vector3(1, 0, 0));
             
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
 

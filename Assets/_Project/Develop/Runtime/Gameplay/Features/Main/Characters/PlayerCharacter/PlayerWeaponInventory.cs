@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using _Project.Develop.Runtime.Configs.Meta.Player;
+using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
@@ -25,7 +25,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             Transform firePoint,
             GameObject owner)
         {
-            var inventoryConfig = ConfigsProviderService.GetConfig<WeaponInventoryConfig>();
+            var inventoryConfig = ConfigsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
             var slots = new Dictionary<SlotWeaponType, WeaponSlot>();
 
             foreach (var slotData in inventoryConfig.Slots)

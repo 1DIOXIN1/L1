@@ -6,10 +6,10 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace _Project.Develop.Runtime.Configs.Meta.Player
+namespace _Project.Develop.Runtime.Configs.Meta.Characters.Player
 {
-    [CreateAssetMenu(menuName = "Configs/Gameplay/Inventory/WeaponInventory", fileName = "WeaponInventoryConfig")]
-    public class WeaponInventoryConfig : ScriptableObject
+    [CreateAssetMenu(menuName = "Configs/Gameplay/Inventory/PlayerWeaponInventory", fileName = "PlayerWeaponInventoryConfig")]
+    public class PlayerWeaponInventoryConfig : ScriptableObject
     {
         [field: SerializeField] public SlotWeaponType DefaultSelectedSlot { get; private set; } = SlotWeaponType.PrimarySlot;
         public IReadOnlyList<StartWeaponSlot> Slots => slots;

@@ -1,5 +1,5 @@
-﻿
-using _Project.Develop.Runtime.Configs.Meta.Player;
+using _Project.Develop.Runtime.Configs.Meta;
+using _Project.Develop.Runtime.Configs.Meta.Characters;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Controllers
@@ -11,16 +11,19 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Controllers
 
         public CharacterControllerDirectionalMover(
             CharacterController controller,
-             PlayerConfig playerConfig)
+            ICharacterConfig characterConfig)
         {
             _controller = controller;
-            _speed = playerConfig.Speed;
+            _speed = characterConfig.Speed;
         }
-        
+
         public void SetDirectional(
             Vector3 direction,
             float deltaTime)
         {
+            if (direction == Vector3.zero)
+                return;
+
             _controller.Move(direction.normalized * _speed * deltaTime);
         }
     }

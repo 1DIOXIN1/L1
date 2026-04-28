@@ -1,8 +1,6 @@
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
-using _Project.Develop.Runtime.Gameplay.Features.Main;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
-using _Project.Develop.Runtime.Gameplay.Features.Main.Controllers;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Progress;

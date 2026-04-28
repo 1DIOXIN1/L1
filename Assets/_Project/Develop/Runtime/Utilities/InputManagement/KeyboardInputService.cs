@@ -16,6 +16,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action SelectPrimarySlot;
         public event Action SelectSecondarySlot;
         public event Action Jump;
+        public event Action Sprint;
         
         private Vector3 _direction;
         
@@ -26,6 +27,11 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             if(_direction != Vector3.zero)
             {
                 Move?.Invoke(_direction);
+            }
+
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                Sprint?.Invoke();
             }
 
             if (Input.GetKeyDown(KeyCode.Space))

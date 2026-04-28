@@ -15,6 +15,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action SelectSecondarySlot;
         event Action SelectPrimarySlot;
         event Action Jump;
+        event Action Sprint;
         
         void Update(float deltaTime);
     }
