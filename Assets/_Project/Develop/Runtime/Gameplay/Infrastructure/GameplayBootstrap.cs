@@ -3,6 +3,7 @@ using System.Collections;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Gameplay.Features.Main;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
@@ -55,8 +56,10 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             var config = _container.Resolve<ConfigsProviderService>().GetConfig<StartGameplayConfig>();
             var charactersFactory = _container.Resolve<CharactersFactory>();
 
-            charactersFactory.CreatePlayer(new Vector3(0, 0, 0));
-            charactersFactory.CreateEnemy(new Vector3(1, 0, 0));
+            charactersFactory.CreatePlayer(new Vector3(2, 1, 0));
+            charactersFactory.CreateEnemy(new Vector3(3, 1, 0), EnemyType.Guard);
+            charactersFactory.CreateEnemy(new Vector3(2.2f, 1, 2), EnemyType.Teacher);
+            charactersFactory.CreateEnemy(new Vector3(2, 1, 2), EnemyType.Cutter);
             
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
 

@@ -44,32 +44,40 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             var mover = new CharacterControllerDirectionalMover(characterController, playerConfig);
 
             player.Initialize(_input, mover, inventory, playerConfig);
-            Debug.Log("Игрок создан");
+            Debug.Log("Player created");
 
             return player;
         }
 
         public Enemy CreateEnemy(Vector3 position)
         {
-            return CreateEnemy(position, _playerTransform);
+            return CreateEnemy(position, EnemyType.Guard, _playerTransform);
         }
 
         public Enemy CreateEnemy(Vector3 position, Transform target)
         {
+            return CreateEnemy(position, EnemyType.Guard, target);
+        }
+
+        public Enemy CreateEnemy(Vector3 position, EnemyType type)
+        {
+            return CreateEnemy(position, type, _playerTransform);
+        }
+
+        public Enemy CreateEnemy(Vector3 position, EnemyType type, Transform target)
+        {
             var enemyConfig = _configsProviderService.GetConfig<EnemyConfig>();
             var enemyPrefab = _assetsLoader.Load<GameObject>("Prefabs/Entities/Enemy");
+            var bulletPrefab = _assetsLoader.Load<GameObject>("Prefabs/Weapons/Bullets/Bullet");
             GameObject instance = Object.Instantiate(enemyPrefab, position, Quaternion.identity);
 
             Enemy enemy = instance.GetComponent<Enemy>();
             CharacterController characterController = instance.GetComponent<CharacterController>();
 
-            if (characterController == null)
-                characterController = instance.AddComponent<CharacterController>();
-
             var mover = new CharacterControllerDirectionalMover(characterController, enemyConfig);
 
-            enemy.Initialize(mover, enemyConfig, target);
-            Debug.Log("Враг создан");
+            enemy.Initialize(mover, enemyConfig, type, target, bulletPrefab);
+            Debug.Log($"Enemy created: {type}");
 
             return enemy;
         }

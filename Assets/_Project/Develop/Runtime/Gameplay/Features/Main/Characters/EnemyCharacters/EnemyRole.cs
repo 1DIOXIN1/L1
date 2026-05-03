@@ -1,10 +1,12 @@
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 {
-    public enum EnemyRole
+    public enum EnemyType
     {
-        Assault,
-        Heavy,
-        Sniper,
-        Engineer
+        Guard,
+        Teacher,
+        Cutter,
+        Cook,
+        Loader,
+        Mayor
     }
 }

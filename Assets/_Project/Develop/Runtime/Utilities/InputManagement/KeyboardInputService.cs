@@ -17,6 +17,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action SelectSecondarySlot;
         public event Action Jump;
         public event Action Sprint;
+        public event Action Crouch;
         
         private Vector3 _direction;
         
@@ -24,12 +25,14 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         {
             _direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
             
-            if(_direction != Vector3.zero)
-            {
-                Move?.Invoke(_direction);
-            }
+            Move?.Invoke(_direction);
 
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+            {
+                Crouch?.Invoke();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 Sprint?.Invoke();
             }

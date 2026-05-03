@@ -1,4 +1,3 @@
-using _Project.Develop.Runtime.Configs.Meta;
 using _Project.Develop.Runtime.Configs.Meta.Characters;
 using UnityEngine;
 
@@ -7,7 +6,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Controllers
     public class CharacterControllerDirectionalMover
     {
         private readonly CharacterController _controller;
-        private readonly float _speed;
+        private float _speed;
 
         public CharacterControllerDirectionalMover(
             CharacterController controller,
@@ -15,6 +14,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Controllers
         {
             _controller = controller;
             _speed = characterConfig.Speed;
+        }
+
+        public void SetSpeed(float speed)
+        {
+            _speed = speed;
         }
 
         public void SetDirectional(
