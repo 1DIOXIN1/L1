@@ -58,8 +58,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             charactersFactory.CreatePlayer(new Vector3(2, 1, 0));
             charactersFactory.CreateEnemy(new Vector3(3, 1, 0), EnemyType.Guard);
-            charactersFactory.CreateEnemy(new Vector3(2.2f, 1, 2), EnemyType.Teacher);
-            charactersFactory.CreateEnemy(new Vector3(2, 1, 2), EnemyType.Cutter);
+            charactersFactory.CreateEnemy(new Vector3(4f, 1, 2), EnemyType.Teacher);
             
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
 

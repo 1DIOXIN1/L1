@@ -150,12 +150,12 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
                 20f,
                 120f,
                 5,
-                10f,
-                25f,
+                5f,
+                12f,
                 1.5f,
                 3,
                 0.16f,
-                0.7f);
+                1f);
         }
 
         public static EnemyPreset CreateTeacher()
@@ -170,7 +170,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
                 120f,
                 2,
                 5f,
-                30f,
+                25f,
                 3f,
                 laserAimTime: 1f,
                 laserDamagePerSecond: 2,

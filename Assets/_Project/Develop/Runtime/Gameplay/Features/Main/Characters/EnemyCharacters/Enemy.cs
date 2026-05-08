@@ -5,6 +5,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 {
     public class Enemy : EnemyBase
     {
+        [SerializeField] private LineRenderer laserRenderer;
         private float _attackCooldown;
         private float _burstTimer;
         private int _burstShotsLeft;
@@ -39,8 +40,16 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         private void GuardCombat(float deltaTime)
         {
             _attackCooldown -= deltaTime;
-
-            if (IsTargetInsideAttackDistance() == false)
+            float distance = DistanceToTarget();
+            
+            if (distance == Preset.MinAttackDistance)
+            {
+                Vector3 dir = (transform.position - Target.position).normalized;
+                MoveTo(transform.position + dir * (Preset.MinAttackDistance - distance), deltaTime);
+                return;
+            }
+            
+            else if (distance > Preset.MaxAttackDistance)
             {
                 MoveTo(Target.position, deltaTime);
                 return;
@@ -52,6 +61,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
                 if (_burstTimer <= 0f)
                 {
+                    Debug.Log("Attacking  projectile");
+                    
                     TryShootProjectileWithAccuracy();
                     _burstShotsLeft--;
                     _burstTimer = Preset.BurstInterval;
@@ -70,8 +81,19 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         private void TeacherCombat(float deltaTime)
         {
             _attackCooldown -= deltaTime;
+            Vector3 origin = GetAttackOrigin();
+            Vector3 targetPos = Target.position + Vector3.up * Preset.AttackOriginHeight;
 
-            if (IsTargetInsideAttackDistance() == false)
+            float distance = DistanceToTarget();
+            
+            if (distance == Preset.MinAttackDistance)
+            {
+                Vector3 dir = (transform.position - Target.position).normalized;
+                MoveTo(transform.position + dir * (Preset.MinAttackDistance - distance), deltaTime);
+                return;
+            }
+            
+            else if (distance > Preset.MaxAttackDistance)
             {
                 ResetLaser();
                 MoveTo(Target.position, deltaTime);
@@ -90,13 +112,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
             if (_laserDamageTimer >= 1f)
             {
+                DrawLaser(origin, targetPos, 0.1f);
                 TryRaycastLaserDamage(Preset.LaserDamagePerSecond);
                 _laserDamageTimer = 0f;
             }
 
             if (_laserTimer < Preset.LaserPowerShotTime)
                 return;
-
+            
+            DrawLaser(origin, targetPos, 0.1f);
             TryRaycastLaserDamage(Preset.LaserPowerShotDamage);
             _attackCooldown = Preset.AttackCooldown;
             ResetLaser();
@@ -134,7 +158,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
             if (_comboTimer > 0f)
                 return;
-
+                
             TryOverlapMeleeDamage(Preset.Damage);
             _comboHitsLeft--;
 
@@ -187,6 +211,25 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         {
             _laserTimer = 0f;
             _laserDamageTimer = 0f;
+        }
+        private void DrawLaser(Vector3 origin, Vector3 target, float duration)
+        {
+            if (laserRenderer == null)
+                return;
+
+            laserRenderer.positionCount = 2;
+            laserRenderer.SetPosition(0, origin);
+            laserRenderer.SetPosition(1, target);
+            
+            Invoke(nameof(HideLaser), duration);
+        }
+
+        private void HideLaser()
+        {
+            if (laserRenderer == null)
+                return;
+
+            laserRenderer.positionCount = 0;
         }
     }
 }

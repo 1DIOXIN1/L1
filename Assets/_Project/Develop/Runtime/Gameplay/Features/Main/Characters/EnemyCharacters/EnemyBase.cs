@@ -39,8 +39,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             InitializeHealth(Preset);
             EnterState(EnemyAIState.Patrol);
             _isInitialized = true;
-
-            OnInitialized();
         }
 
         private void Update()
@@ -63,10 +61,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         }
 
         protected abstract void CombatTick(float deltaTime);
-
-        protected virtual void OnInitialized()
-        {
-        }
 
         protected virtual void OnStateEntered(EnemyAIState state)
         {

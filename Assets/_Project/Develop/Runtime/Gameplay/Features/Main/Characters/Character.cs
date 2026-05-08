@@ -23,7 +23,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 return;
 
             _health = Mathf.Max(0, _health - damage);
-
+            Debug.Log($"Character {name} damaged with {damage} remain hp: {_health}");
             if (_health == 0)
                 Die();
         }
