@@ -21,9 +21,13 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _configsProviderService = configsProviderService;
         }
 
+        public void TriggerDefeat()
+        {
+            Defeat?.Invoke();
+        }
+
         public void Start()
         {
-            
         }
 
         private void OnRightSequence()

@@ -1,13 +1,19 @@
+using System.Collections.Generic;
+using System.Linq;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Controllers;
+using _Project.Develop.Runtime.Gameplay.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 {
@@ -17,6 +23,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
         private readonly IInputService _input;
         private readonly DIContainer _container;
         private readonly ConfigsProviderService _configsProviderService;
+        private readonly EnemyAIService _enemyAIService;
 
         private Transform _playerTransform;
 
@@ -27,6 +34,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             _assetsLoader = _container.Resolve<ResourcesAssetsLoader>();
             _input = _container.Resolve<IInputService>();
             _configsProviderService = _container.Resolve<ConfigsProviderService>();
+            _enemyAIService = _container.Resolve<EnemyAIService>();
         }
 
         public Player CreatePlayer(Vector3 position)
@@ -44,44 +52,107 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             var gadgetInventoryBuilder = _container.Resolve<PlayerGadgetInventory>();
             var gadgetInventory = gadgetInventoryBuilder.CreatePlayerGadgetInventory(player.FirePoint, instance);
             var mover = new CharacterControllerDirectionalMover(characterController, playerConfig);
+            var gameMode = _container.Resolve<GameMode>();
 
             player.Initialize(_input, mover, inventory, gadgetInventory, playerConfig);
-            Debug.Log("Player created");
+            player.SetDeathHandler(gameMode.TriggerDefeat);
 
             return player;
         }
 
-        public Enemy CreateEnemy(Vector3 position)
+        public EnemyBase CreateEnemy(EnemySpawnPoint spawnPoint)
         {
-            return CreateEnemy(position, EnemyType.Guard, _playerTransform);
+            return CreateEnemy(spawnPoint.SpawnPosition, spawnPoint.EnemyType, spawnPoint.PatrolPoints);
         }
 
-        public Enemy CreateEnemy(Vector3 position, Transform target)
-        {
-            return CreateEnemy(position, EnemyType.Guard, target);
-        }
-
-        public Enemy CreateEnemy(Vector3 position, EnemyType type)
-        {
-            return CreateEnemy(position, type, _playerTransform);
-        }
-
-        public Enemy CreateEnemy(Vector3 position, EnemyType type, Transform target)
+        public EnemyBase CreateEnemy(Vector3 position, EnemyType type, Transform[] patrolPoints = null)
         {
             var enemyConfig = _configsProviderService.GetConfig<EnemyConfig>();
-            var enemyPrefab = _assetsLoader.Load<GameObject>("Prefabs/Entities/Enemy");
-            var bulletPrefab = _assetsLoader.Load<GameObject>("Prefabs/Weapons/Bullets/Bullet");
-            GameObject instance = Object.Instantiate(enemyPrefab, position, Quaternion.identity);
+            GameObject prefab = ResolvePrefab(enemyConfig, type);
 
-            Enemy enemy = instance.GetComponent<Enemy>();
+            if (prefab == null)
+                throw new System.InvalidOperationException($"Prefab for enemy type {type} is not configured.");
+
+            GameObject instance = Object.Instantiate(prefab, position, Quaternion.identity);
+            EnemyBase enemy = instance.GetComponent<EnemyBase>();
+
+            if (enemy == null)
+                throw new System.InvalidOperationException($"Prefab '{prefab.name}' for {type} has no {nameof(EnemyBase)} component.");
+
             CharacterController characterController = instance.GetComponent<CharacterController>();
 
-            var mover = new CharacterControllerDirectionalMover(characterController, enemyConfig);
+            if (characterController != null)
+                characterController.enabled = false;
 
-            enemy.Initialize(mover, enemyConfig, type, target, bulletPrefab);
-            Debug.Log($"Enemy created: {type}");
+            var bulletPrefab = _assetsLoader.Load<GameObject>("Prefabs/Weapons/Bullets/Bullet");
+            IReadOnlyList<Transform> points = ResolvePatrolPoints(position, patrolPoints);
+
+            enemy.Initialize(_enemyAIService, enemyConfig, _playerTransform, bulletPrefab, points);
 
             return enemy;
+        }
+
+        private GameObject ResolvePrefab(EnemyConfig enemyConfig, EnemyType type)
+        {
+            GameObject prefab = enemyConfig.GetPrefab(type);
+            if (prefab != null)
+                return prefab;
+
+            return type switch
+            {
+                EnemyType.Melee => _assetsLoader.Load<GameObject>("Prefabs/Entities/Melee"),
+                EnemyType.Ranger => _assetsLoader.Load<GameObject>("Prefabs/Entities/Ranger"),
+                _ => enemyConfig.CookerPrefab
+            };
+        }
+
+        public void SpawnEnemiesFromScene()
+        {
+            EnemySpawnPoint[] spawnPoints = Object.FindObjectsOfType<EnemySpawnPoint>();
+
+            if (spawnPoints.Length == 0)
+            {
+                CreateFallbackEnemies();
+                return;
+            }
+
+            foreach (EnemySpawnPoint spawnPoint in spawnPoints)
+                CreateEnemy(spawnPoint);
+        }
+
+        private void CreateFallbackEnemies()
+        {
+            CreateEnemy(new Vector3(5f, 0f, 2f), EnemyType.Ranger, CreateDefaultPatrolPoints(new Vector3(5f, 0f, 2f)));
+            CreateEnemy(new Vector3(-3f, 0f, 4f), EnemyType.Cooker, CreateDefaultPatrolPoints(new Vector3(-3f, 0f, 4f)));
+            CreateEnemy(new Vector3(1f, 0f, -4f), EnemyType.Melee, CreateDefaultPatrolPoints(new Vector3(1f, 0f, -4f)));
+        }
+
+        private static Transform[] CreateDefaultPatrolPoints(Vector3 center)
+        {
+            var points = new Transform[3];
+            Vector3[] offsets =
+            {
+                new(3f, 0f, 0f),
+                new(-2f, 0f, 3f),
+                new(-2f, 0f, -3f)
+            };
+
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                var pointObject = new GameObject($"PatrolPoint_{i}");
+                pointObject.transform.position = center + offsets[i];
+                points[i] = pointObject.transform;
+            }
+
+            return points;
+        }
+
+        private static IReadOnlyList<Transform> ResolvePatrolPoints(Vector3 spawnPosition, Transform[] patrolPoints)
+        {
+            if (patrolPoints != null && patrolPoints.Any(point => point != null))
+                return patrolPoints;
+
+            return CreateDefaultPatrolPoints(spawnPosition);
         }
     }
 }

@@ -68,11 +68,18 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             float deltaTime = Time.deltaTime;
 
             UpdateHorizontalMovement(deltaTime);
-            UpdateRotation();
             UpdateVerticalMovement(deltaTime);
             UpdateStamina(deltaTime);
 
             _sprintRequested = false;
+        }
+
+        private void LateUpdate()
+        {
+            if (_playerConfig == null)
+                return;
+
+            UpdateRotation();
         }
 
         private void OnDestroy()

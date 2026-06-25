@@ -1,3 +1,4 @@
+using System;
 using _Project.Develop.Runtime.Configs.Meta.Characters;
 using UnityEngine;
 
@@ -7,9 +8,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
     {
         private int _health;
         private bool _isDead;
+        private Action _onDied;
         
         protected int Health => _health;
         protected bool IsDead => _isDead;
+
+        public void SetDeathHandler(Action onDied)
+        {
+            _onDied = onDied;
+        }
 
         protected void InitializeHealth(ICharacterConfig config)
         {
@@ -31,6 +38,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
         protected virtual void Die()
         {
             _isDead = true;
+            _onDied?.Invoke();
             Destroy(gameObject);
         }
     }

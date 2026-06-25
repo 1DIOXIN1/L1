@@ -1,5 +1,7 @@
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
+using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
@@ -27,6 +29,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGameplayPresentersFactory).NonLazy();
             container.RegisterAsSingle(CreateGameplayScreen).NonLazy();
             container.RegisterAsSingle(CreateCharactersFactory);
+            container.RegisterAsSingle(CreateEnemyAIService);
             container.RegisterAsSingle(CreateWeaponFactory);
             container.RegisterAsSingle(CreateGadgetFactory);
             container.RegisterAsSingle(CreatePlayerWeaponInventory);
@@ -75,6 +78,12 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         
         private static CharactersFactory CreateCharactersFactory(DIContainer container)
             => new CharactersFactory(container);
+
+        private static EnemyAIService CreateEnemyAIService(DIContainer container)
+        {
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            return new EnemyAIService(configsProviderService.GetConfig<EnemyConfig>());
+        }
         
         private static WeaponFactory CreateWeaponFactory(DIContainer container) 
             => new WeaponFactory(container);

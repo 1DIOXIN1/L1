@@ -2,11 +2,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 {
     public enum EnemyType
     {
-        Guard,
-        Teacher,
-        Cutter,
-        Cook,
-        Loader,
-        Mayor
+        Cooker,
+        Ranger,
+        Melee
     }
 }
