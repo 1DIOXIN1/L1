@@ -51,8 +51,22 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         protected virtual void RegisterStates(EnemyStateMachine stateMachine)
         {
             stateMachine.RegisterState(new PatrolEnemyState());
-            stateMachine.RegisterState(new DetectingEnemyState());
             stateMachine.RegisterState(new InfiltrationEnemyState());
+        }
+
+        public void EnterCombatAsSpotter()
+        {
+            if (_isInitialized == false || IsDead)
+                return;
+
+            if (StateMachine.CurrentStateId == EnemyStateId.Infiltration)
+                return;
+
+            _context.IsSpotter = true;
+            _context.SpotterTimer = 0f;
+            _context.AlarmSpreadTriggered = false;
+            _context.InfiltrationTriggered = true;
+            StateMachine.ChangeState(EnemyStateId.Infiltration);
         }
 
         public void EnterInfiltration()
@@ -63,6 +77,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (StateMachine.CurrentStateId == EnemyStateId.Infiltration)
                 return;
 
+            _context.IsSpotter = false;
             _context.InfiltrationTriggered = true;
             StateMachine.ChangeState(EnemyStateId.Infiltration);
         }
@@ -186,15 +201,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         protected override void Die()
         {
             if (_context != null)
-            {
                 _context.AIService.Unregister(this);
-
-                if (StateMachine.CurrentStateId == EnemyStateId.Detecting
-                    && _context.InfiltrationTriggered == false)
-                {
-                    _context.InfiltrationTriggered = false;
-                }
-            }
 
             base.Die();
         }

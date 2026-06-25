@@ -23,7 +23,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         {
             if (context.Enemy.CanSeePlayer())
             {
-                context.Enemy.StateMachine.ChangeState(EnemyStateId.Detecting);
+                context.Enemy.EnterCombatAsSpotter();
                 return;
             }
 

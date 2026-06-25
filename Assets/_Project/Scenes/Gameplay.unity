@@ -377,7 +377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 0
+  enemyType: 2
   patrolPoints:
   - {fileID: 1718496844}
   - {fileID: 816398503}
@@ -807,7 +807,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 0
+  enemyType: 1
   patrolPoints:
   - {fileID: 110160506}
   - {fileID: 2058952030}

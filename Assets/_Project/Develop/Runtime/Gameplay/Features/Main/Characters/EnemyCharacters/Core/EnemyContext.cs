@@ -20,6 +20,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public float PatrolWaitTimer { get; set; }
         public float DetectingTimer { get; set; }
         public bool InfiltrationTriggered { get; set; }
+        public bool IsSpotter { get; set; }
+        public float SpotterTimer { get; set; }
+        public bool AlarmSpreadTriggered { get; set; }
 
         public EnemyContext(
             EnemyBase enemy,

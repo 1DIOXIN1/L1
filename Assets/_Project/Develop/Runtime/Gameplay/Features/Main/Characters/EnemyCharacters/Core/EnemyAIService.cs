@@ -25,12 +25,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             _enemies.Remove(enemy);
         }
 
-        public void TriggerInfiltration(EnemyBase source)
+        public void SpreadAlarm(EnemyBase source)
         {
             if (source == null)
                 return;
-
-            source.EnterInfiltration();
 
             foreach (EnemyBase enemy in _enemies)
             {

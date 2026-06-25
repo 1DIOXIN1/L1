@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0ffe001aabb0022334455667788abcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flameParticles: {fileID: 1297642267643900383, guid: 73c393b8a93b9df41ba05a2f9cef59af, type: 3}
+  flameParticles: {fileID: 1952733237466308718, guid: f33ff9edfe9bcc8418a4b3c126d59e81, type: 3}
 --- !u!195 &19500003
 NavMeshAgent:
   m_ObjectHideFlags: 0

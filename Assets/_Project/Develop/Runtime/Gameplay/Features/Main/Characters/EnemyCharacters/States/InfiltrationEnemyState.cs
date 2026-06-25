@@ -27,6 +27,30 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 return;
 
             context.Enemy.TickCombat(deltaTime);
+            TickSpotterAlarm(context, deltaTime);
+        }
+
+        private static void TickSpotterAlarm(EnemyContext context, float deltaTime)
+        {
+            if (context.IsSpotter == false || context.AlarmSpreadTriggered)
+                return;
+
+            if (context.Enemy.CanSeePlayer() == false)
+            {
+                context.IsSpotter = false;
+                context.SpotterTimer = 0f;
+                context.InfiltrationTriggered = false;
+                context.Enemy.StateMachine.ChangeState(EnemyStateId.Patrol);
+                return;
+            }
+
+            context.SpotterTimer += deltaTime;
+
+            if (context.SpotterTimer < context.Config.InfiltrationTriggerTime)
+                return;
+
+            context.AlarmSpreadTriggered = true;
+            context.AIService.SpreadAlarm(context.Enemy);
         }
     }
 }
