@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
