@@ -13,8 +13,12 @@ MonoBehaviour:
   m_Name: PlayerWeaponInventoryConfig
   m_EditorClassIdentifier: 
   <DefaultSelectedSlot>k__BackingField: 1
+  <DefaultSelectedGadgetSlot>k__BackingField: 1
   slots:
   - <SlotType>k__BackingField: 1
     <WeaponType>k__BackingField: 0
   - <SlotType>k__BackingField: 2
     <WeaponType>k__BackingField: 1
+  gadgetSlots:
+  - <SlotType>k__BackingField: 1
+    <GadgetType>k__BackingField: 0

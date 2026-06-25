@@ -41,9 +41,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
             var inventoryBuilder = _container.Resolve<PlayerWeaponInventory>();
             var inventory = inventoryBuilder.CreatePlayerWeaponInventory(_playerTransform, player.FirePoint, instance);
+            var gadgetInventoryBuilder = _container.Resolve<PlayerGadgetInventory>();
+            var gadgetInventory = gadgetInventoryBuilder.CreatePlayerGadgetInventory(player.FirePoint, instance);
             var mover = new CharacterControllerDirectionalMover(characterController, playerConfig);
 
-            player.Initialize(_input, mover, inventory, playerConfig);
+            player.Initialize(_input, mover, inventory, gadgetInventory, playerConfig);
             Debug.Log("Player created");
 
             return player;

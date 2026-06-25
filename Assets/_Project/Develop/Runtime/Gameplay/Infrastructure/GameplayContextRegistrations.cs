@@ -1,6 +1,7 @@
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Progress;
@@ -27,7 +28,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGameplayScreen).NonLazy();
             container.RegisterAsSingle(CreateCharactersFactory);
             container.RegisterAsSingle(CreateWeaponFactory);
+            container.RegisterAsSingle(CreateGadgetFactory);
             container.RegisterAsSingle(CreatePlayerWeaponInventory);
+            container.RegisterAsSingle(CreatePlayerGadgetInventory);
         }
 
         private static GameMode CreateGameMode(DIContainer container)
@@ -76,12 +79,23 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private static WeaponFactory CreateWeaponFactory(DIContainer container) 
             => new WeaponFactory(container);
 
+        private static GadgetFactory CreateGadgetFactory(DIContainer container)
+            => new GadgetFactory(container);
+
         private static PlayerWeaponInventory CreatePlayerWeaponInventory(DIContainer container)
         {
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             WeaponFactory factory = container.Resolve<WeaponFactory>();
             
             return new PlayerWeaponInventory(configsProviderService, factory);
+        }
+
+        private static PlayerGadgetInventory CreatePlayerGadgetInventory(DIContainer container)
+        {
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            GadgetFactory factory = container.Resolve<GadgetFactory>();
+
+            return new PlayerGadgetInventory(configsProviderService, factory);
         }
     }
 }

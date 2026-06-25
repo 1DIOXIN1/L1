@@ -13,6 +13,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action ConfirmPressed;
         public event Action<Vector3> Move;
         public event Action Shoot;
+        public event Action UseGadget;
         public event Action SelectPrimarySlot;
         public event Action SelectSecondarySlot;
         public event Action Jump;
@@ -55,6 +56,11 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 Shoot?.Invoke();
+            }
+
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                UseGadget?.Invoke();
             }
             
             if (Input.GetKeyDown(KeyCode.Space))

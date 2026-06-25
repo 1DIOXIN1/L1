@@ -1,6 +1,7 @@
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Controllers;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         private IInputService _input;
         private CharacterControllerDirectionalMover _mover;
         private WeaponInventory _inventory;
+        private GadgetInventory _gadgetInventory;
         private PlayerConfig _playerConfig;
         private CharacterController _characterController;
         private Vector3 _moveInput;
@@ -33,11 +35,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             IInputService input,
             CharacterControllerDirectionalMover mover,
             WeaponInventory inventory,
+            GadgetInventory gadgetInventory,
             PlayerConfig playerConfig)
         {
             _input = input;
             _mover = mover;
             _inventory = inventory;
+            _gadgetInventory = gadgetInventory;
             _playerConfig = playerConfig;
             _characterController = GetComponent<CharacterController>();
             _stamina = _playerConfig.MaxStamina;
@@ -50,6 +54,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Jump += OnJump;
             _input.Move += OnMove;
             _input.Shoot += OnShoot;
+            _input.UseGadget += OnUseGadget;
             _input.Crouch += OnCrouch;
             _input.SelectPrimarySlot += OnSelectPrimarySlot;
             _input.SelectSecondarySlot += OnSelectSecondarySlot;
@@ -79,6 +84,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Jump -= OnJump;
             _input.Move -= OnMove;
             _input.Shoot -= OnShoot;
+            _input.UseGadget -= OnUseGadget;
             _input.Crouch -= OnCrouch;
             _input.SelectPrimarySlot -= OnSelectPrimarySlot;
             _input.SelectSecondarySlot -= OnSelectSecondarySlot;
@@ -104,6 +110,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         }
 
         private void OnShoot() => _inventory.CurrentWeapon.Shoot();
+
+        private void OnUseGadget() => _gadgetInventory.UseCurrentGadget();
 
         private void OnSelectPrimarySlot() => _inventory.EquipWeapon(SlotWeaponType.PrimarySlot);
 

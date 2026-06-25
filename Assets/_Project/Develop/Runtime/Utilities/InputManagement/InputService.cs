@@ -12,6 +12,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action<char> CharEntered;
         event Action<Vector3> Move;
         event Action Shoot;
+        event Action UseGadget;
         event Action SelectSecondarySlot;
         event Action SelectPrimarySlot;
         event Action Jump;
