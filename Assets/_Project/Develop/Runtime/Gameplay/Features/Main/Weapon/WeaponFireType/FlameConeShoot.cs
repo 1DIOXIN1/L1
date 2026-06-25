@@ -35,14 +35,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
                 if (Vector3.Angle(forward, toTarget) > halfAngle)
                     continue;
 
-                if (hit.TryGetComponent(out IDamageble damageble) == false)
-                    damageble = hit.GetComponentInParent<IDamageble>();
-
-                if (damageble == null)
-                    continue;
-
-                damageble.TakeDamage(damage);
-                damagedCount++;
+                if (DamageUtility.TryApplyDamage(hit, damage, owner))
+                    damagedCount++;
             }
 
             return damagedCount;

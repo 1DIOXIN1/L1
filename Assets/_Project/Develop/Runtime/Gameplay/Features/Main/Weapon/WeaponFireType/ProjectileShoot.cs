@@ -29,12 +29,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
 
         public void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject == _owner) return;
+            if (DamageUtility.TryApplyDamage(other, _damage, _owner) == false)
+                return;
 
-            if (other.TryGetComponent<IDamageble>(out var damageble))
-            {
-                damageble.TakeDamage(_damage);
-            }
             Destroy(gameObject);
         }
     }

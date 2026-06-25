@@ -3,6 +3,10 @@ using _Project.Develop.Runtime.UI;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.MainMenu;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
+using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
+using _Project.Develop.Runtime.Utilities.InputManagement;
+using _Project.Develop.Runtime.Utilities.SceneManagement;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Meta.Infrastructure
@@ -14,9 +18,19 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
             Debug.Log("Процесс регистрации сервисов на сцене меню");
             
             container.RegisterAsSingle(CreateMainMenuUIRoot).NonLazy();
+            container.RegisterAsSingle(CreateMainMenuNavigationService);
             container.RegisterAsSingle(CreateMainMenuScreen).NonLazy();
             container.RegisterAsSingle(CreateMainMenuPresentersFactory);
             container.RegisterAsSingle(CreateMainMenuPopupService);
+        }
+
+        private static MainMenuNavigationService CreateMainMenuNavigationService(DIContainer container)
+        {
+            return new MainMenuNavigationService(
+                container.Resolve<CoroutinesPerformer>(),
+                container.Resolve<SceneSwitcherService>(),
+                container.Resolve<PlayerDataProvider>(),
+                container.Resolve<IInputService>());
         }
 
         private static MainMenuPopupService CreateMainMenuPopupService(DIContainer container)

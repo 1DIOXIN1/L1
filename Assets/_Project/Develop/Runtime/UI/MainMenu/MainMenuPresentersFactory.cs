@@ -16,8 +16,13 @@ namespace _Project.Develop.Runtime.UI.MainMenu
         {
             ProjectPresentersFactory projectPresentersFactory = _container.Resolve<ProjectPresentersFactory>();
             MainMenuPopupService popupService = _container.Resolve<MainMenuPopupService>();
-            
-            return new MainMenuScreenPresenter(mainMenuScreenView, projectPresentersFactory, popupService);
+            MainMenuNavigationService navigationService = _container.Resolve<MainMenuNavigationService>();
+
+            return new MainMenuScreenPresenter(
+                mainMenuScreenView,
+                projectPresentersFactory,
+                popupService,
+                navigationService);
         }
     }
 }

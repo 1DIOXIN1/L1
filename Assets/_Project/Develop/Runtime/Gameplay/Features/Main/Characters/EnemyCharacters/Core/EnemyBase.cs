@@ -28,6 +28,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             EnemyPreset preset = config.GetPreset(Type);
 
             ConfigureAgent(agent, preset);
+            EnsureDamageCollider(agent);
 
             _context = new EnemyContext(
                 this,
@@ -201,7 +202,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         protected override void Die()
         {
             if (_context != null)
+            {
+                _context.Agent.enabled = false;
                 _context.AIService.Unregister(this);
+            }
 
             base.Die();
         }
@@ -218,6 +222,18 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         {
             if (_context?.AIService != null)
                 _context.AIService.Unregister(this);
+        }
+
+        private void EnsureDamageCollider(NavMeshAgent agent)
+        {
+            if (TryGetComponent<Collider>(out _))
+                return;
+
+            CapsuleCollider collider = gameObject.AddComponent<CapsuleCollider>();
+            collider.isTrigger = true;
+            collider.height = Mathf.Max(agent.height, 1f);
+            collider.radius = Mathf.Max(agent.radius, 0.3f);
+            collider.center = new Vector3(0f, agent.baseOffset, 0f);
         }
 
         private static void ConfigureAgent(NavMeshAgent agent, EnemyPreset preset)

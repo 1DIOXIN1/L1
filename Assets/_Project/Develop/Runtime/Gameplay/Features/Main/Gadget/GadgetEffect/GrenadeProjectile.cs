@@ -36,13 +36,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Gadget.GadgetEffect
 
             foreach (Collider hit in hits)
             {
-                if (hit.transform.root.gameObject == _owner)
+                if (DamageUtility.TryApplyDamage(hit, _damage, _owner) == false)
                     continue;
-
-                if (!hit.TryGetComponent<IDamageble>(out var damageble))
-                    damageble = hit.GetComponentInParent<IDamageble>();
-
-                damageble?.TakeDamage(_damage);
 
                 if (hit.attachedRigidbody != null)
                     hit.attachedRigidbody.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);

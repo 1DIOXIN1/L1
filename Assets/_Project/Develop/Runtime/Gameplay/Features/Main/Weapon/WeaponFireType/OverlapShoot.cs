@@ -15,14 +15,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
 
             foreach (Collider hit in hits)
             {
-                if (owner != null && hit.transform.root == owner.transform.root)
-                    continue;
-
-                if (hit.TryGetComponent(out IDamageble damageble) == false)
-                    continue;
-
-                damageble.TakeDamage(damage);
-                return true;
+                if (DamageUtility.TryApplyDamage(hit, damage, owner))
+                    return true;
             }
 
             return false;
