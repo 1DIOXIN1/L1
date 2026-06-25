@@ -16,12 +16,24 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         {
             _attackCooldown -= deltaTime;
             float distance = DistanceToPlayer();
+            float shootDistance = (Context.Preset.MinAttackDistance + Context.Preset.MaxAttackDistance) * 0.5f;
 
             if (distance > Context.Preset.MaxAttackDistance)
+            {
+                ChasePlayer(shootDistance);
+                LookAtPlayer(deltaTime);
                 return;
+            }
 
             if (distance < Context.Preset.MinAttackDistance)
+            {
+                MoveAwayFromPlayer(Context.Preset.MinAttackDistance + 0.5f);
+                LookAtPlayer(deltaTime);
                 return;
+            }
+
+            StopAgent();
+            LookAtPlayer(deltaTime);
 
             if (_burstShotsLeft > 0)
             {
@@ -49,6 +61,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             _attackCooldown = 0f;
             _burstTimer = 0f;
             _burstShotsLeft = 0;
+            StopAgent();
         }
 
         private void TryShoot()

@@ -91,11 +91,60 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void LookAtPlayer()
         {
+            LookAtPlayer(Time.deltaTime);
+        }
+
+        public void LookAtPlayer(float deltaTime)
+        {
             if (_context?.Player == null)
                 return;
 
             Vector3 direction = _context.Player.position - transform.position;
-            RotateTowards(direction, Time.deltaTime);
+            RotateTowards(direction, deltaTime);
+        }
+
+        protected void ChasePlayer(float stoppingDistance)
+        {
+            if (_context?.Player == null)
+                return;
+
+            NavMeshAgent agent = _context.Agent;
+            agent.isStopped = false;
+            agent.speed = _context.Preset.ChaseSpeed;
+            agent.stoppingDistance = stoppingDistance;
+            agent.SetDestination(_context.Player.position);
+        }
+
+        protected void MoveAwayFromPlayer(float desiredDistance)
+        {
+            if (_context?.Player == null)
+                return;
+
+            NavMeshAgent agent = _context.Agent;
+            Vector3 away = transform.position - _context.Player.position;
+            away.y = 0f;
+
+            if (away.sqrMagnitude < 0.01f)
+                away = -transform.forward;
+
+            away.Normalize();
+            Vector3 target = _context.Player.position + away * desiredDistance;
+
+            agent.isStopped = false;
+            agent.speed = _context.Preset.ChaseSpeed;
+            agent.stoppingDistance = 0.25f;
+            agent.SetDestination(target);
+        }
+
+        protected void StopAgent()
+        {
+            if (_context?.Agent == null)
+                return;
+
+            _context.Agent.isStopped = true;
+
+            if (_context.Agent.hasPath)
+                _context.Agent.ResetPath();
         }
 
         public void RotateTowards(Vector3 direction, float deltaTime)
@@ -174,7 +223,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             agent.updateRotation = false;
         }
 
-        private bool HasLineOfSightToPlayer()
+        protected bool HasLineOfSightToPlayer()
         {
             Vector3 origin = GetAttackOrigin();
             Vector3 direction = GetDirectionToPlayer();

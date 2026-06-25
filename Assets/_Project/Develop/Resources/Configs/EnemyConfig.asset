@@ -31,7 +31,7 @@ MonoBehaviour:
     <AgentAngularSpeed>k__BackingField: 360
     <AgentAcceleration>k__BackingField: 12
     <AttackRange>k__BackingField: 2
-    <MinAttackDistance>k__BackingField: 2
+    <MinAttackDistance>k__BackingField: 1
     <MaxAttackDistance>k__BackingField: 8
     <Damage>k__BackingField: 3
     <AttackCooldown>k__BackingField: 0.5
@@ -48,6 +48,7 @@ MonoBehaviour:
     <DashSpeed>k__BackingField: 0
     <DashCooldown>k__BackingField: 0
     <AttackOriginHeight>k__BackingField: 1
+    <PostAttackPause>k__BackingField: 0
   - <Type>k__BackingField: 1
     <Id>k__BackingField: enemy_ranger
     <Health>k__BackingField: 35
@@ -76,6 +77,7 @@ MonoBehaviour:
     <DashSpeed>k__BackingField: 0
     <DashCooldown>k__BackingField: 0
     <AttackOriginHeight>k__BackingField: 1
+    <PostAttackPause>k__BackingField: 0
   - <Type>k__BackingField: 2
     <Id>k__BackingField: enemy_melee
     <Health>k__BackingField: 60
@@ -104,3 +106,4 @@ MonoBehaviour:
     <DashSpeed>k__BackingField: 9
     <DashCooldown>k__BackingField: 3
     <AttackOriginHeight>k__BackingField: 1
+    <PostAttackPause>k__BackingField: 0.8

@@ -90,6 +90,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
         [field: SerializeField] public float DashSpeed { get; private set; }
         [field: SerializeField] public float DashCooldown { get; private set; }
         [field: SerializeField] public float AttackOriginHeight { get; private set; }
+        [field: SerializeField] public float PostAttackPause { get; private set; }
 
         public float Speed => PatrolSpeed;
 
@@ -121,7 +122,8 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
             float dashTriggerDistance = 0f,
             float dashSpeed = 0f,
             float dashCooldown = 0f,
-            float attackOriginHeight = 1f)
+            float attackOriginHeight = 1f,
+            float postAttackPause = 0f)
         {
             Type = type;
             Id = id;
@@ -151,6 +153,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
             DashSpeed = dashSpeed;
             DashCooldown = dashCooldown;
             AttackOriginHeight = attackOriginHeight;
+            PostAttackPause = postAttackPause;
         }
 
         public static EnemyPreset CreateCooker()
@@ -167,7 +170,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
                 360f,
                 12f,
                 2f,
-                2f,
+                1f,
                 8f,
                 3,
                 0.5f,
@@ -220,7 +223,8 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
                 1f,
                 dashTriggerDistance: 6f,
                 dashSpeed: 9f,
-                dashCooldown: 3f);
+                dashCooldown: 3f,
+                postAttackPause: 0.8f);
         }
     }
 }

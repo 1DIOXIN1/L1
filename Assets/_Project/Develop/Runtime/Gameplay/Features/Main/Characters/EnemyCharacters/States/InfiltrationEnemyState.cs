@@ -10,12 +10,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         {
             context.Agent.isStopped = false;
             context.Agent.speed = context.Preset.ChaseSpeed;
-            context.Agent.stoppingDistance = context.Preset.AttackRange * 0.8f;
         }
 
         public void Exit(EnemyContext context)
         {
             context.Enemy.ResetCombat();
+            context.Agent.isStopped = true;
+
+            if (context.Agent.hasPath)
+                context.Agent.ResetPath();
         }
 
         public void Tick(EnemyContext context, float deltaTime)
@@ -23,8 +26,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (context.Player == null)
                 return;
 
-            context.Agent.SetDestination(context.Player.position);
-            context.Enemy.LookAtPlayer();
             context.Enemy.TickCombat(deltaTime);
         }
     }
