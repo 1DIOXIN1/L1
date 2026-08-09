@@ -76,7 +76,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             _input = _container.Resolve<IInputService>();
 
-            
+            if (_input is KeyboardInputService keyboardInput)
+                keyboardInput.SetContext(InputContext.Gameplay);
 
             if (_input is Controller controller)
 

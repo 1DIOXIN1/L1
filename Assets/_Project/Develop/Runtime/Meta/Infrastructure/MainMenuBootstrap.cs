@@ -39,6 +39,9 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
 
+            if (_input is KeyboardInputService keyboardInput)
+                keyboardInput.SetContext(InputContext.Menu);
+
             if (_input is Controller controller)
                 controller.Enable();
 

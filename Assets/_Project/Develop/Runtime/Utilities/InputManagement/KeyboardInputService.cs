@@ -18,74 +18,70 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action Jump;
         public event Action Sprint;
         public event Action Crouch;
-        
-        private Vector3 _direction;
-        
+
+        private InputContext _context = InputContext.Menu;
+
+        public void SetContext(InputContext context) => _context = context;
+
         protected override void UpdateLogic(float deltaTime)
         {
-            _direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-            
-            Move?.Invoke(_direction);
+            switch (_context)
+            {
+                case InputContext.Menu:
+                    ProcessMenuInput();
+                    break;
+                case InputContext.Gameplay:
+                    ProcessGameplayInput();
+                    break;
+            }
+        }
 
-            if (Input.GetKeyDown(KeyCode.LeftControl))
-            {
-                Crouch?.Invoke();
-            }
-            
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                Sprint?.Invoke();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Jump?.Invoke();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                SelectPrimarySlot?.Invoke();
-            }
-            
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                SelectSecondarySlot?.Invoke();
-            }
-            
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                Shoot?.Invoke();
-            }
-
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                UseGadget?.Invoke();
-            }
-            
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
+        private void ProcessMenuInput()
+        {
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 ConfirmPressed?.Invoke();
-            }
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
                 SelectFirstMode?.Invoke();
-            }
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
                 SelectSecondMode?.Invoke();
-            }
-            
+
             if (Input.GetKeyDown(KeyCode.R))
-            {
                 ResetPressed?.Invoke();
-            }
 
             foreach (char c in Input.inputString)
-            {
                 CharEntered?.Invoke(c);
-            }
+        }
+
+        private void ProcessGameplayInput()
+        {
+            Vector3 direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+            Move?.Invoke(direction);
+
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+                Crouch?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+                Sprint?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+                Jump?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                SelectPrimarySlot?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+                SelectSecondarySlot?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+                Shoot?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.G))
+                UseGadget?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                ConfirmPressed?.Invoke();
         }
     }
 }
