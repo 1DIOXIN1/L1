@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.UI.Core;
-using _Project.Develop.Runtime.UI.Gameplay.Sequence;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -19,7 +18,6 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public void Initialize()
         {
-            CreateSequencePresenter();
             
             foreach (var childPresenter in _childPresenters)
                 childPresenter.Initialize();
@@ -31,13 +29,6 @@ namespace _Project.Develop.Runtime.UI.Gameplay
                 childPresenter.Dispose();
             
             _childPresenters.Clear();
-        }
-
-        private void CreateSequencePresenter()
-        {
-            SequencePresenter sequencePresenter = _presentersFactory.CreateSequencePresenter(_view.SequenceView);
-            
-            _childPresenters.Add(sequencePresenter);
         }
     }
 }

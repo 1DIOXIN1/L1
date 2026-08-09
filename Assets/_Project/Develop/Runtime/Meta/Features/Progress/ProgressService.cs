@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using _Project.Develop.Runtime.Utilities;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.Reactive;

@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcb2b156580c4401a05857595950ea26, type: 3}
+  m_Name: EnemyConfig
+  m_EditorClassIdentifier: 
+  <InfiltrationTriggerTime>k__BackingField: 5
+  <InfiltrationSpreadRadius>k__BackingField: 25
+  <PatrolPointWaitTime>k__BackingField: 1.5
+  <PatrolPointReachDistance>k__BackingField: 0.6
+  <CookerPrefab>k__BackingField: {fileID: 8076757054092318504, guid: 756686be6a06bd7498cda7e9c41f8488, type: 3}
+  <RangerPrefab>k__BackingField: {fileID: 4496244555982910951, guid: 285859b3809a80542a606db6a89882ab, type: 3}
+  <MeleePrefab>k__BackingField: {fileID: 4496244555982910951, guid: 582234536ee74094bb1dc7081eca81c7, type: 3}
+  presets:
+  - <Type>k__BackingField: 0
+    <Id>k__BackingField: enemy_cooker
+    <Health>k__BackingField: 50
+    <PatrolSpeed>k__BackingField: 2.5
+    <ChaseSpeed>k__BackingField: 4.5
+    <ViewRadius>k__BackingField: 18
+    <ViewAngle>k__BackingField: 110
+    <RotationSpeed>k__BackingField: 10
+    <AgentAngularSpeed>k__BackingField: 360
+    <AgentAcceleration>k__BackingField: 12
+    <AttackRange>k__BackingField: 2
+    <MinAttackDistance>k__BackingField: 1
+    <MaxAttackDistance>k__BackingField: 8
+    <Damage>k__BackingField: 3
+    <AttackCooldown>k__BackingField: 0.5
+    <BurstShots>k__BackingField: 1
+    <BurstInterval>k__BackingField: 0.15
+    <Accuracy>k__BackingField: 0.85
+    <ProjectileSpeed>k__BackingField: 18
+    <ProjectileLifeTime>k__BackingField: 4
+    <FlameRange>k__BackingField: 7
+    <FlameConeAngle>k__BackingField: 70
+    <FlameDamagePerSecond>k__BackingField: 5
+    <FlameWarmupTime>k__BackingField: 0.35
+    <DashTriggerDistance>k__BackingField: 0
+    <DashSpeed>k__BackingField: 0
+    <DashCooldown>k__BackingField: 0
+    <AttackOriginHeight>k__BackingField: 1
+    <PostAttackPause>k__BackingField: 0
+  - <Type>k__BackingField: 1
+    <Id>k__BackingField: enemy_ranger
+    <Health>k__BackingField: 35
+    <PatrolSpeed>k__BackingField: 2
+    <ChaseSpeed>k__BackingField: 5
+    <ViewRadius>k__BackingField: 22
+    <ViewAngle>k__BackingField: 120
+    <RotationSpeed>k__BackingField: 12
+    <AgentAngularSpeed>k__BackingField: 420
+    <AgentAcceleration>k__BackingField: 16
+    <AttackRange>k__BackingField: 10
+    <MinAttackDistance>k__BackingField: 5
+    <MaxAttackDistance>k__BackingField: 18
+    <Damage>k__BackingField: 6
+    <AttackCooldown>k__BackingField: 1.2
+    <BurstShots>k__BackingField: 3
+    <BurstInterval>k__BackingField: 0.14
+    <Accuracy>k__BackingField: 0.8
+    <ProjectileSpeed>k__BackingField: 18
+    <ProjectileLifeTime>k__BackingField: 4
+    <FlameRange>k__BackingField: 0
+    <FlameConeAngle>k__BackingField: 0
+    <FlameDamagePerSecond>k__BackingField: 0
+    <FlameWarmupTime>k__BackingField: 0
+    <DashTriggerDistance>k__BackingField: 0
+    <DashSpeed>k__BackingField: 0
+    <DashCooldown>k__BackingField: 0
+    <AttackOriginHeight>k__BackingField: 1
+    <PostAttackPause>k__BackingField: 0
+  - <Type>k__BackingField: 2
+    <Id>k__BackingField: enemy_melee
+    <Health>k__BackingField: 60
+    <PatrolSpeed>k__BackingField: 2.5
+    <ChaseSpeed>k__BackingField: 6
+    <ViewRadius>k__BackingField: 16
+    <ViewAngle>k__BackingField: 140
+    <RotationSpeed>k__BackingField: 14
+    <AgentAngularSpeed>k__BackingField: 480
+    <AgentAcceleration>k__BackingField: 18
+    <AttackRange>k__BackingField: 2.5
+    <MinAttackDistance>k__BackingField: 0
+    <MaxAttackDistance>k__BackingField: 2.5
+    <Damage>k__BackingField: 10
+    <AttackCooldown>k__BackingField: 1
+    <BurstShots>k__BackingField: 1
+    <BurstInterval>k__BackingField: 0.15
+    <Accuracy>k__BackingField: 1
+    <ProjectileSpeed>k__BackingField: 18
+    <ProjectileLifeTime>k__BackingField: 4
+    <FlameRange>k__BackingField: 0
+    <FlameConeAngle>k__BackingField: 0
+    <FlameDamagePerSecond>k__BackingField: 0
+    <FlameWarmupTime>k__BackingField: 0
+    <DashTriggerDistance>k__BackingField: 6
+    <DashSpeed>k__BackingField: 9
+    <DashCooldown>k__BackingField: 3
+    <AttackOriginHeight>k__BackingField: 1
+    <PostAttackPause>k__BackingField: 0.8

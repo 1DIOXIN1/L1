@@ -1,6 +1,5 @@
-using _Project.Develop.Runtime.Gameplay.Main;
+using _Project.Develop.Runtime.Gameplay.Features.Main;
 using _Project.Develop.Runtime.Infrastructure.DI;
-using _Project.Develop.Runtime.UI.Gameplay.Sequence;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -16,13 +15,6 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         public GameplayScreenPresenter CreateGameplayScreenPresenter(GameplayScreenView gameplayScreenView)
         {
             return new GameplayScreenPresenter(gameplayScreenView, this);
-        }
-
-        public SequencePresenter CreateSequencePresenter(SequenceView sequenceView)
-        {
-            SequenceChecker sequenceChecker = _container.Resolve<SequenceChecker>();
-            
-            return new SequencePresenter(sequenceView, sequenceChecker);
         }
     }
 }

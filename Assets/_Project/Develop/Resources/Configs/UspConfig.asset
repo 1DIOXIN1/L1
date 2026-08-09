@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ece7c3cf334875ba62b953896550fe, type: 3}
+  m_Name: UspConfig
+  m_EditorClassIdentifier: 
+  slotType: 2
+  <Ammo>k__BackingField: 12
+  <ReloadSpeed>k__BackingField: 5
+  <Damage>k__BackingField: 10
+  <ShootSpeed>k__BackingField: 100
+  <BulletLifeTime>k__BackingField: 0.8

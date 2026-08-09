@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using _Project.Develop.Runtime.Configs;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
+using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
+using _Project.Develop.Runtime.Configs.Meta.Enemy;
+using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
 using _Project.Develop.Runtime.Configs.Meta.Progress;
 using _Project.Develop.Runtime.Configs.Meta.Wallet;
+using _Project.Develop.Runtime.Configs.Meta.Weapon.WeaponsConfigs;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using UnityEngine;
 
@@ -19,7 +22,13 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(StartWalletConfig), "Configs/StartWalletConfig"},
             {typeof(StartGameplayConfig), "Configs/StartGameplayConfig"},
             {typeof(ProgressConfig), "Configs/ProgressConfig"},
-            {typeof(CurrencyIconsConfig), "Configs/CurrencyIconsConfig"}
+            {typeof(CurrencyIconsConfig), "Configs/CurrencyIconsConfig"},
+            {typeof(UspConfig), "Configs/UspConfig"},
+            {typeof(SmgConfig), "Configs/SmgConfig"},
+            {typeof(GrenadeConfig), "Configs/GrenadeConfig"},
+            {typeof(PlayerConfig), "Configs/PlayerConfig"},
+            {typeof(PlayerWeaponInventoryConfig), "Configs/PlayerWeaponInventoryConfig"},
+            {typeof(EnemyConfig), "Configs/EnemyConfig"}
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader resources)
@@ -30,7 +39,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
         public IEnumerator LoadAsync(Action<Dictionary<Type, object>> onConfigsLoaded)
         {
             Dictionary<Type, object> loadedConfigs = new();
-
+ 
             foreach (KeyValuePair<Type, string> configsResourcesPath in _configsResourcesPath)
             {
                 ScriptableObject config = _resources.Load<ScriptableObject>(configsResourcesPath.Value);

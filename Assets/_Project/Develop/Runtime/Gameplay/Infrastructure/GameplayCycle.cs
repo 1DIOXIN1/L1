@@ -1,5 +1,5 @@
 using _Project.Develop.Runtime.Meta.Features.Progress;
-using _Project.Develop.Runtime.Utilities;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
@@ -95,10 +95,18 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
         private void OnGameModeDefeat()
         {
+            if (_isSwitchingScene)
+                return;
+
             Debug.Log("Defeat");
             _progressService.Lose();
 
-            _isGameFinished = true;
+            _isSwitchingScene = true;
+
+            _coroutinesPerformer.StartPerform(
+                _sceneSwitcherService.ProcessSwitchTo(
+                    Scenes.GamePlay,
+                    _gameplayInputArgs));
         }
     }
 }

@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: 15b71b2d6e515d34082391cdbdb8ca9e
   - enabled: 1
     path: Assets/_Project/Scenes/Empty.unity
-    guid: 0bfd1ea4f0c2c3c4f95aad7c7d56a4ec
+    guid: aa1e6d3fb5d0cd44daad24ef73308b0c
   - enabled: 1
     path: Assets/_Project/Scenes/MainMenu.unity
     guid: a23298e95db36144285f1294e193aaa3
