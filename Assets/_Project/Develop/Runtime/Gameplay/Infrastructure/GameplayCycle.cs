@@ -1,13 +1,13 @@
+using System;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
-using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
-    public class GameplayCycle
+    public class GameplayCycle : IDisposable
     {
         private readonly GameMode _gameMode;
         private readonly SceneSwitcherService _sceneSwitcherService;
@@ -54,6 +54,13 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _gameMode.Start();
         }
 
+        public void Dispose()
+        {
+            _inputService.ConfirmPressed -= OnConfirmPressed;
+            _gameMode.Win -= OnGameModeWin;
+            _gameMode.Defeat -= OnGameModeDefeat;
+        }
+
         private void OnConfirmPressed()
         {
             if (!_isGameFinished)
@@ -66,15 +73,11 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             if (_isWin)
             {
-                Debug.Log("Switching to MainMenu");
-
                 _coroutinesPerformer.StartPerform(
                     _sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
             }
             else
             {
-                Debug.Log("Restart Gameplay");
-
                 _coroutinesPerformer.StartPerform(
                     _sceneSwitcherService.ProcessSwitchTo(
                         Scenes.GamePlay,
@@ -86,7 +89,6 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
         private void OnGameModeWin()
         {
-            Debug.Log("Win");
             _progressService.Win();
 
             _isWin = true;
@@ -98,7 +100,6 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             if (_isSwitchingScene)
                 return;
 
-            Debug.Log("Defeat");
             _progressService.Lose();
 
             _isSwitchingScene = true;

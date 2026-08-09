@@ -51,7 +51,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             //Object instance = Object.Instantiate(WeaponPrefab,position,Quaternion.identity);
             
             var smgConfig = _configsProvider.GetConfig<SmgConfig>();
-            Debug.Log("СМГ создано!");
             return new Smg(smgConfig, firePoint, owner, _bulletPrefab);
         }
 
@@ -61,8 +60,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             GameObject owner)
         {
             var uspConfig = _configsProvider.GetConfig<UspConfig>();
-            Debug.Log("ЮСП СОЗДАН!");
-            
             return new Usp(uspConfig, firePoint, owner, _bulletPrefab);
         }
     }

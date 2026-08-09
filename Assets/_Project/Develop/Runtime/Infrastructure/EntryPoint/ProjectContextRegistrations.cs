@@ -91,7 +91,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             IDataSerializer serializer = new JsonSerializer();
             IDataKeyStorage dataKeyStorage = new MapDataKeysStorage();
 
-            string saveFolderPath = Application.isEditor ? Application.dataPath : Application.persistentDataPath;
+            string saveFolderPath = Application.persistentDataPath;
             IDataRepository dataRepository = new LocalFileDataRepository(saveFolderPath, "json");
 
             return new SaveLoadService(serializer, dataKeyStorage, dataRepository);
