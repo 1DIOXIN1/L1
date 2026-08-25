@@ -7,7 +7,7 @@ using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
 using _Project.Develop.Runtime.Configs.Meta.Progress;
 using _Project.Develop.Runtime.Configs.Meta.Wallet;
-using _Project.Develop.Runtime.Configs.Meta.Weapon.WeaponsConfigs;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using UnityEngine;
 
@@ -23,8 +23,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(StartGameplayConfig), "Configs/StartGameplayConfig"},
             {typeof(ProgressConfig), "Configs/ProgressConfig"},
             {typeof(CurrencyIconsConfig), "Configs/CurrencyIconsConfig"},
-            {typeof(UspConfig), "Configs/UspConfig"},
-            {typeof(SmgConfig), "Configs/SmgConfig"},
+            {typeof(WeaponsCatalogConfig), "Configs/WeaponsCatalogConfig"},
             {typeof(GrenadeConfig), "Configs/GrenadeConfig"},
             {typeof(PlayerConfig), "Configs/PlayerConfig"},
             {typeof(PlayerWeaponInventoryConfig), "Configs/PlayerWeaponInventoryConfig"},

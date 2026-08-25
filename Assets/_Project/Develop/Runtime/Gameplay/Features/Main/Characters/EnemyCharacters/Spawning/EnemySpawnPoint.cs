@@ -1,3 +1,4 @@
+using System.Linq;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters;
 using UnityEngine;
 
@@ -11,6 +12,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public EnemyType EnemyType => enemyType;
         public Transform[] PatrolPoints => patrolPoints;
         public Vector3 SpawnPosition => transform.position;
+
+        public bool HasValidPatrolPoints()
+        {
+            return patrolPoints != null && patrolPoints.Any(point => point != null);
+        }
 
         private void OnDrawGizmosSelected()
         {

@@ -1,13 +1,15 @@
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Progress;
-using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
@@ -30,6 +32,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGameplayScreen).NonLazy();
             container.RegisterAsSingle(CreateCharactersFactory);
             container.RegisterAsSingle(CreateEnemyAIService);
+            container.RegisterAsSingle(CreateEnemyAttackBehaviorFactory);
+            container.RegisterAsSingle(CreateEnemySpawnService);
+            container.RegisterAsSingle(CreateFireModeRegistry);
             container.RegisterAsSingle(CreateWeaponFactory);
             container.RegisterAsSingle(CreateGadgetFactory);
             container.RegisterAsSingle(CreatePlayerWeaponInventory);
@@ -38,10 +43,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
         private static GameMode CreateGameMode(DIContainer container)
         {
-            WalletService walletService = container.Resolve<WalletService>();
-            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
-            
-            return new GameMode(walletService, configsProviderService);
+            EnemyAIService enemyAIService = container.Resolve<EnemyAIService>();
+            return new GameMode(enemyAIService);
         }
         
         private static GameplayCycle CreateGameplayCycle(DIContainer container)
@@ -84,7 +87,16 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             return new EnemyAIService(configsProviderService.GetConfig<EnemyConfig>());
         }
-        
+
+        private static EnemyAttackBehaviorFactory CreateEnemyAttackBehaviorFactory(DIContainer container)
+            => new EnemyAttackBehaviorFactory();
+
+        private static EnemySpawnService CreateEnemySpawnService(DIContainer container)
+            => new EnemySpawnService(container.Resolve<CharactersFactory>());
+
+        private static FireModeRegistry CreateFireModeRegistry(DIContainer container)
+            => new FireModeRegistry();
+
         private static WeaponFactory CreateWeaponFactory(DIContainer container) 
             => new WeaponFactory(container);
 

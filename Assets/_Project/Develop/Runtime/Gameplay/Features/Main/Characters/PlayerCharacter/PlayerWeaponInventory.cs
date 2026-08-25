@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
@@ -30,13 +30,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
             foreach (var slotData in inventoryConfig.Slots)
             {
-                IWeapon weapon = Factory.CreateWeapon(slotData.WeaponType, playerTransform.position, firePoint, owner);
+                IWeapon weapon = Factory.CreateWeapon(slotData.WeaponType, firePoint, owner);
                 slots[slotData.SlotType] = new WeaponSlot(weapon, slotData.SlotType);
             }
 
             var inventory = new WeaponInventory(slots);
             inventory.EquipWeapon(inventoryConfig.DefaultSelectedSlot);
-            Debug.Log("Инвентарь создан");
             return inventory;
         }
     }

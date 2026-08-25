@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs
 {
-    [CreateAssetMenu(menuName = "Configs/Gameplay/Gadget/GrenadeConfig", fileName = "GrenadeConfig")]
+    [CreateAssetMenu(menuName = "Configs/Core/Gameplay/Gadget/GrenadeConfig", fileName = "GrenadeConfig")]
     public class GrenadeConfig : ScriptableObject, IGadgetConfig
     {
         [field: SerializeField] public int StartAmount { get; private set; } = 1;

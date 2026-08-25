@@ -1,142 +1,74 @@
 using System;
-
 using System.Collections;
-
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
-
-using _Project.Develop.Runtime.Gameplay.Features.Main;
-
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
-
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Infrastructure;
-
 using _Project.Develop.Runtime.Infrastructure.DI;
-
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
-
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
-
 using _Project.Develop.Runtime.Utilities.InputManagement;
-
 using _Project.Develop.Runtime.Utilities.SceneManagement;
-
 using UnityEngine;
 
-
-
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
-
 {
-
     public class GameplayBootstrap : SceneBootstrap
-
     {
+        [SerializeField] private PlayerSpawnPoint playerSpawnPoint;
+        [SerializeField] private EnemySpawnRegistry enemySpawnRegistry;
 
         private DIContainer _container;
-
         private IInputService _input;
-
         private GameplayInputArgs _gameplayInputArgs;
-
-        private bool _isRunning = false;
-
-
+        private bool _isRunning;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs)
-
         {
-
             _container = container;
 
-
-
             if (sceneArgs is not GameplayInputArgs gameplayInputArgs)
-
                 throw new ArgumentException($"{nameof(sceneArgs)} is not match with {typeof(GameplayInputArgs)}");
 
-
-
             _gameplayInputArgs = gameplayInputArgs;
-
-            
-
             GameplayContextRegistrations.Process(container);
-
         }
-
-
 
         public override IEnumerator Initialize()
-
         {
-
             yield return _container.Resolve<GameplayDataProvider>().Load();
 
-            
-
             _input = _container.Resolve<IInputService>();
-
-            if (_input is KeyboardInputService keyboardInput)
-                keyboardInput.SetContext(InputContext.Gameplay);
+            _input.SetContext(InputContext.Gameplay);
 
             if (_input is Controller controller)
-
                 controller.Enable();
-
         }
-
-
 
         public void Update()
-
         {
-
             if (_isRunning == false)
-
                 return;
 
-
-
             _input.Update(Time.deltaTime);
-
         }
 
-
-
         public override void Run()
-
         {
-
             Cursor.visible = false;
-
             Cursor.lockState = CursorLockMode.Locked;
-
-            
 
             _container.Resolve<ConfigsProviderService>().GetConfig<StartGameplayConfig>();
 
-            GameplayNavMeshBuilder.Build();
+            CharactersFactory charactersFactory = _container.Resolve<CharactersFactory>();
+            charactersFactory.CreatePlayer(playerSpawnPoint);
 
-
-
-            var charactersFactory = _container.Resolve<CharactersFactory>();
-
-            charactersFactory.CreatePlayer(new Vector3(2, 1, 0));
-
-            charactersFactory.SpawnEnemiesFromScene();
-
-            
+            EnemySpawnService spawnService = _container.Resolve<EnemySpawnService>();
+            spawnService.SpawnFromRegistry(enemySpawnRegistry);
 
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
-
-
-
             _isRunning = true;
-
-        } 
-
+        }
     }
-
 }
-
-

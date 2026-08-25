@@ -1,49 +1,104 @@
 using System;
-using _Project.Develop.Runtime.Configs.Core.Gameplay;
-using _Project.Develop.Runtime.Configs.Meta.Wallet;
-using _Project.Develop.Runtime.Gameplay.Features.Main;
-using _Project.Develop.Runtime.Meta.Features.Wallet;
-using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using System.Collections.Generic;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
     public class GameMode
     {
-        public event Action Win;
-        public event Action Defeat;
-        
-        private readonly WalletService _walletService;
-        private readonly ConfigsProviderService _configsProviderService;
+        public event Action<MissionResult> MissionEnded;
 
-        public GameMode(WalletService walletService, ConfigsProviderService configsProviderService)
+        private readonly EnemyAIService _enemyAIService;
+        private readonly List<IMissionObjective> _objectives = new();
+
+        private Player _player;
+        private bool _isFinished;
+
+        public GameMode(EnemyAIService enemyAIService)
         {
-            _walletService = walletService;
-            _configsProviderService = configsProviderService;
+            _enemyAIService = enemyAIService;
+        }
+
+        public void RegisterPlayer(Player player)
+        {
+            _player = player;
         }
 
         public void TriggerDefeat()
         {
-            Defeat?.Invoke();
+            Complete(MissionEndReason.PlayerDied);
         }
 
         public void Start()
         {
+            _isFinished = false;
+            StopObjectives();
+
+            _enemyAIService.MarkSpawnComplete();
+
+            var clearEnemies = new ClearAllEnemiesObjective(_enemyAIService);
+            clearEnemies.Completed += OnObjectiveCompleted;
+            _objectives.Add(clearEnemies);
+
+            foreach (IMissionObjective objective in _objectives)
+                objective.Start();
         }
 
-        private void OnRightSequence()
+        private void OnObjectiveCompleted()
         {
-            _walletService.Add(CurrencyTypes.Gold, _configsProviderService.GetConfig<StartWalletConfig>().ValueToAdd);
-            Win?.Invoke();
+            if (_isFinished)
+                return;
+
+            for (int i = 0; i < _objectives.Count; i++)
+            {
+                if (_objectives[i].IsComplete == false)
+                    return;
+            }
+
+            Complete(MissionEndReason.ObjectivesComplete);
         }
 
-        private void OnWrongSequence()
+        private void Complete(MissionEndReason reason)
         {
-            var valueToSpend = _configsProviderService.GetConfig<StartWalletConfig>().ValueToSpend;
-            
-            if(_walletService.Enough(CurrencyTypes.Gold, valueToSpend))
-                _walletService.Spend(CurrencyTypes.Gold, valueToSpend);
-            
-            Defeat?.Invoke();
+            if (_isFinished)
+                return;
+
+            _isFinished = true;
+            StopObjectives();
+            _player?.SetControlMode(PlayerControlMode.Locked);
+
+            MissionEnded?.Invoke(new MissionResult(reason));
         }
+
+        private void StopObjectives()
+        {
+            foreach (IMissionObjective objective in _objectives)
+            {
+                objective.Completed -= OnObjectiveCompleted;
+                objective.Stop();
+            }
+
+            _objectives.Clear();
+        }
+
+        // Sequence minigame rules (legacy, disabled for shooter sortie loop):
+        //
+        // private void OnRightSequence()
+        // {
+        //     _walletService.Add(CurrencyTypes.Gold, _configsProviderService.GetConfig<StartWalletConfig>().ValueToAdd);
+        //     Complete(MissionEndReason.ObjectivesComplete);
+        // }
+        //
+        // private void OnWrongSequence()
+        // {
+        //     var valueToSpend = _configsProviderService.GetConfig<StartWalletConfig>().ValueToSpend;
+        //
+        //     if (_walletService.Enough(CurrencyTypes.Gold, valueToSpend))
+        //         _walletService.Spend(CurrencyTypes.Gold, valueToSpend);
+        //
+        //     Complete(MissionEndReason.PlayerDied);
+        // }
     }
 }

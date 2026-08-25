@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Configs.Meta.Characters.Player
 {
-    [CreateAssetMenu(menuName = "Configs/Gameplay/Inventory/PlayerWeaponInventory", fileName = "PlayerWeaponInventoryConfig")]
+    [CreateAssetMenu(menuName = "Configs/Core/Gameplay/Inventory/PlayerWeaponInventory", fileName = "PlayerWeaponInventoryConfig")]
     public class PlayerWeaponInventoryConfig : ScriptableObject
     {
         [field: SerializeField] public SlotWeaponType DefaultSelectedSlot { get; private set; } = SlotWeaponType.PrimarySlot;

@@ -1,5 +1,5 @@
-﻿using System;
-using _Project.Develop.Runtime.Configs.Meta.Weapon.WeaponsConfigs;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
@@ -10,57 +10,27 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 {
     public class WeaponFactory
     {
-        private readonly DIContainer _container;
         private readonly ConfigsProviderService _configsProvider;
-        private ResourcesAssetsLoader _resourcesAssetsLoader;
-        private GameObject _bulletPrefab;
-        
+        private readonly FireModeRegistry _fireModeRegistry;
+        private readonly ResourcesAssetsLoader _resourcesAssetsLoader;
+        private readonly GameObject _bulletPrefab;
+
         public WeaponFactory(DIContainer container)
         {
-            _container = container;
-            _configsProvider = _container.Resolve <ConfigsProviderService>();
-            _resourcesAssetsLoader = _container.Resolve <ResourcesAssetsLoader>();
+            _configsProvider = container.Resolve<ConfigsProviderService>();
+            _fireModeRegistry = container.Resolve<FireModeRegistry>();
+            _resourcesAssetsLoader = container.Resolve<ResourcesAssetsLoader>();
             _bulletPrefab = _resourcesAssetsLoader.Load<GameObject>("Prefabs/Weapons/Bullets/Bullet");
         }
 
-        public IWeapon CreateWeapon(
-            WeaponType type,
-            Vector3 spawnPosition,
-            Transform firePoint,
-            GameObject owner)
+        public IWeapon CreateWeapon(WeaponType type, Transform firePoint, GameObject owner)
         {
-            switch (type)
-            {
-                case WeaponType.Smg:
-                    return CreateSmg(spawnPosition, firePoint, owner);
-                
-                case WeaponType.Usp:
-                    return CreateUsp(spawnPosition, firePoint, owner);
-                
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-        }
+            WeaponsCatalogConfig catalog = _configsProvider.GetConfig<WeaponsCatalogConfig>();
+            WeaponConfig config = catalog.GetWeapon(type);
+            IFireMode fireMode = _fireModeRegistry.Resolve(config.FireMode);
+            GameObject bulletPrefab = config.FireMode == WeaponFireMode.Projectile ? _bulletPrefab : null;
 
-        private IWeapon CreateSmg(
-            Vector3 spawnPosition,
-            Transform firePoint,
-            GameObject owner)
-        {
-            //var WeaponPrefab = _resourcesAssetsLoader.Load<GameObject>("");
-            //Object instance = Object.Instantiate(WeaponPrefab,position,Quaternion.identity);
-            
-            var smgConfig = _configsProvider.GetConfig<SmgConfig>();
-            return new Smg(smgConfig, firePoint, owner, _bulletPrefab);
-        }
-
-        private IWeapon CreateUsp(
-            Vector3 spawnPosition,
-            Transform firePoint,
-            GameObject owner)
-        {
-            var uspConfig = _configsProvider.GetConfig<UspConfig>();
-            return new Usp(uspConfig, firePoint, owner, _bulletPrefab);
+            return new Weapon(config, fireMode, firePoint, owner, bulletPrefab);
         }
     }
 }

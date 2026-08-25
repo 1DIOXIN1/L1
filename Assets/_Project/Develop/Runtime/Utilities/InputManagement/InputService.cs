@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Utilities.InputManagement
@@ -12,13 +12,16 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action<char> CharEntered;
         event Action<Vector3> Move;
         event Action Shoot;
+        event Action Reload;
         event Action UseGadget;
         event Action SelectSecondarySlot;
         event Action SelectPrimarySlot;
         event Action Jump;
-        event Action Sprint;
         event Action Crouch;
-        
+
+        bool IsShootHeld { get; }
+        bool IsSprintHeld { get; }
         void Update(float deltaTime);
+        void SetContext(InputContext context);
     }
 }

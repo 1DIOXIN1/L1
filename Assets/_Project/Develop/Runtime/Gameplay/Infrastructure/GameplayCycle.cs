@@ -1,4 +1,5 @@
 using System;
+using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
@@ -16,13 +17,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private readonly ProgressService _progressService;
         private readonly IInputService _inputService;
 
-        private GameplayInputArgs _gameplayInputArgs;
-
         private bool _isGameFinished;
-        private bool _isWin;
-
         private bool _isSwitchingScene;
-        
+
         public GameplayCycle(
             GameMode gameMode,
             IInputService inputService,
@@ -39,16 +36,12 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _progressService = progressService;
 
             _inputService.ConfirmPressed += OnConfirmPressed;
-            _gameMode.Win += OnGameModeWin;
-            _gameMode.Defeat += OnGameModeDefeat;
+            _gameMode.MissionEnded += OnMissionEnded;
         }
 
         public void StartGame(GameplayInputArgs gameplayInputArgs)
         {
-            _gameplayInputArgs = gameplayInputArgs;
-
             _isGameFinished = false;
-            _isWin = false;
             _isSwitchingScene = false;
 
             _gameMode.Start();
@@ -57,57 +50,33 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public void Dispose()
         {
             _inputService.ConfirmPressed -= OnConfirmPressed;
-            _gameMode.Win -= OnGameModeWin;
-            _gameMode.Defeat -= OnGameModeDefeat;
+            _gameMode.MissionEnded -= OnMissionEnded;
         }
 
         private void OnConfirmPressed()
         {
-            if (!_isGameFinished)
+            if (_isGameFinished == false)
                 return;
 
             if (_isSwitchingScene)
                 return;
-
-            _isSwitchingScene = true;
-
-            if (_isWin)
-            {
-                _coroutinesPerformer.StartPerform(
-                    _sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
-            }
-            else
-            {
-                _coroutinesPerformer.StartPerform(
-                    _sceneSwitcherService.ProcessSwitchTo(
-                        Scenes.GamePlay,
-                        _gameplayInputArgs));
-            }
-
-            _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
-        }
-
-        private void OnGameModeWin()
-        {
-            _progressService.Win();
-
-            _isWin = true;
-            _isGameFinished = true;
-        }
-
-        private void OnGameModeDefeat()
-        {
-            if (_isSwitchingScene)
-                return;
-
-            _progressService.Lose();
 
             _isSwitchingScene = true;
 
             _coroutinesPerformer.StartPerform(
-                _sceneSwitcherService.ProcessSwitchTo(
-                    Scenes.GamePlay,
-                    _gameplayInputArgs));
+                _sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
+
+            _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
+        }
+
+        private void OnMissionEnded(MissionResult result)
+        {
+            if (result.IsSuccess)
+                _progressService.Win();
+            else
+                _progressService.Lose();
+
+            _isGameFinished = true;
         }
     }
 }

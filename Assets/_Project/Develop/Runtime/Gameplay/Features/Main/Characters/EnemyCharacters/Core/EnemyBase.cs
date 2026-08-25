@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
+using _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,11 +13,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
     public abstract class EnemyBase : Character
     {
         private EnemyContext _context;
+        private EnemyAttackBehaviorFactory _attackBehaviorFactory;
+        private IEnemyAttackBehavior[] _attackBehaviors = Array.Empty<IEnemyAttackBehavior>();
+        private IEnemyAttackBehavior _activeAttackBehavior;
         private bool _isInitialized;
 
         public EnemyStateMachine StateMachine { get; private set; }
         public bool IsAlive => IsDead == false;
-        protected EnemyContext Context => _context;
+        public EnemyContext Context => _context;
         protected abstract EnemyType Type { get; }
 
         public void Initialize(
@@ -22,8 +28,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             EnemyConfig config,
             Transform player,
             GameObject projectilePrefab,
-            IReadOnlyList<Transform> patrolPoints)
+            IReadOnlyList<Transform> patrolPoints,
+            EnemyAttackBehaviorFactory attackBehaviorFactory)
         {
+            if (attackBehaviorFactory == null)
+                throw new ArgumentNullException(nameof(attackBehaviorFactory));
+
+            _attackBehaviorFactory = attackBehaviorFactory;
+
             NavMeshAgent agent = GetComponent<NavMeshAgent>();
             EnemyPreset preset = config.GetPreset(Type);
 
@@ -40,6 +52,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 projectilePrefab,
                 patrolPoints);
 
+            CreateAttackBehaviors(preset);
+
             StateMachine = new EnemyStateMachine();
             RegisterStates(StateMachine);
             StateMachine.Initialize(_context, EnemyStateId.Patrol);
@@ -48,6 +62,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             aiService.Register(this);
             _isInitialized = true;
         }
+
+        protected virtual IEnemyAttackPresentation CreatePresentation()
+            => new DefaultEnemyAttackPresentation();
 
         protected virtual void RegisterStates(EnemyStateMachine stateMachine)
         {
@@ -83,9 +100,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             StateMachine.ChangeState(EnemyStateId.Infiltration);
         }
 
-        public abstract void TickCombat(float deltaTime);
+        public void TickCombat(float deltaTime) => _activeAttackBehavior?.Tick(deltaTime);
 
-        public abstract void ResetCombat();
+        public void ResetCombat()
+        {
+            for (int i = 0; i < _attackBehaviors.Length; i++)
+                _attackBehaviors[i]?.Reset();
+        }
 
         public bool CanSeePlayer()
         {
@@ -119,7 +140,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             RotateTowards(direction, deltaTime);
         }
 
-        protected void ChasePlayer(float stoppingDistance)
+        public void ChasePlayer(float stoppingDistance)
         {
             if (_context?.Player == null)
                 return;
@@ -131,7 +152,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             agent.SetDestination(_context.Player.position);
         }
 
-        protected void MoveAwayFromPlayer(float desiredDistance)
+        public void MoveAwayFromPlayer(float desiredDistance)
         {
             if (_context?.Player == null)
                 return;
@@ -152,7 +173,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             agent.SetDestination(target);
         }
 
-        protected void StopAgent()
+        public void StopAgent()
         {
             if (_context?.Agent == null)
                 return;
@@ -177,12 +198,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 _context.Preset.RotationSpeed * deltaTime);
         }
 
-        protected Vector3 GetAttackOrigin()
+        public Vector3 GetAttackOrigin()
         {
             return transform.position + Vector3.up * _context.Preset.AttackOriginHeight;
         }
 
-        protected Vector3 GetDirectionToPlayer()
+        public Vector3 GetDirectionToPlayer()
         {
             if (_context?.Player == null)
                 return transform.forward;
@@ -191,12 +212,24 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             return (target - GetAttackOrigin()).normalized;
         }
 
-        protected float DistanceToPlayer()
+        public float DistanceToPlayer()
         {
             if (_context?.Player == null)
                 return float.MaxValue;
 
             return Vector3.Distance(transform.position, _context.Player.position);
+        }
+
+        public bool HasLineOfSightToPlayer()
+        {
+            Vector3 origin = GetAttackOrigin();
+            Vector3 direction = GetDirectionToPlayer();
+            float distance = Vector3.Distance(origin, _context.Player.position + Vector3.up * _context.Preset.AttackOriginHeight);
+
+            if (Physics.Raycast(origin, direction, out RaycastHit hit, distance, ~0, QueryTriggerInteraction.Ignore) == false)
+                return true;
+
+            return hit.collider.transform.root == _context.Player.root;
         }
 
         protected override void Die()
@@ -208,6 +241,34 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             }
 
             base.Die();
+        }
+
+        private void CreateAttackBehaviors(EnemyPreset preset)
+        {
+            IReadOnlyList<EnemyAttackBehaviorConfig> configs = preset.AttackBehaviors;
+
+            if (configs == null || configs.Count == 0)
+                throw new InvalidOperationException(
+                    $"Enemy preset '{preset.Id}' has no {nameof(EnemyPreset.AttackBehaviors)} configured.");
+
+            IEnemyAttackPresentation presentation = CreatePresentation();
+            if (presentation == null)
+                throw new InvalidOperationException(
+                    $"{GetType().Name} returned null from {nameof(CreatePresentation)}.");
+
+            _attackBehaviors = new IEnemyAttackBehavior[configs.Count];
+
+            for (int i = 0; i < configs.Count; i++)
+            {
+                EnemyAttackBehaviorConfig config = configs[i];
+                if (config == null)
+                    throw new InvalidOperationException(
+                        $"Enemy preset '{preset.Id}' has a null attack behavior at index {i}.");
+
+                _attackBehaviors[i] = _attackBehaviorFactory.Create(config, this, presentation);
+            }
+
+            _activeAttackBehavior = _attackBehaviors[0];
         }
 
         private void Update()
@@ -244,18 +305,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             agent.stoppingDistance = 0.5f;
             agent.autoBraking = true;
             agent.updateRotation = false;
-        }
-
-        protected bool HasLineOfSightToPlayer()
-        {
-            Vector3 origin = GetAttackOrigin();
-            Vector3 direction = GetDirectionToPlayer();
-            float distance = Vector3.Distance(origin, _context.Player.position + Vector3.up * _context.Preset.AttackOriginHeight);
-
-            if (Physics.Raycast(origin, direction, out RaycastHit hit, distance, ~0, QueryTriggerInteraction.Ignore) == false)
-                return true;
-
-            return hit.collider.transform.root == _context.Player.root;
         }
     }
 }

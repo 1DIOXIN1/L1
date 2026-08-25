@@ -1,12 +1,15 @@
-﻿namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
+namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 {
     public interface IWeapon
     {
-        public int Ammo { get; }
-        public float ShootSpeed { get; }
-        public float ReloadSpeed { get; }
-        public int Damage { get; }
+        int Ammo { get; }
+        int MagazineSize { get; }
+        bool CanShoot { get; }
+        bool IsReloading { get; }
+        bool IsAutomatic { get; }
 
-        public void Shoot();
+        void Tick(float deltaTime);
+        void Shoot();
+        void Reload();
     }
 }
