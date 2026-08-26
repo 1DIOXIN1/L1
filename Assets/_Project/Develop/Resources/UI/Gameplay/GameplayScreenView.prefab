@@ -2115,7 +2115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2369040946174900794}
   m_Layer: 5
-  m_Name: WeaponGroup
+  m_Name: AmmoGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
