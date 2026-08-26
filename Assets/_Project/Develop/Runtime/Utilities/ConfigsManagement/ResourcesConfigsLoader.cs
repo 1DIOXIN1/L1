@@ -5,6 +5,7 @@ using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
+using _Project.Develop.Runtime.Configs.Meta.Noise;
 using _Project.Develop.Runtime.Configs.Meta.Progress;
 using _Project.Develop.Runtime.Configs.Meta.Wallet;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
@@ -27,7 +28,8 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(GrenadeConfig), "Configs/GrenadeConfig"},
             {typeof(PlayerConfig), "Configs/PlayerConfig"},
             {typeof(PlayerWeaponInventoryConfig), "Configs/PlayerWeaponInventoryConfig"},
-            {typeof(EnemyConfig), "Configs/EnemyConfig"}
+            {typeof(EnemyConfig), "Configs/EnemyConfig"},
+            {typeof(NoiseConfig), "Configs/NoiseConfig"}
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader resources)

@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
+using _Project.Develop.Runtime.Configs.Meta.Noise;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
@@ -28,6 +30,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
         private readonly EnemyAIService _enemyAIService;
         private readonly EnemyAttackBehaviorFactory _attackBehaviorFactory;
         private readonly PlayerStateService _playerStateService;
+        private readonly NoiseService _noiseService;
 
         private Transform _playerTransform;
 
@@ -41,6 +44,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             _enemyAIService = _container.Resolve<EnemyAIService>();
             _attackBehaviorFactory = _container.Resolve<EnemyAttackBehaviorFactory>();
             _playerStateService = _container.Resolve<PlayerStateService>();
+            _noiseService = _container.Resolve<NoiseService>();
         }
 
         public Player CreatePlayer(PlayerSpawnPoint spawnPoint)
@@ -49,6 +53,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 throw new InvalidOperationException($"{nameof(PlayerSpawnPoint)} is missing on the gameplay scene.");
 
             var playerConfig = _configsProviderService.GetConfig<PlayerConfig>();
+            var noiseConfig = _configsProviderService.GetConfig<NoiseConfig>();
             var playerPrefab = _assetsLoader.Load<GameObject>("Prefabs/Entities/Player");
             GameObject instance = Object.Instantiate(playerPrefab, spawnPoint.Position, spawnPoint.Rotation);
 
@@ -63,9 +68,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
             var motor = new PlayerMotor(characterController, _playerTransform, player.ViewTransform, playerConfig);
             var combat = new PlayerCombatController(inventory, gadgetInventory);
+            var noiseEmitter = new PlayerNoiseEmitter(motor, _playerTransform, _noiseService, noiseConfig);
             var gameMode = _container.Resolve<GameMode>();
 
-            player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health);
+            player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health, noiseEmitter);
             gameMode.RegisterPlayer(player, inventory);
             player.SetDeathHandler(gameMode.TriggerDefeat);
 

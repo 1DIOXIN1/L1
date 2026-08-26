@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         private IInputService _input;
         private PlayerMotor _motor;
         private PlayerCombatController _combat;
+        private PlayerNoiseEmitter _noiseEmitter;
         private PlayerControlMode _controlMode = PlayerControlMode.Free;
 
         public Transform FirePoint => firePoint;
@@ -29,11 +31,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             PlayerMotor motor,
             PlayerCombatController combat,
             PlayerConfig playerConfig,
-            int currentHealth)
+            int currentHealth,
+            PlayerNoiseEmitter noiseEmitter = null)
         {
             _input = input;
             _motor = motor;
             _combat = combat;
+            _noiseEmitter = noiseEmitter;
 
             InitializeHealth(currentHealth, playerConfig.Health);
 
@@ -61,6 +65,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
             _motor.SetSprintHeld(_input.IsSprintHeld);
             _motor.Tick(deltaTime);
+            _noiseEmitter?.Tick(deltaTime);
             _combat.Tick(deltaTime, _input.IsShootHeld);
         }
 

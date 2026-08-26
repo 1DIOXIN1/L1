@@ -6,6 +6,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Infrastructure.DI;
@@ -33,6 +34,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGameplayScreen).NonLazy();
             container.RegisterAsSingle(CreateCharactersFactory);
             container.RegisterAsSingle(CreateEnemyAIService);
+            container.RegisterAsSingle(CreateNoiseService);
             container.RegisterAsSingle(CreateEnemyAttackBehaviorFactory);
             container.RegisterAsSingle(CreateEnemySpawnService);
             container.RegisterAsSingle(CreateFireModeRegistry);
@@ -98,6 +100,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             return new EnemyAIService(configsProviderService.GetConfig<EnemyConfig>());
         }
+
+        private static NoiseService CreateNoiseService(DIContainer container)
+            => new NoiseService(container.Resolve<EnemyAIService>());
 
         private static EnemyAttackBehaviorFactory CreateEnemyAttackBehaviorFactory(DIContainer container)
             => new EnemyAttackBehaviorFactory();

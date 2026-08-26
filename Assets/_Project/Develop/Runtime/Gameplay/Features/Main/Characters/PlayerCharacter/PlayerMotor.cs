@@ -37,6 +37,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public float MaxStamina => _config.MaxStamina;
         public bool IsCrouching => _isCrouching;
         public bool IsSprinting { get; private set; }
+        public bool IsMovingHorizontally { get; private set; }
 
         public void SetMoveInput(Vector3 move)
         {
@@ -83,6 +84,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             motion.y = _verticalVelocity;
 
             _characterController.Move(motion * deltaTime);
+
+            Vector3 planarVelocity = _characterController.velocity;
+            planarVelocity.y = 0f;
+            IsMovingHorizontally = planarVelocity.sqrMagnitude > 0.05f ||
+                                   (_moveInput.sqrMagnitude > 0.01f && _characterController.isGrounded);
         }
 
         public void LateTick()
