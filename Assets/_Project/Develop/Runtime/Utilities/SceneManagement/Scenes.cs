@@ -5,6 +5,6 @@ namespace _Project.Develop.Runtime.Utilities.SceneManagement
         public const string GameEntryPoint = "GameEntryPoint";
         public const string Empty = "Empty";
         public const string MainMenu = "MainMenu";
-        public const string GamePlay = "GamePlay";
+        public const string GamePlay = "Test";
     }
 }

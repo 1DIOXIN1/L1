@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.UI.Core;
+using _Project.Develop.Runtime.UI.Gameplay.Detection;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -12,6 +13,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         private PlayerVitalsPresenter _vitalsPresenter;
         private WeaponHudPresenter _weaponHudPresenter;
+        private EnemyDetectionIconsPresenter _detectionIconsPresenter;
 
         public GameplayScreenPresenter(GameplayScreenView view, GameplayPresentersFactory presentersFactory)
         {
@@ -23,9 +25,11 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         {
             _vitalsPresenter = _presentersFactory.CreatePlayerVitalsPresenter(_view);
             _weaponHudPresenter = _presentersFactory.CreateWeaponHudPresenter(_view);
+            _detectionIconsPresenter = _presentersFactory.CreateEnemyDetectionIconsPresenter();
 
             _childPresenters.Add(_vitalsPresenter);
             _childPresenters.Add(_weaponHudPresenter);
+            _childPresenters.Add(_detectionIconsPresenter);
 
             foreach (IPresenter childPresenter in _childPresenters)
                 childPresenter.Initialize();
@@ -40,6 +44,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         public void Tick()
         {
             _vitalsPresenter?.Tick();
+            _detectionIconsPresenter?.Tick();
         }
 
         public void Dispose()
@@ -50,6 +55,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _childPresenters.Clear();
             _vitalsPresenter = null;
             _weaponHudPresenter = null;
+            _detectionIconsPresenter = null;
         }
     }
 }

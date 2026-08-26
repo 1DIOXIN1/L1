@@ -14,6 +14,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         private int _registeredCount;
 
         public event Action AllEnemiesEliminated;
+        public event Action<EnemyBase> EnemyRegistered;
+        public event Action<EnemyBase> EnemyUnregistered;
 
         public EnemyAIService(EnemyConfig config)
         {
@@ -46,11 +48,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
             _enemies.Add(enemy);
             _registeredCount++;
+            EnemyRegistered?.Invoke(enemy);
         }
 
         public void Unregister(EnemyBase enemy)
         {
-            _enemies.Remove(enemy);
+            if (_enemies.Remove(enemy) == false)
+                return;
+
+            EnemyUnregistered?.Invoke(enemy);
 
             if (_spawnCompleted && _registeredCount > 0 && AliveCount == 0)
                 AllEnemiesEliminated?.Invoke();
@@ -69,16 +75,18 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (source == null)
                 return;
 
+            Vector3 alarmSourcePosition = source.transform.position;
+
             foreach (EnemyBase enemy in _enemies)
             {
                 if (enemy == null || enemy == source || enemy.IsAlive == false)
                     continue;
 
-                float distance = Vector3.Distance(source.transform.position, enemy.transform.position);
+                float distance = Vector3.Distance(alarmSourcePosition, enemy.transform.position);
                 if (distance > _config.InfiltrationSpreadRadius)
                     continue;
 
-                enemy.EnterInfiltration();
+                enemy.EnterInfiltrationAsAlarmResponder(alarmSourcePosition);
             }
         }
     }

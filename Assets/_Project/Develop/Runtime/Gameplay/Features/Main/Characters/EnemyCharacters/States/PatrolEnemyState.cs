@@ -1,3 +1,4 @@
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Detection;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core
@@ -8,6 +9,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void Enter(EnemyContext context)
         {
+            context.IsAlarmResponder = false;
             context.Agent.isStopped = false;
             context.Agent.speed = context.Preset.PatrolSpeed;
             context.Agent.stoppingDistance = context.Config.PatrolPointReachDistance;
@@ -21,9 +23,18 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void Tick(EnemyContext context, float deltaTime)
         {
-            if (context.Enemy.CanSeePlayer())
+            bool canSee = context.Enemy.CanSeePlayer();
+            context.Awareness.TickSight(canSee, deltaTime);
+
+            if (canSee || context.Awareness.Phase != DetectionPhase.Calm)
             {
-                context.Enemy.EnterCombatAsSpotter();
+                if (canSee && context.Player != null)
+                {
+                    context.InvestigatePosition = context.Player.position;
+                    context.HasInvestigateTarget = true;
+                }
+
+                context.Enemy.EnterDetecting();
                 return;
             }
 

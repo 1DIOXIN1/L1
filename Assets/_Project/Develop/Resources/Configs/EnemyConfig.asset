@@ -16,6 +16,10 @@ MonoBehaviour:
   <InfiltrationSpreadRadius>k__BackingField: 25
   <PatrolPointWaitTime>k__BackingField: 1.5
   <PatrolPointReachDistance>k__BackingField: 0.6
+  <SuspiciousFillTime>k__BackingField: 1.25
+  <LostHoldTime>k__BackingField: 1.5
+  <LostDecayTime>k__BackingField: 2
+  <DamageSuspicionBurst>k__BackingField: 0.45
   <CookerPrefab>k__BackingField: {fileID: 8076757054092318504, guid: 756686be6a06bd7498cda7e9c41f8488, type: 3}
   <RangerPrefab>k__BackingField: {fileID: 4496244555982910951, guid: 285859b3809a80542a606db6a89882ab, type: 3}
   <MeleePrefab>k__BackingField: {fileID: 4496244555982910951, guid: 582234536ee74094bb1dc7081eca81c7, type: 3}

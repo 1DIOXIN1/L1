@@ -4,6 +4,7 @@ using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Detection;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -69,10 +70,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         protected virtual void RegisterStates(EnemyStateMachine stateMachine)
         {
             stateMachine.RegisterState(new PatrolEnemyState());
+            stateMachine.RegisterState(new DetectingEnemyState());
             stateMachine.RegisterState(new InfiltrationEnemyState());
         }
 
-        public void EnterCombatAsSpotter()
+        public void EnterDetecting()
         {
             if (_isInitialized == false || IsDead)
                 return;
@@ -80,10 +82,50 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (StateMachine.CurrentStateId == EnemyStateId.Infiltration)
                 return;
 
+            if (StateMachine.CurrentStateId == EnemyStateId.Detecting)
+                return;
+
+            StateMachine.ChangeState(EnemyStateId.Detecting);
+        }
+
+        public void ApplyStimulus(NoiseStimulus stimulus)
+        {
+            if (_isInitialized == false || IsDead || _context == null)
+                return;
+
+            _context.Awareness.NotifyStimulus(stimulus.SuspicionAmount);
+            _context.InvestigatePosition = stimulus.Position;
+            _context.HasInvestigateTarget = true;
+
+            if (StateMachine.CurrentStateId == EnemyStateId.Infiltration)
+                return;
+
+            if (StateMachine.CurrentStateId != EnemyStateId.Detecting)
+                EnterDetecting();
+        }
+
+        public void EnterCombatAsSpotter()
+        {
+            if (_isInitialized == false || IsDead)
+                return;
+
+            if (StateMachine.CurrentStateId == EnemyStateId.Infiltration && _context.IsAlarmResponder == false)
+                return;
+
             _context.IsSpotter = true;
+            _context.IsAlarmResponder = false;
             _context.SpotterTimer = 0f;
             _context.AlarmSpreadTriggered = false;
             _context.InfiltrationTriggered = true;
+            _context.IsSearchingLastKnown = false;
+            _context.Awareness.ForceAlerted();
+
+            if (_context.Player != null)
+            {
+                _context.LastKnownPlayerPosition = _context.Player.position;
+                _context.HasLastKnownPlayerPosition = true;
+            }
+
             StateMachine.ChangeState(EnemyStateId.Infiltration);
         }
 
@@ -96,7 +138,29 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 return;
 
             _context.IsSpotter = false;
+            _context.IsAlarmResponder = false;
             _context.InfiltrationTriggered = true;
+            StateMachine.ChangeState(EnemyStateId.Infiltration);
+        }
+
+        public void EnterInfiltrationAsAlarmResponder(Vector3 alarmSourcePosition)
+        {
+            if (_isInitialized == false || IsDead)
+                return;
+
+            if (StateMachine.CurrentStateId == EnemyStateId.Infiltration &&
+                _context.IsSpotter &&
+                _context.IsAlarmResponder == false)
+                return;
+
+            _context.IsSpotter = false;
+            _context.IsAlarmResponder = true;
+            _context.AlarmSourcePosition = alarmSourcePosition;
+            _context.LastKnownPlayerPosition = alarmSourcePosition;
+            _context.HasLastKnownPlayerPosition = true;
+            _context.IsSearchingLastKnown = false;
+            _context.InfiltrationTriggered = true;
+            _context.Awareness.NotifyAlarm();
             StateMachine.ChangeState(EnemyStateId.Infiltration);
         }
 
@@ -232,6 +296,21 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             return hit.collider.transform.root == _context.Player.root;
         }
 
+        protected override void OnDamaged(int damage)
+        {
+            if (_isInitialized == false || IsDead || _context == null)
+                return;
+
+            Vector3 sourcePosition = _context.Player != null
+                ? _context.Player.position
+                : transform.position;
+
+            ApplyStimulus(new NoiseStimulus(
+                sourcePosition,
+                _context.Awareness.DamageSuspicionBurst,
+                NoiseStimulusType.Damage));
+        }
+
         protected override void Die()
         {
             if (_context != null)
@@ -260,12 +339,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
             for (int i = 0; i < configs.Count; i++)
             {
-                EnemyAttackBehaviorConfig config = configs[i];
-                if (config == null)
+                EnemyAttackBehaviorConfig behaviorConfig = configs[i];
+                if (behaviorConfig == null)
                     throw new InvalidOperationException(
                         $"Enemy preset '{preset.Id}' has a null attack behavior at index {i}.");
 
-                _attackBehaviors[i] = _attackBehaviorFactory.Create(config, this, presentation);
+                _attackBehaviors[i] = _attackBehaviorFactory.Create(behaviorConfig, this, presentation);
             }
 
             _activeAttackBehavior = _attackBehaviors[0];

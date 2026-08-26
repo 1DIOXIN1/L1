@@ -14,6 +14,10 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
         [field: SerializeField] public float InfiltrationSpreadRadius { get; private set; } = 25f;
         [field: SerializeField] public float PatrolPointWaitTime { get; private set; } = 1.5f;
         [field: SerializeField] public float PatrolPointReachDistance { get; private set; } = 0.6f;
+        [field: SerializeField] public float SuspiciousFillTime { get; private set; } = 1.25f;
+        [field: SerializeField] public float LostHoldTime { get; private set; } = 1.5f;
+        [field: SerializeField] public float LostDecayTime { get; private set; } = 2f;
+        [field: SerializeField, Range(0f, 1f)] public float DamageSuspicionBurst { get; private set; } = 0.45f;
         [field: SerializeField] public GameObject CookerPrefab { get; private set; }
         [field: SerializeField] public GameObject RangerPrefab { get; private set; }
         [field: SerializeField] public GameObject MeleePrefab { get; private set; }

@@ -1,6 +1,11 @@
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Detection;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Player;
+using _Project.Develop.Runtime.UI.Core;
+using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using UnityEngine;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -32,6 +37,29 @@ namespace _Project.Develop.Runtime.UI.Gameplay
                 view,
                 _container.Resolve<PlayerStateService>(),
                 _container.Resolve<ConfigsProviderService>());
+        }
+
+        public EnemyDetectionIconsPresenter CreateEnemyDetectionIconsPresenter()
+        {
+            return new EnemyDetectionIconsPresenter(
+                _container.Resolve<EnemyAIService>(),
+                _container.Resolve<ViewsFactory>(),
+                this);
+        }
+
+        public EnemyDetectionIconPresenter CreateEnemyDetectionIconPresenter(
+            EnemyAwareness awareness,
+            EnemyDetectionIconView view,
+            Transform followTarget,
+            Transform player,
+            float heightOffset)
+        {
+            return new EnemyDetectionIconPresenter(
+                awareness,
+                view,
+                followTarget,
+                player,
+                heightOffset);
         }
     }
 }

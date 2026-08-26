@@ -43,9 +43,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
             _health = Mathf.Max(0, _health - damage);
             HealthChanged?.Invoke(_health, _maxHealth);
+            OnDamaged(damage);
 
             if (_health == 0)
                 Die();
+        }
+
+        protected virtual void OnDamaged(int damage)
+        {
         }
 
         protected virtual void Die()
