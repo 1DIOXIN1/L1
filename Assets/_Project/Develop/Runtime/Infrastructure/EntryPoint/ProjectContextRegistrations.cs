@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.UI;
@@ -33,6 +34,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateSceneSwitcherService);
             container.RegisterAsSingle(CreateWalletService).NonLazy();
             container.RegisterAsSingle(CreatePlayerDataProvider);
+            container.RegisterAsSingle(CreatePlayerStateService).NonLazy();
             container.RegisterAsSingle(CreateGameplayDataProvider);
             container.RegisterAsSingle(CreateProgressService);
             container.RegisterAsSingle(CreateProjectPresentersFactory);
@@ -54,6 +56,13 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
 
             return new PlayerDataProvider(saveLoadService, configsProviderService);
+        }
+
+        private static PlayerStateService CreatePlayerStateService(DIContainer container)
+        {
+            return new PlayerStateService(
+                container.Resolve<PlayerDataProvider>(),
+                container.Resolve<ConfigsProviderService>());
         }
 
         private static GameplayDataProvider CreateGameplayDataProvider(DIContainer container)

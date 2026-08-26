@@ -9,6 +9,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay;
@@ -54,9 +55,19 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             SceneSwitcherService sceneSwitcher = container.Resolve<SceneSwitcherService>();
             CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
             GameplayDataProvider gameplayDataProvider = container.Resolve<GameplayDataProvider>();
+            PlayerDataProvider playerDataProvider = container.Resolve<PlayerDataProvider>();
+            PlayerStateService playerStateService = container.Resolve<PlayerStateService>();
             ProgressService progressService = container.Resolve<ProgressService>();
-            
-            return new GameplayCycle(gameMode, input, sceneSwitcher, coroutinesPerformer, gameplayDataProvider, progressService);
+
+            return new GameplayCycle(
+                gameMode,
+                input,
+                sceneSwitcher,
+                coroutinesPerformer,
+                gameplayDataProvider,
+                playerDataProvider,
+                playerStateService,
+                progressService);
         }
 
         private static GameplayUIRoot CreateGameplayUIRoot(DIContainer container)
@@ -107,8 +118,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         {
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
             WeaponFactory factory = container.Resolve<WeaponFactory>();
-            
-            return new PlayerWeaponInventory(configsProviderService, factory);
+            PlayerStateService playerStateService = container.Resolve<PlayerStateService>();
+
+            return new PlayerWeaponInventory(configsProviderService, factory, playerStateService);
         }
 
         private static PlayerGadgetInventory CreatePlayerGadgetInventory(DIContainer container)

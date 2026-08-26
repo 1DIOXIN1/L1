@@ -6,6 +6,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.UI.Gameplay;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
@@ -22,6 +23,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private DIContainer _container;
         private IInputService _input;
         private GameplayInputArgs _gameplayInputArgs;
+        private GameplayScreenPresenter _gameplayScreenPresenter;
         private bool _isRunning;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs)
@@ -52,6 +54,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
                 return;
 
             _input.Update(Time.deltaTime);
+            _gameplayScreenPresenter?.Tick();
         }
 
         public override void Run()
@@ -61,8 +64,11 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             _container.Resolve<ConfigsProviderService>().GetConfig<StartGameplayConfig>();
 
+            _gameplayScreenPresenter = _container.Resolve<GameplayScreenPresenter>();
+
             CharactersFactory charactersFactory = _container.Resolve<CharactersFactory>();
-            charactersFactory.CreatePlayer(playerSpawnPoint);
+            Player player = charactersFactory.CreatePlayer(playerSpawnPoint);
+            _gameplayScreenPresenter.AttachPlayer(player);
 
             EnemySpawnService spawnService = _container.Resolve<EnemySpawnService>();
             spawnService.SpawnFromRegistry(enemySpawnRegistry);

@@ -34,6 +34,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         }
 
         public float Stamina => _stamina;
+        public float MaxStamina => _config.MaxStamina;
         public bool IsCrouching => _isCrouching;
         public bool IsSprinting { get; private set; }
 

@@ -7,9 +7,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
     public abstract class Character : MonoBehaviour, IDamageble
     {
         private int _health;
+        private int _maxHealth;
         private bool _isDead;
         private Action _onDied;
-        
+
+        public event Action<int, int> HealthChanged;
+
+        public int CurrentHealth => _health;
+        public int MaxHealth => _maxHealth;
         protected int Health => _health;
         protected bool IsDead => _isDead;
 
@@ -20,8 +25,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
         protected void InitializeHealth(ICharacterConfig config)
         {
-            _health = config.Health;
+            InitializeHealth(config.Health, config.Health);
+        }
+
+        protected void InitializeHealth(int currentHealth, int maxHealth)
+        {
+            _maxHealth = Mathf.Max(1, maxHealth);
+            _health = Mathf.Clamp(currentHealth, 0, _maxHealth);
             _isDead = false;
+            HealthChanged?.Invoke(_health, _maxHealth);
         }
 
         public void TakeDamage(int damage)
@@ -30,6 +42,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 return;
 
             _health = Mathf.Max(0, _health - damage);
+            HealthChanged?.Invoke(_health, _maxHealth);
 
             if (_health == 0)
                 Die();

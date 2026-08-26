@@ -16,7 +16,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         public Transform FirePoint => firePoint;
         public Transform ViewTransform => viewTransform;
+        public PlayerCombatController Combat => _combat;
         public float Stamina => _motor?.Stamina ?? 0f;
+        public float MaxStamina => _motor?.MaxStamina ?? 0f;
         public bool IsCrouching => _motor != null && _motor.IsCrouching;
         public bool IsSprinting => _motor != null && _motor.IsSprinting;
         public bool IsControlLocked => _controlMode == PlayerControlMode.Locked;
@@ -26,13 +28,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             IInputService input,
             PlayerMotor motor,
             PlayerCombatController combat,
-            PlayerConfig playerConfig)
+            PlayerConfig playerConfig,
+            int currentHealth)
         {
             _input = input;
             _motor = motor;
             _combat = combat;
 
-            InitializeHealth(playerConfig);
+            InitializeHealth(currentHealth, playerConfig.Health);
 
             _input.Jump += OnJump;
             _input.Move += OnMove;

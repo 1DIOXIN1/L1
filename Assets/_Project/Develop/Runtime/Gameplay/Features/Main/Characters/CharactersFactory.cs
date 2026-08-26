@@ -7,8 +7,10 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.InputManagement;
@@ -25,6 +27,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
         private readonly ConfigsProviderService _configsProviderService;
         private readonly EnemyAIService _enemyAIService;
         private readonly EnemyAttackBehaviorFactory _attackBehaviorFactory;
+        private readonly PlayerStateService _playerStateService;
 
         private Transform _playerTransform;
 
@@ -37,6 +40,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             _configsProviderService = _container.Resolve<ConfigsProviderService>();
             _enemyAIService = _container.Resolve<EnemyAIService>();
             _attackBehaviorFactory = _container.Resolve<EnemyAttackBehaviorFactory>();
+            _playerStateService = _container.Resolve<PlayerStateService>();
         }
 
         public Player CreatePlayer(PlayerSpawnPoint spawnPoint)
@@ -61,8 +65,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             var combat = new PlayerCombatController(inventory, gadgetInventory);
             var gameMode = _container.Resolve<GameMode>();
 
-            player.Initialize(_input, motor, combat, playerConfig);
-            gameMode.RegisterPlayer(player);
+            player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health);
+            gameMode.RegisterPlayer(player, inventory);
             player.SetDeathHandler(gameMode.TriggerDefeat);
 
             return player;

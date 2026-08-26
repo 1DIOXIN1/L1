@@ -15,6 +15,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _gadgetInventory = gadgetInventory;
         }
 
+        public WeaponInventory Weapons => _weaponInventory;
+
         public void OnShootPressed()
         {
             IWeapon weapon = _weaponInventory.CurrentWeapon;

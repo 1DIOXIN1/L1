@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
+using _Project.Develop.Runtime.Meta.Features.Player;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
@@ -14,6 +16,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private readonly List<IMissionObjective> _objectives = new();
 
         private Player _player;
+        private WeaponInventory _weaponInventory;
         private bool _isFinished;
 
         public GameMode(EnemyAIService enemyAIService)
@@ -21,9 +24,18 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _enemyAIService = enemyAIService;
         }
 
-        public void RegisterPlayer(Player player)
+        public void RegisterPlayer(Player player, WeaponInventory weaponInventory)
         {
             _player = player;
+            _weaponInventory = weaponInventory;
+        }
+
+        public void CapturePlayerState(PlayerStateService playerStateService)
+        {
+            if (_player == null || _weaponInventory == null)
+                return;
+
+            playerStateService.CaptureFrom(_player, _weaponInventory);
         }
 
         public void TriggerDefeat()
