@@ -20,7 +20,16 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public void OnShootPressed()
         {
             IWeapon weapon = _weaponInventory.CurrentWeapon;
-            if (weapon != null && weapon.IsAutomatic == false)
+            if (weapon == null)
+                return;
+
+            if (weapon.Ammo <= 0)
+            {
+                weapon.Reload();
+                return;
+            }
+
+            if (weapon.IsAutomatic == false)
                 weapon.Shoot();
         }
 

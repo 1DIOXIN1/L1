@@ -17,7 +17,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Characters.Player
 
         [SerializeField] private List<StartWeaponSlot> slots = new()
         {
-            new StartWeaponSlot(SlotWeaponType.PrimarySlot, WeaponType.Smg),
+            new StartWeaponSlot(SlotWeaponType.PrimarySlot, WeaponType.Ak74),
             new StartWeaponSlot(SlotWeaponType.SecondarySlot, WeaponType.Usp)
         };
 

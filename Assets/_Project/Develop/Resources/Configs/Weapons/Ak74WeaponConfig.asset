@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 365feab23ea848399d667e9ee9b807d6, type: 3}
-  m_Name: SmgWeaponConfig
+  m_Name: Ak74WeaponConfig
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 0
   <FireMode>k__BackingField: 0
   <MagazineSize>k__BackingField: 30
+  <ReserveAmmo>k__BackingField: 270
   <ReloadDuration>k__BackingField: 3
   <Damage>k__BackingField: 27
   <FireInterval>k__BackingField: 0.08
@@ -22,3 +23,9 @@ MonoBehaviour:
   <BulletLifeTime>k__BackingField: 0.8
   <Range>k__BackingField: 50
   <IsAutomatic>k__BackingField: 1
+  <HudIconActive>k__BackingField: {fileID: 21300000, guid: be2ad34e4253cbe409e3e7d607c90e68, type: 3}
+  <HudIconReloading>k__BackingField: {fileID: 21300000, guid: f638eb392ac08f944a10dc6c412a6699, type: 3}
+  <ViewPrefab>k__BackingField: {fileID: 1487774384131766, guid: ee329c3cd08e58645834d20702d7f6c6, type: 3}
+  <ViewLocalPosition>k__BackingField: {x: 0, y: -0.05, z: -0.15}
+  <ViewLocalEulerAngles>k__BackingField: {x: 0, y: 0, z: 0}
+  <ViewLocalScale>k__BackingField: {x: 1, y: 1, z: 1}

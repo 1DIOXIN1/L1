@@ -9,6 +9,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Weapon
         [field: SerializeField] public WeaponType Type { get; private set; }
         [field: SerializeField] public WeaponFireMode FireMode { get; private set; } = WeaponFireMode.Projectile;
         [field: SerializeField] public int MagazineSize { get; private set; } = 30;
+        [field: SerializeField] public int ReserveAmmo { get; private set; } = 270;
         [field: SerializeField] public float ReloadDuration { get; private set; } = 3f;
         [field: SerializeField] public int Damage { get; private set; } = 10;
         [field: SerializeField] public float FireInterval { get; private set; } = 0.1f;
@@ -16,5 +17,11 @@ namespace _Project.Develop.Runtime.Configs.Meta.Weapon
         [field: SerializeField] public float BulletLifeTime { get; private set; } = 0.8f;
         [field: SerializeField] public float Range { get; private set; } = 50f;
         [field: SerializeField] public bool IsAutomatic { get; private set; }
+        [field: SerializeField] public Sprite HudIconActive { get; private set; }
+        [field: SerializeField] public Sprite HudIconReloading { get; private set; }
+        [field: SerializeField] public GameObject ViewPrefab { get; private set; }
+        [field: SerializeField] public Vector3 ViewLocalPosition { get; private set; }
+        [field: SerializeField] public Vector3 ViewLocalEulerAngles { get; private set; }
+        [field: SerializeField] public Vector3 ViewLocalScale { get; private set; } = Vector3.one;
     }
 }

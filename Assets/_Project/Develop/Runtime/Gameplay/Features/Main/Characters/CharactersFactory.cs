@@ -72,6 +72,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             var gameMode = _container.Resolve<GameMode>();
 
             player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health, noiseEmitter);
+
+            Transform weaponSocket = PlayerWeaponView.CreateSocket(player.FirePoint);
+            PlayerWeaponView weaponView = new PlayerWeaponView(weaponSocket);
+            player.BindWeaponView(weaponView, inventory);
+
             gameMode.RegisterPlayer(player, inventory);
             player.SetDeathHandler(gameMode.TriggerDefeat);
 

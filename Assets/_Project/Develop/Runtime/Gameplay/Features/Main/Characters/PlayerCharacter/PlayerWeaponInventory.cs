@@ -35,7 +35,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             foreach (var slotData in inventoryConfig.Slots)
             {
                 int ammo = _playerStateService.GetAmmo(slotData.WeaponType);
-                IWeapon weapon = _factory.CreateWeapon(slotData.WeaponType, firePoint, owner, ammo);
+                int reserveAmmo = _playerStateService.GetReserveAmmo(slotData.WeaponType);
+                IWeapon weapon = _factory.CreateWeapon(slotData.WeaponType, firePoint, owner, ammo, reserveAmmo);
                 slots[slotData.SlotType] = new WeaponSlot(weapon, slotData.SlotType);
             }
 

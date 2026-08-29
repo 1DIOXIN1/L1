@@ -15,6 +15,7 @@ MonoBehaviour:
   <Type>k__BackingField: 1
   <FireMode>k__BackingField: 0
   <MagazineSize>k__BackingField: 12
+  <ReserveAmmo>k__BackingField: 96
   <ReloadDuration>k__BackingField: 5
   <Damage>k__BackingField: 10
   <FireInterval>k__BackingField: 0.35
@@ -22,3 +23,9 @@ MonoBehaviour:
   <BulletLifeTime>k__BackingField: 0.8
   <Range>k__BackingField: 50
   <IsAutomatic>k__BackingField: 0
+  <HudIconActive>k__BackingField: {fileID: 21300000, guid: be2ad34e4253cbe409e3e7d607c90e68, type: 3}
+  <HudIconReloading>k__BackingField: {fileID: 21300000, guid: f638eb392ac08f944a10dc6c412a6699, type: 3}
+  <ViewPrefab>k__BackingField: {fileID: 7779035596426449466, guid: 436d84b39ebbb99449cf0c0ed23b24a5, type: 3}
+  <ViewLocalPosition>k__BackingField: {x: 0, y: -0.02, z: -0.08}
+  <ViewLocalEulerAngles>k__BackingField: {x: 0, y: 0, z: 0}
+  <ViewLocalScale>k__BackingField: {x: 1, y: 1, z: 1}

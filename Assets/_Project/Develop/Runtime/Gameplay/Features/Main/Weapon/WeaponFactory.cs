@@ -24,14 +24,19 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             _bulletPrefab = _resourcesAssetsLoader.Load<GameObject>("Prefabs/Weapons/Bullets/Bullet");
         }
 
-        public IWeapon CreateWeapon(WeaponType type, Transform firePoint, GameObject owner, int? initialAmmo = null)
+        public IWeapon CreateWeapon(
+            WeaponType type,
+            Transform firePoint,
+            GameObject owner,
+            int? initialAmmo = null,
+            int? initialReserveAmmo = null)
         {
             WeaponsCatalogConfig catalog = _configsProvider.GetConfig<WeaponsCatalogConfig>();
             WeaponConfig config = catalog.GetWeapon(type);
             IFireMode fireMode = _fireModeRegistry.Resolve(config.FireMode);
             GameObject bulletPrefab = config.FireMode == WeaponFireMode.Projectile ? _bulletPrefab : null;
 
-            return new Weapon(config, fireMode, firePoint, owner, bulletPrefab, initialAmmo);
+            return new Weapon(config, fireMode, firePoint, owner, bulletPrefab, initialAmmo, initialReserveAmmo);
         }
     }
 }

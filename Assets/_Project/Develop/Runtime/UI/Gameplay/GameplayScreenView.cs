@@ -12,6 +12,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         [SerializeField] private TMP_Text currentAmmoText;
         [SerializeField] private TMP_Text maxAmmoText;
         [SerializeField] private TMP_Text weaponNameText;
+        [SerializeField] private Image weaponIconImage;
         [SerializeField] private GameObject sequenceViewRoot;
 
         private void Awake()
@@ -32,19 +33,28 @@ namespace _Project.Develop.Runtime.UI.Gameplay
                 staminaSlider.value = Mathf.Clamp01(normalized);
         }
 
-        public void SetAmmo(int current, int max)
+        public void SetAmmo(int currentMagazine, int reserveAmmo)
         {
             if (currentAmmoText != null)
-                currentAmmoText.text = current.ToString();
+                currentAmmoText.text = currentMagazine.ToString();
 
             if (maxAmmoText != null)
-                maxAmmoText.text = max.ToString();
+                maxAmmoText.text = reserveAmmo.ToString();
         }
 
         public void SetWeaponName(string weaponName)
         {
             if (weaponNameText != null)
                 weaponNameText.text = weaponName;
+        }
+
+        public void SetWeaponIcon(Sprite icon)
+        {
+            if (weaponIconImage == null)
+                return;
+
+            weaponIconImage.sprite = icon;
+            weaponIconImage.enabled = icon != null;
         }
     }
 }

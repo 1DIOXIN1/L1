@@ -16,6 +16,7 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
     {
         private readonly ConfigsProviderService _configsProviderService;
         private readonly Dictionary<WeaponType, int> _ammoByWeapon = new();
+        private readonly Dictionary<WeaponType, int> _reserveAmmoByWeapon = new();
 
         private int _health;
         private SlotWeaponType _selectedWeaponSlot;
@@ -32,14 +33,22 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
         public int MaxHealth => _configsProviderService.GetConfig<PlayerConfig>().Health;
         public SlotWeaponType SelectedWeaponSlot => _selectedWeaponSlot;
         public IReadOnlyDictionary<WeaponType, int> AmmoByWeapon => _ammoByWeapon;
+        public IReadOnlyDictionary<WeaponType, int> ReserveAmmoByWeapon => _reserveAmmoByWeapon;
 
         public int GetAmmo(WeaponType type)
         {
             if (_ammoByWeapon.TryGetValue(type, out int ammo))
                 return ammo;
 
-            WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
-            return catalog.GetWeapon(type).MagazineSize;
+            return GetWeaponConfig(type).MagazineSize;
+        }
+
+        public int GetReserveAmmo(WeaponType type)
+        {
+            if (_reserveAmmoByWeapon.TryGetValue(type, out int reserve))
+                return reserve;
+
+            return GetWeaponConfig(type).ReserveAmmo;
         }
 
         public void CaptureFrom(PlayerCharacter player, WeaponInventory weaponInventory)
@@ -53,12 +62,16 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
             _selectedWeaponSlot = weaponInventory.CurrentSlot ?? _selectedWeaponSlot;
 
             _ammoByWeapon.Clear();
+            _reserveAmmoByWeapon.Clear();
+
             foreach (KeyValuePair<SlotWeaponType, WeaponSlot> pair in weaponInventory.Slots)
             {
                 if (pair.Value?.Weapon == null)
                     continue;
 
-                _ammoByWeapon[pair.Value.Weapon.Type] = pair.Value.Weapon.Ammo;
+                IWeapon weapon = pair.Value.Weapon;
+                _ammoByWeapon[weapon.Type] = weapon.Ammo;
+                _reserveAmmoByWeapon[weapon.Type] = weapon.ReserveAmmo;
             }
         }
 
@@ -69,15 +82,7 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
 
         public void RefillAmmo()
         {
-            WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
-            PlayerWeaponInventoryConfig inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
-
-            _ammoByWeapon.Clear();
-            foreach (PlayerWeaponInventoryConfig.StartWeaponSlot slot in inventoryConfig.Slots)
-            {
-                WeaponConfig weaponConfig = catalog.GetWeapon(slot.WeaponType);
-                _ammoByWeapon[slot.WeaponType] = weaponConfig.MagazineSize;
-            }
+            ApplyOriginCombatStats();
         }
 
         public void WriteTo(PlayerData data)
@@ -85,6 +90,7 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
             data.Health = _health;
             data.SelectedWeaponSlot = _selectedWeaponSlot;
             data.AmmoByWeapon = new Dictionary<WeaponType, int>(_ammoByWeapon);
+            data.ReserveAmmoByWeapon = new Dictionary<WeaponType, int>(_reserveAmmoByWeapon);
         }
 
         public void ReadFrom(PlayerData data)
@@ -101,11 +107,23 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
                 : data.SelectedWeaponSlot;
 
             _ammoByWeapon.Clear();
+            _reserveAmmoByWeapon.Clear();
+
             foreach (KeyValuePair<WeaponType, int> pair in data.AmmoByWeapon)
             {
-                WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
-                int magazineSize = catalog.GetWeapon(pair.Key).MagazineSize;
+                int magazineSize = GetWeaponConfig(pair.Key).MagazineSize;
                 _ammoByWeapon[pair.Key] = Mathf.Clamp(pair.Value, 0, magazineSize);
+            }
+
+            if (data.ReserveAmmoByWeapon != null)
+            {
+                foreach (KeyValuePair<WeaponType, int> pair in data.ReserveAmmoByWeapon)
+                    _reserveAmmoByWeapon[pair.Key] = Mathf.Max(0, pair.Value);
+            }
+            else
+            {
+                foreach (KeyValuePair<WeaponType, int> pair in _ammoByWeapon)
+                    _reserveAmmoByWeapon[pair.Key] = GetWeaponConfig(pair.Key).ReserveAmmo;
             }
         }
 
@@ -113,17 +131,24 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
         {
             PlayerConfig playerConfig = _configsProviderService.GetConfig<PlayerConfig>();
             PlayerWeaponInventoryConfig inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
-            WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
 
             _health = playerConfig.Health;
             _selectedWeaponSlot = inventoryConfig.DefaultSelectedSlot;
 
             _ammoByWeapon.Clear();
+            _reserveAmmoByWeapon.Clear();
+
             foreach (PlayerWeaponInventoryConfig.StartWeaponSlot slot in inventoryConfig.Slots)
             {
-                WeaponConfig weaponConfig = catalog.GetWeapon(slot.WeaponType);
+                WeaponConfig weaponConfig = GetWeaponConfig(slot.WeaponType);
                 _ammoByWeapon[slot.WeaponType] = weaponConfig.MagazineSize;
+                _reserveAmmoByWeapon[slot.WeaponType] = weaponConfig.ReserveAmmo;
             }
+        }
+
+        private WeaponConfig GetWeaponConfig(WeaponType type)
+        {
+            return _configsProviderService.GetConfig<WeaponsCatalogConfig>().GetWeapon(type);
         }
     }
 }

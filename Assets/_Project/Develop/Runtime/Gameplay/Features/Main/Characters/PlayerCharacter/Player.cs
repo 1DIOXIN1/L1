@@ -1,5 +1,6 @@
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         private PlayerMotor _motor;
         private PlayerCombatController _combat;
         private PlayerNoiseEmitter _noiseEmitter;
+        private PlayerWeaponView _weaponView;
+        private WeaponInventory _weaponInventory;
         private PlayerControlMode _controlMode = PlayerControlMode.Free;
 
         public Transform FirePoint => firePoint;
@@ -51,6 +54,20 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.SelectSecondarySlot += OnSelectSecondarySlot;
         }
 
+        public void BindWeaponView(PlayerWeaponView weaponView, WeaponInventory weaponInventory)
+        {
+            UnbindWeaponView();
+
+            _weaponView = weaponView;
+            _weaponInventory = weaponInventory;
+
+            if (_weaponInventory == null || _weaponView == null)
+                return;
+
+            _weaponInventory.WeaponChanged += OnWeaponViewChanged;
+            _weaponView.Show(_weaponInventory.CurrentWeapon);
+        }
+
         public void SetControlMode(PlayerControlMode mode)
         {
             _controlMode = mode;
@@ -79,6 +96,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         private void OnDestroy()
         {
+            UnbindWeaponView();
+
             if (_input == null)
                 return;
 
@@ -90,6 +109,23 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Crouch -= OnCrouch;
             _input.SelectPrimarySlot -= OnSelectPrimarySlot;
             _input.SelectSecondarySlot -= OnSelectSecondarySlot;
+        }
+
+        private void OnWeaponViewChanged(IWeapon weapon)
+        {
+            _weaponView?.Show(weapon);
+        }
+
+        private void UnbindWeaponView()
+        {
+            if (_weaponInventory != null)
+            {
+                _weaponInventory.WeaponChanged -= OnWeaponViewChanged;
+                _weaponInventory = null;
+            }
+
+            _weaponView?.Clear();
+            _weaponView = null;
         }
 
         private void OnCrouch()

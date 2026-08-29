@@ -2,7 +2,10 @@
 {
     public enum WeaponType
     {
-        Smg,
-        Usp
+        Ak74 = 0,
+        Usp = 1,
+
+        /// <summary>Legacy save key. Prefer <see cref="Ak74"/>.</summary>
+        Smg = Ak74
     }
 }

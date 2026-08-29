@@ -35,16 +35,18 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
             if (weaponType.HasValue)
             {
+                WeaponConfig config = _configsProviderService.GetConfig<WeaponsCatalogConfig>().GetWeapon(weaponType.Value);
                 int ammo = _playerStateService.GetAmmo(weaponType.Value);
-                WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
-                int magazine = catalog.GetWeapon(weaponType.Value).MagazineSize;
-                _view.SetAmmo(ammo, magazine);
+                int reserve = _playerStateService.GetReserveAmmo(weaponType.Value);
+                _view.SetAmmo(ammo, reserve);
                 _view.SetWeaponName(weaponType.Value.ToString());
+                _view.SetWeaponIcon(config.HudIconActive);
             }
             else
             {
                 _view.SetAmmo(0, 0);
                 _view.SetWeaponName(string.Empty);
+                _view.SetWeaponIcon(null);
             }
         }
 
@@ -107,11 +109,15 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             {
                 _view.SetAmmo(0, 0);
                 _view.SetWeaponName(string.Empty);
+                _view.SetWeaponIcon(null);
                 return;
             }
 
-            _view.SetAmmo(weapon.Ammo, weapon.MagazineSize);
+            _view.SetAmmo(weapon.Ammo, weapon.ReserveAmmo);
             _view.SetWeaponName(weapon.Type.ToString());
+            _view.SetWeaponIcon(weapon.IsReloading
+                ? weapon.HudIconReloading
+                : weapon.HudIconActive);
         }
 
         private WeaponType? ResolveWeaponTypeFromSlot(SlotWeaponType slotType)

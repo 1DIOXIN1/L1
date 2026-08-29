@@ -13,6 +13,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         private readonly WeaponFireContext _fireContext;
 
         private int _ammo;
+        private int _reserveAmmo;
         private float _nextShotTime;
         private float _reloadEndTime;
 
@@ -24,27 +25,42 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             Transform firePoint,
             GameObject owner,
             GameObject bulletPrefab = null,
-            int? initialAmmo = null)
+            int? initialAmmo = null,
+            int? initialReserveAmmo = null)
         {
             _config = config;
             _fireMode = fireMode;
             _ammo = Mathf.Clamp(initialAmmo ?? config.MagazineSize, 0, config.MagazineSize);
+            _reserveAmmo = Mathf.Max(0, initialReserveAmmo ?? config.ReserveAmmo);
             _fireContext = new WeaponFireContext(firePoint, owner, config, bulletPrefab);
         }
 
         public WeaponType Type => _config.Type;
         public int Ammo => _ammo;
+        public int ReserveAmmo => _reserveAmmo;
         public int MagazineSize => _config.MagazineSize;
+        public int ReserveCapacity => _config.ReserveAmmo;
         public bool CanShoot => IsReloading == false && _ammo > 0 && Time.time >= _nextShotTime;
-        public bool IsReloading => Time.time < _reloadEndTime;
+        public bool IsReloading => _reloadEndTime > 0f && Time.time < _reloadEndTime;
         public bool IsAutomatic => _config.IsAutomatic;
+        public Sprite HudIconActive => _config.HudIconActive;
+        public Sprite HudIconReloading => _config.HudIconReloading;
+        public GameObject ViewPrefab => _config.ViewPrefab;
+        public Vector3 ViewLocalPosition => _config.ViewLocalPosition;
+        public Vector3 ViewLocalEulerAngles => _config.ViewLocalEulerAngles;
+        public Vector3 ViewLocalScale => _config.ViewLocalScale == Vector3.zero
+            ? Vector3.one
+            : _config.ViewLocalScale;
 
         public void Tick(float deltaTime)
         {
             if (_reloadEndTime <= 0f || IsReloading)
                 return;
 
-            _ammo = MagazineSize;
+            int needed = MagazineSize - _ammo;
+            int taken = Mathf.Min(needed, _reserveAmmo);
+            _ammo += taken;
+            _reserveAmmo -= taken;
             _reloadEndTime = 0f;
             AmmoChanged?.Invoke();
         }
@@ -62,15 +78,22 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 
         public void Reload()
         {
-            if (IsReloading || _ammo == MagazineSize)
+            if (IsReloading || _ammo >= MagazineSize || _reserveAmmo <= 0)
                 return;
 
             _reloadEndTime = Time.time + _config.ReloadDuration;
+            AmmoChanged?.Invoke();
         }
 
         public void SetAmmo(int ammo)
         {
             _ammo = Mathf.Clamp(ammo, 0, MagazineSize);
+            AmmoChanged?.Invoke();
+        }
+
+        public void SetReserveAmmo(int reserveAmmo)
+        {
+            _reserveAmmo = Mathf.Max(0, reserveAmmo);
             AmmoChanged?.Invoke();
         }
     }

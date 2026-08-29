@@ -11,5 +11,6 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement
         public int Health;
         public SlotWeaponType SelectedWeaponSlot;
         public Dictionary<WeaponType, int> AmmoByWeapon;
+        public Dictionary<WeaponType, int> ReserveAmmoByWeapon;
     }
 }

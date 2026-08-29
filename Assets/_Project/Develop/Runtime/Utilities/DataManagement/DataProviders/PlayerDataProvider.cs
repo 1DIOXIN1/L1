@@ -25,7 +25,8 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
                 WalletData = InitWalletData(),
                 Health = _configsProviderService.GetConfig<PlayerConfig>().Health,
                 SelectedWeaponSlot = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>().DefaultSelectedSlot,
-                AmmoByWeapon = InitAmmoData()
+                AmmoByWeapon = InitAmmoData(),
+                ReserveAmmoByWeapon = InitReserveAmmoData()
             };
         }
 
@@ -53,6 +54,21 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
             }
 
             return ammo;
+        }
+
+        private Dictionary<WeaponType, int> InitReserveAmmoData()
+        {
+            Dictionary<WeaponType, int> reserve = new();
+            PlayerWeaponInventoryConfig inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
+            WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
+
+            foreach (PlayerWeaponInventoryConfig.StartWeaponSlot slot in inventoryConfig.Slots)
+            {
+                WeaponConfig weaponConfig = catalog.GetWeapon(slot.WeaponType);
+                reserve[slot.WeaponType] = weaponConfig.ReserveAmmo;
+            }
+
+            return reserve;
         }
     }
 }
