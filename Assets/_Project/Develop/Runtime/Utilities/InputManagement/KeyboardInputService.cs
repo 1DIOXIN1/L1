@@ -21,6 +21,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         public bool IsShootHeld { get; private set; }
         public bool IsSprintHeld { get; private set; }
+        public InputContext CurrentContext => _context;
 
         private InputContext _context = InputContext.Menu;
 
@@ -36,6 +37,23 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
                 case InputContext.Gameplay:
                     ProcessGameplayInput();
                     break;
+                case InputContext.Cutscene:
+                    ProcessCutsceneInput();
+                    break;
+            }
+        }
+
+        private void ProcessCutsceneInput()
+        {
+            IsShootHeld = false;
+            IsSprintHeld = false;
+
+            if (Input.GetKeyDown(KeyCode.Space) ||
+                Input.GetKeyDown(KeyCode.Return) ||
+                Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                Input.GetKeyDown(KeyCode.Escape))
+            {
+                ConfirmPressed?.Invoke();
             }
         }
 

@@ -21,6 +21,8 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         bool IsShootHeld { get; }
         bool IsSprintHeld { get; }
+        InputContext CurrentContext { get; }
+
         void Update(float deltaTime);
         void SetContext(InputContext context);
     }

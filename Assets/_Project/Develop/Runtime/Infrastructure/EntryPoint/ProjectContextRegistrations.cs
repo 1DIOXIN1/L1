@@ -14,6 +14,8 @@ using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataRepository;
 using _Project.Develop.Runtime.Utilities.DataManagement.KeyStorage;
 using _Project.Develop.Runtime.Utilities.DataManagement.Serializers;
+using _Project.Develop.Runtime.Cutscenes;
+using _Project.Develop.Runtime.Utilities.CutsceneManagement;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.Reactive;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
@@ -41,8 +43,19 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateViewsFactory);
             container.RegisterAsSingle(CreateResetProgressService);
             container.RegisterAsSingle<IInputService>(CreateKeyboardInputService);
+            container.RegisterAsSingle<IGameplayBlocker>(CreateGameplayBlocker);
+            container.RegisterAsSingle<ICutsceneService>(CreateCutsceneService);
             container.RegisterAsSingle<ISaveLoadService>(CreateSaveLoadService);
         }
+
+        private static IGameplayBlocker CreateGameplayBlocker(DIContainer container)
+            => new GameplayBlocker(container.Resolve<IInputService>());
+
+        private static ICutsceneService CreateCutsceneService(DIContainer container)
+            => new CutsceneService(
+                container.Resolve<IGameplayBlocker>(),
+                container.Resolve<IInputService>(),
+                container.Resolve<CoroutinesPerformer>());
 
         private static ViewsFactory CreateViewsFactory(DIContainer container)
             => new ViewsFactory(container.Resolve<ResourcesAssetsLoader>());

@@ -10,6 +10,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
     {
         [SerializeField] private Transform firePoint;
         [SerializeField] private Transform viewTransform;
+        [SerializeField] private Animator animator;
+        [SerializeField] private CharacterController characterController;
 
         private IInputService _input;
         private PlayerMotor _motor;
@@ -21,6 +23,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         public Transform FirePoint => firePoint;
         public Transform ViewTransform => viewTransform;
+        public Animator Animator => animator;
+        public CharacterController CharacterController => characterController;
         public PlayerCombatController Combat => _combat;
         public float Stamina => _motor?.Stamina ?? 0f;
         public float MaxStamina => _motor?.MaxStamina ?? 0f;

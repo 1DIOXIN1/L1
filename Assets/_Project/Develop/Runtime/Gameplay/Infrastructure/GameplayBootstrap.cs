@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
+using _Project.Develop.Runtime.Cutscenes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.UI.Gameplay;
@@ -19,6 +21,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
     {
         [SerializeField] private PlayerSpawnPoint playerSpawnPoint;
         [SerializeField] private EnemySpawnRegistry enemySpawnRegistry;
+        [SerializeField] private Bed[] beds;
 
         private DIContainer _container;
         private IInputService _input;
@@ -70,11 +73,31 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             Player player = charactersFactory.CreatePlayer(playerSpawnPoint);
             _gameplayScreenPresenter.AttachPlayer(player);
 
-            EnemySpawnService spawnService = _container.Resolve<EnemySpawnService>();
-            spawnService.SpawnFromRegistry(enemySpawnRegistry);
+            WireCutscenes(player);
+
+            if (enemySpawnRegistry != null)
+            {
+                EnemySpawnService spawnService = _container.Resolve<EnemySpawnService>();
+                spawnService.SpawnFromRegistry(enemySpawnRegistry);
+            }
 
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
             _isRunning = true;
+        }
+
+        private void WireCutscenes(Player player)
+        {
+            ICutsceneService cutscenes = _container.Resolve<ICutsceneService>();
+            cutscenes.SetPlayerBinding(player.Animator);
+
+            if (beds == null)
+                return;
+
+            for (int i = 0; i < beds.Length; i++)
+            {
+                if (beds[i] != null)
+                    beds[i].Construct(cutscenes, player);
+            }
         }
     }
 }
