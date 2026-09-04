@@ -8,5 +8,6 @@ namespace _Project.Develop.Runtime.UI.Core
         public const string ProgressItem = nameof(ProgressItem);
         public const string ResetProgressPopup = nameof(ResetProgressPopup);
         public const string EnemyDetectionIcon = nameof(EnemyDetectionIcon);
+        public const string InteractionPrompt = nameof(InteractionPrompt);
     }
 }

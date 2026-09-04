@@ -9,9 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 301965de1f8b2d94084c3815ca91f8fc, type: 3}
-  m_Name: BedSleepCutscene
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f64789a0b1c2d3e4f50617, type: 3}
+  m_Name: InteractionConfig
   m_EditorClassIdentifier: 
-  id: Sleep
-  timeline: {fileID: 11400000, guid: f01db7ca72fba724d9706fd1e6e68224, type: 2}
-  bindings: []
+  maxDistance: 6
+  maxScreenRadius: 0.307
+  checkOcclusion: 1
+  occlusionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295

@@ -8,6 +8,7 @@ using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
 {
@@ -51,7 +52,7 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
             _playerBinding = binding;
         }
 
-        public Task Play(string id)
+        public Task Play(string id, Transform spaceOrigin = null)
         {
             if (IsPlaying)
                 return Task.CompletedTask;
@@ -63,7 +64,7 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
                 throw new InvalidOperationException($"Cutscene '{id}' has no timeline.");
 
             _playCompletion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            _coroutines.StartPerform(PlayRoutine(config));
+            _coroutines.StartPerform(PlayRoutine(config, spaceOrigin));
             return _playCompletion.Task;
         }
 
@@ -77,18 +78,23 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
             _director.Stop();
         }
 
-        private IEnumerator PlayRoutine(CutsceneConfig config)
+        private IEnumerator PlayRoutine(CutsceneConfig config, Transform spaceOrigin)
         {
             IsPlaying = true;
             IDisposable gameplayLock = _gameplayBlocker.Block();
             bool stopped = false;
+            List<AnimationTrackOffsetState> offsetStates = null;
 
             Action<PlayableDirector> onStopped = _ => stopped = true;
 
             try
             {
-                _director = CreateDirector(config);
+                _director = CreateDirector(config, spaceOrigin);
                 ApplyBindings(_director, config, _playerBinding);
+
+                if (spaceOrigin != null)
+                    offsetStates = ApplyAnimationSpaceOrigin(config.Timeline, spaceOrigin);
+
                 _director.RebuildGraph();
                 _director.time = 0d;
                 _director.Evaluate();
@@ -105,6 +111,8 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
             }
             finally
             {
+                RestoreAnimationSpaceOrigins(offsetStates);
+
                 if (_director != null)
                 {
                     _director.stopped -= onStopped;
@@ -125,9 +133,12 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
                 Skip();
         }
 
-        private static PlayableDirector CreateDirector(CutsceneConfig config)
+        private static PlayableDirector CreateDirector(CutsceneConfig config, Transform spaceOrigin)
         {
             GameObject gameObject = new GameObject($"Cutscene_{config.Id}");
+            if (spaceOrigin != null)
+                gameObject.transform.SetPositionAndRotation(spaceOrigin.position, spaceOrigin.rotation);
+
             PlayableDirector director = gameObject.AddComponent<PlayableDirector>();
             director.playOnAwake = false;
             director.extrapolationMode = DirectorWrapMode.None;
@@ -170,6 +181,73 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
                         director.SetGenericBinding(output.sourceObject, binding.Target);
                 }
             }
+        }
+
+        private static List<AnimationTrackOffsetState> ApplyAnimationSpaceOrigin(
+            PlayableAsset playableAsset,
+            Transform spaceOrigin)
+        {
+            if (playableAsset is not TimelineAsset timeline)
+                return null;
+
+            List<AnimationTrackOffsetState> states = new();
+
+            foreach (TrackAsset track in timeline.GetOutputTracks())
+            {
+                if (track is not AnimationTrack animationTrack)
+                    continue;
+
+                states.Add(new AnimationTrackOffsetState(
+                    animationTrack,
+                    animationTrack.trackOffset,
+                    animationTrack.position,
+                    animationTrack.eulerAngles));
+
+                // Root position/rotation clips are evaluated relative to these offsets.
+                // Without this, Remove Start Offset plays from world (0,0,0).
+                animationTrack.trackOffset = TrackOffset.ApplyTransformOffsets;
+                animationTrack.position = spaceOrigin.position;
+                animationTrack.eulerAngles = spaceOrigin.rotation.eulerAngles;
+            }
+
+            return states.Count > 0 ? states : null;
+        }
+
+        private static void RestoreAnimationSpaceOrigins(List<AnimationTrackOffsetState> states)
+        {
+            if (states == null)
+                return;
+
+            for (int i = 0; i < states.Count; i++)
+            {
+                AnimationTrackOffsetState state = states[i];
+                if (state.Track == null)
+                    continue;
+
+                state.Track.trackOffset = state.TrackOffset;
+                state.Track.position = state.Position;
+                state.Track.eulerAngles = state.EulerAngles;
+            }
+        }
+
+        private readonly struct AnimationTrackOffsetState
+        {
+            public AnimationTrackOffsetState(
+                AnimationTrack track,
+                TrackOffset trackOffset,
+                Vector3 position,
+                Vector3 eulerAngles)
+            {
+                Track = track;
+                TrackOffset = trackOffset;
+                Position = position;
+                EulerAngles = eulerAngles;
+            }
+
+            public AnimationTrack Track { get; }
+            public TrackOffset TrackOffset { get; }
+            public Vector3 Position { get; }
+            public Vector3 EulerAngles { get; }
         }
     }
 }

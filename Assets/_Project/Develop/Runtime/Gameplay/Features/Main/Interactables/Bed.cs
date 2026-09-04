@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 {
-    [RequireComponent(typeof(Collider))]
-    public sealed class Bed : MonoBehaviour
+    public sealed class Bed : Interactable
     {
         [SerializeField] private CutsceneConfig cutscene;
         [SerializeField] private Transform sleepPoint;
@@ -16,24 +15,27 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
         private Player _player;
         private bool _used;
 
-        public void Construct(ICutsceneService cutscenes, Player player)
+        public override void Construct(InteractionSetup setup)
         {
-            _cutscenes = cutscenes;
-            _player = player;
+            _cutscenes = setup.Cutscenes;
+            _player = setup.Player;
 
             if (cutscene != null)
                 _cutscenes.Register(cutscene);
         }
 
-        private void OnTriggerEnter(Collider other)
+        public override bool CanInteract()
         {
-            if (_used || _cutscenes == null || _player == null || cutscene == null)
-                return;
+            return _used == false
+                   && _cutscenes != null
+                   && _player != null
+                   && cutscene != null
+                   && _cutscenes.IsPlaying == false;
+        }
 
-            if (_cutscenes.IsPlaying)
-                return;
-
-            if (IsPlayerCollider(other) == false)
+        public override void Interact()
+        {
+            if (CanInteract() == false)
                 return;
 
             _used = true;
@@ -54,7 +56,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
             {
                 Transform point = sleepPoint != null ? sleepPoint : transform;
                 _player.transform.SetPositionAndRotation(point.position, point.rotation);
-                await _cutscenes.Play(cutscene.Id);
+                await _cutscenes.Play(cutscene.Id, point);
             }
             finally
             {
@@ -64,12 +66,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
                 if (_player != null)
                     _player.SetControlMode(previousMode);
             }
-        }
-
-        private bool IsPlayerCollider(Collider other)
-        {
-            Transform root = _player.transform;
-            return other.transform == root || other.transform.IsChildOf(root);
         }
     }
 }

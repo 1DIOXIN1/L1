@@ -21,10 +21,11 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
     {
         [SerializeField] private PlayerSpawnPoint playerSpawnPoint;
         [SerializeField] private EnemySpawnRegistry enemySpawnRegistry;
-        [SerializeField] private Bed[] beds;
+        [SerializeField] private InteractableRegistry interactableRegistry;
 
         private DIContainer _container;
         private IInputService _input;
+        private InteractionService _interactionService;
         private GameplayInputArgs _gameplayInputArgs;
         private GameplayScreenPresenter _gameplayScreenPresenter;
         private bool _isRunning;
@@ -60,6 +61,16 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _gameplayScreenPresenter?.Tick();
         }
 
+        public void LateUpdate()
+        {
+            if (_isRunning == false)
+                return;
+
+            // After Cinemachine updates the look camera.
+            _interactionService?.Tick();
+            _gameplayScreenPresenter?.TickInteraction();
+        }
+
         public override void Run()
         {
             Cursor.visible = false;
@@ -73,7 +84,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             Player player = charactersFactory.CreatePlayer(playerSpawnPoint);
             _gameplayScreenPresenter.AttachPlayer(player);
 
-            WireCutscenes(player);
+            WireInteractions(player);
 
             if (enemySpawnRegistry != null)
             {
@@ -85,19 +96,29 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _isRunning = true;
         }
 
-        private void WireCutscenes(Player player)
+        private void WireInteractions(Player player)
         {
             ICutsceneService cutscenes = _container.Resolve<ICutsceneService>();
             cutscenes.SetPlayerBinding(player.Animator);
 
-            if (beds == null)
+            _interactionService = _container.Resolve<InteractionService>();
+            _interactionService.BindPlayer(player);
+
+            if (interactableRegistry == null)
                 return;
 
-            for (int i = 0; i < beds.Length; i++)
+            InteractionSetup setup = new InteractionSetup(cutscenes, player);
+            var interactables = interactableRegistry.Interactables;
+            for (int i = 0; i < interactables.Count; i++)
             {
-                if (beds[i] != null)
-                    beds[i].Construct(cutscenes, player);
+                Interactable interactable = interactables[i];
+                if (interactable == null)
+                    continue;
+
+                interactable.Construct(setup);
             }
+
+            _interactionService.RegisterFrom(interactableRegistry);
         }
     }
 }

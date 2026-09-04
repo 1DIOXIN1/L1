@@ -10,6 +10,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
     {
         [SerializeField] private Transform firePoint;
         [SerializeField] private Transform viewTransform;
+        [SerializeField] private Camera lookCamera;
         [SerializeField] private Animator animator;
         [SerializeField] private CharacterController characterController;
 
@@ -23,6 +24,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         public Transform FirePoint => firePoint;
         public Transform ViewTransform => viewTransform;
+        public Camera LookCamera => lookCamera;
         public Animator Animator => animator;
         public CharacterController CharacterController => characterController;
         public PlayerCombatController Combat => _combat;

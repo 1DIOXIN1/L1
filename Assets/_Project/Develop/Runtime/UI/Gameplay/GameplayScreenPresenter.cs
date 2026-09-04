@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
+using _Project.Develop.Runtime.UI.Gameplay.Interaction;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -14,6 +15,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         private PlayerVitalsPresenter _vitalsPresenter;
         private WeaponHudPresenter _weaponHudPresenter;
         private EnemyDetectionIconsPresenter _detectionIconsPresenter;
+        private InteractionPromptPresenter _interactionPromptPresenter;
 
         public GameplayScreenPresenter(GameplayScreenView view, GameplayPresentersFactory presentersFactory)
         {
@@ -39,12 +41,24 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         {
             _vitalsPresenter?.AttachPlayer(player);
             _weaponHudPresenter?.AttachPlayer(player);
+
+            if (_interactionPromptPresenter != null || player == null)
+                return;
+
+            _interactionPromptPresenter = _presentersFactory.CreateInteractionPromptPresenter(player);
+            _interactionPromptPresenter.Initialize();
+            _childPresenters.Add(_interactionPromptPresenter);
         }
 
         public void Tick()
         {
             _vitalsPresenter?.Tick();
             _detectionIconsPresenter?.Tick();
+        }
+
+        public void TickInteraction()
+        {
+            _interactionPromptPresenter?.Tick();
         }
 
         public void Dispose()
@@ -56,6 +70,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _vitalsPresenter = null;
             _weaponHudPresenter = null;
             _detectionIconsPresenter = null;
+            _interactionPromptPresenter = null;
         }
     }
 }

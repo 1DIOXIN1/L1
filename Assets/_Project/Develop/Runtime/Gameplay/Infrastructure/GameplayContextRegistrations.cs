@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
+using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors;
@@ -6,6 +7,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
@@ -42,6 +44,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGadgetFactory);
             container.RegisterAsSingle(CreatePlayerWeaponInventory);
             container.RegisterAsSingle(CreatePlayerGadgetInventory);
+            container.RegisterAsSingle(CreateInteractionService);
         }
 
         private static GameMode CreateGameMode(DIContainer container)
@@ -49,7 +52,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             EnemyAIService enemyAIService = container.Resolve<EnemyAIService>();
             return new GameMode(enemyAIService);
         }
-        
+
         private static GameplayCycle CreateGameplayCycle(DIContainer container)
         {
             GameMode gameMode = container.Resolve<GameMode>();
@@ -76,7 +79,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         {
             ResourcesAssetsLoader assetsLoader = container.Resolve<ResourcesAssetsLoader>();
             GameplayUIRoot gameplayUIRoot = assetsLoader.Load<GameplayUIRoot>("UI/Gameplay/GameplayUIRoot");
-            
+
             return Object.Instantiate(gameplayUIRoot);
         }
 
@@ -85,13 +88,13 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             GameplayUIRoot uiRoot = container.Resolve<GameplayUIRoot>();
             GameplayScreenView screenView = container.Resolve<ViewsFactory>().Create<GameplayScreenView>(ViewIDs.GameplayScreen, uiRoot.HUDLayer);
             GameplayPresentersFactory presentersFactory = container.Resolve<GameplayPresentersFactory>();
-            
+
             return new GameplayScreenPresenter(screenView, presentersFactory);
         }
-    
+
         private static GameplayPresentersFactory CreateGameplayPresentersFactory(DIContainer container)
             => new GameplayPresentersFactory(container);
-        
+
         private static CharactersFactory CreateCharactersFactory(DIContainer container)
             => new CharactersFactory(container);
 
@@ -113,7 +116,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private static FireModeRegistry CreateFireModeRegistry(DIContainer container)
             => new FireModeRegistry();
 
-        private static WeaponFactory CreateWeaponFactory(DIContainer container) 
+        private static WeaponFactory CreateWeaponFactory(DIContainer container)
             => new WeaponFactory(container);
 
         private static GadgetFactory CreateGadgetFactory(DIContainer container)
@@ -134,6 +137,14 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             GadgetFactory factory = container.Resolve<GadgetFactory>();
 
             return new PlayerGadgetInventory(configsProviderService, factory);
+        }
+
+        private static InteractionService CreateInteractionService(DIContainer container)
+        {
+            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
+            return new InteractionService(
+                container.Resolve<IInputService>(),
+                configsProviderService.GetConfig<InteractionConfig>());
         }
     }
 }

@@ -17,7 +17,8 @@ namespace _Project.Develop.Runtime.UI.Core
             {ViewIDs.ResetProgressPopup, "UI/Progress/ResetProgressPopup"},
             {ViewIDs.ProgressItem, "UI/Progress/ProgressItemView"},
             {ViewIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView"},
-            {ViewIDs.EnemyDetectionIcon, "UI/Gameplay/EnemyDetectionIconView"}
+            {ViewIDs.EnemyDetectionIcon, "UI/Gameplay/EnemyDetectionIconView"},
+            {ViewIDs.InteractionPrompt, "UI/Gameplay/InteractionPromptView"}
         };
 
         public ViewsFactory(ResourcesAssetsLoader resourcesAssetsLoader)

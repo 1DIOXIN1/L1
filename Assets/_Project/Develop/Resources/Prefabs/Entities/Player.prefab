@@ -130,6 +130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   firePoint: {fileID: 1412915281115785652}
   viewTransform: {fileID: 6443343822688214550}
+  lookCamera: {fileID: 6373348865010975671}
   animator: {fileID: 3692239660002739571}
   characterController: {fileID: 5714541808703224751}
 --- !u!136 &3692239660002739570

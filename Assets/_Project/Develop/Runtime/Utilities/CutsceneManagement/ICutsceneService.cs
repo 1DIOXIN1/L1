@@ -10,9 +10,13 @@ namespace _Project.Develop.Runtime.Cutscenes
 
         void Register(CutsceneConfig config);
 
-        void SetPlayerBinding(Object binding);
+        void SetPlayerBinding(UnityEngine.Object binding);
 
-        Task Play(string id);
+        /// <param name="spaceOrigin">
+        /// World space origin for Animation Track root motion/position.
+        /// Use the cutscene start point so recorded root animation plays from there, not from (0,0,0).
+        /// </param>
+        Task Play(string id, Transform spaceOrigin = null);
 
         void Skip();
     }

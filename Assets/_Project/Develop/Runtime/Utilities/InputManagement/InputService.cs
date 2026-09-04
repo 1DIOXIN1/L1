@@ -8,6 +8,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action SelectFirstMode;
         event Action SelectSecondMode;
         event Action ConfirmPressed;
+        event Action InteractPressed;
         event Action ResetPressed;
         event Action<char> CharEntered;
         event Action<Vector3> Move;

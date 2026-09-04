@@ -10,6 +10,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action SelectFirstMode;
         public event Action SelectSecondMode;
         public event Action ConfirmPressed;
+        public event Action InteractPressed;
         public event Action<Vector3> Move;
         public event Action Shoot;
         public event Action Reload;
@@ -107,6 +108,9 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
             if (Input.GetKeyDown(KeyCode.G))
                 UseGadget?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.F))
+                InteractPressed?.Invoke();
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 ConfirmPressed?.Invoke();

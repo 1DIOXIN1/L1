@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 namespace _Project.Develop.Runtime.Configs.Core.Gameplay
 {
@@ -10,7 +11,7 @@ namespace _Project.Develop.Runtime.Configs.Core.Gameplay
     public sealed class CutsceneConfig : ScriptableObject
     {
         [SerializeField] private string id;
-        [SerializeField] private PlayableAsset timeline;
+        [SerializeField] private TimelineAsset timeline;
         [SerializeField] private CutsceneBinding[] bindings;
 
         public string Id => id;
