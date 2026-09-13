@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 324364010111466592}
   - component: {fileID: 11400001}
   - component: {fileID: 19500003}
+  - component: {fileID: 7512376257746741969}
   m_Layer: 0
   m_Name: Cooker
   m_TagString: Untagged
@@ -46,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0ffe001aabb0022334455667788abcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 7512376257746741969}
   flameParticles: {fileID: 1952733237466308718, guid: f33ff9edfe9bcc8418a4b3c126d59e81, type: 3}
 --- !u!195 &19500003
 NavMeshAgent:
@@ -69,6 +71,27 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!95 &7512376257746741969
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8076757054092318504}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a1b7986485665a2498a72e25329438f5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &8691318019883765425
 PrefabInstance:
   m_ObjectHideFlags: 0

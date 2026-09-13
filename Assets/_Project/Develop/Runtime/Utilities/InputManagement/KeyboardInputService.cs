@@ -22,6 +22,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         public bool IsShootHeld { get; private set; }
         public bool IsSprintHeld { get; private set; }
+        public Vector2 LookDelta { get; private set; }
         public InputContext CurrentContext => _context;
 
         private InputContext _context = InputContext.Menu;
@@ -41,13 +42,15 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
                 case InputContext.Cutscene:
                     ProcessCutsceneInput();
                     break;
+                default:
+                    ClearGameplayAxes();
+                    break;
             }
         }
 
         private void ProcessCutsceneInput()
         {
-            IsShootHeld = false;
-            IsSprintHeld = false;
+            ClearGameplayAxes();
 
             if (Input.GetKeyDown(KeyCode.Space) ||
                 Input.GetKeyDown(KeyCode.Return) ||
@@ -60,8 +63,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         private void ProcessMenuInput()
         {
-            IsShootHeld = false;
-            IsSprintHeld = false;
+            ClearGameplayAxes();
 
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 ConfirmPressed?.Invoke();
@@ -81,6 +83,8 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         private void ProcessGameplayInput()
         {
+            LookDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+
             Vector3 direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
             Move?.Invoke(direction);
 
@@ -114,6 +118,13 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 ConfirmPressed?.Invoke();
+        }
+
+        private void ClearGameplayAxes()
+        {
+            IsShootHeld = false;
+            IsSprintHeld = false;
+            LookDelta = Vector2.zero;
         }
     }
 }

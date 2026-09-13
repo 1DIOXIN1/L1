@@ -11,31 +11,33 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
     {
         private readonly IInputService _input;
         private readonly InteractionConfig _config;
-        private readonly List<Interactable> _interactables = new();
+        private readonly List<IInteractable> _interactables = new();
 
         private Player _player;
-        private Interactable _currentFocus;
+        private PlayerCamera _playerCamera;
+        private IInteractable _currentFocus;
 
-        public event Action<Interactable> FocusChanged;
+        public event Action<IInteractable> FocusChanged;
 
         public InteractionService(IInputService input, InteractionConfig config)
         {
-            _input = input;
-            _config = config;
+            _input = input ?? throw new ArgumentNullException(nameof(input));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
             _input.InteractPressed += OnInteractPressed;
         }
 
-        public Interactable CurrentFocus => _currentFocus;
+        public IInteractable CurrentFocus => _currentFocus;
 
-        public void BindPlayer(Player player)
+        public void BindPlayer(Player player, PlayerCamera playerCamera)
         {
-            _player = player;
+            _player = player ?? throw new ArgumentNullException(nameof(player));
+            _playerCamera = playerCamera ?? throw new ArgumentNullException(nameof(playerCamera));
             ClearFocus();
         }
 
-        public void Register(Interactable interactable)
+        public void Register(IInteractable interactable)
         {
-            if (interactable == null || _interactables.Contains(interactable))
+            if (_interactables.Contains(interactable))
                 return;
 
             _interactables.Add(interactable);
@@ -43,9 +45,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         public void RegisterFrom(InteractableRegistry registry)
         {
-            if (registry == null)
-                return;
-
             IReadOnlyList<Interactable> interactables = registry.Interactables;
             for (int i = 0; i < interactables.Count; i++)
                 Register(interactables[i]);
@@ -58,16 +57,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         private void UpdateFocus()
         {
-            Interactable best = FindBestInteractable();
-            SetFocus(best);
+            SetFocus(FindBestInteractable());
         }
 
-        private Interactable FindBestInteractable()
+        private IInteractable FindBestInteractable()
         {
-            if (_player == null || _player.IsControlLocked || _config == null)
+            if (_player.IsControlLocked)
                 return null;
 
-            Camera lookCamera = _player.LookCamera;
+            Camera lookCamera = _playerCamera.LookCamera;
             if (lookCamera == null || lookCamera.isActiveAndEnabled == false)
                 return null;
 
@@ -76,21 +74,18 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
             float maxDistanceSqr = _config.MaxDistanceSqr;
             float maxScreenRadiusSqr = _config.MaxScreenRadiusSqr;
 
-            Interactable best = null;
+            IInteractable best = null;
             float bestScreenDistSqr = float.MaxValue;
             float bestDistanceSqr = float.MaxValue;
             int bestPriority = int.MinValue;
 
             for (int i = 0; i < _interactables.Count; i++)
             {
-                Interactable interactable = _interactables[i];
-                if (interactable == null || interactable.isActiveAndEnabled == false)
+                IInteractable interactable = _interactables[i];
+                if (interactable.IsAvailable == false || interactable.CanInteract() == false)
                     continue;
 
-                if (interactable.CanInteract() == false)
-                    continue;
-
-                Vector3 target = interactable.PromptAnchor.position;
+                Vector3 target = interactable.HintAnchor.position;
                 Vector3 toTarget = target - origin;
                 float distanceSqr = toTarget.sqrMagnitude;
                 if (distanceSqr > maxDistanceSqr || distanceSqr < 0.0001f)
@@ -104,7 +99,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
                 if (screenDistSqr > maxScreenRadiusSqr)
                     continue;
 
-                if (_config.CheckOcclusion && IsOccluded(origin, target, interactable))
+                if (_config.CheckOcclusion && IsOccluded(origin, target, interactable.HierarchyRoot))
                     continue;
 
                 int priority = interactable.Priority;
@@ -149,7 +144,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
             return distanceSqr < bestDistanceSqr;
         }
 
-        private bool IsOccluded(Vector3 origin, Vector3 target, Interactable interactable)
+        private bool IsOccluded(Vector3 origin, Vector3 target, Transform hierarchyRoot)
         {
             if (Physics.Linecast(
                     origin,
@@ -165,7 +160,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
             if (BelongsToHierarchy(_player.transform, hitTransform))
                 return false;
 
-            if (BelongsToHierarchy(interactable.transform, hitTransform))
+            if (BelongsToHierarchy(hierarchyRoot, hitTransform))
                 return false;
 
             return true;
@@ -173,15 +168,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         private static bool BelongsToHierarchy(Transform root, Transform hit)
         {
-            if (root == null || hit == null)
-                return false;
-
             return hit == root
                    || hit.IsChildOf(root)
                    || root.IsChildOf(hit);
         }
 
-        private void SetFocus(Interactable focus)
+        private void SetFocus(IInteractable focus)
         {
             if (_currentFocus == focus)
                 return;
@@ -197,7 +189,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         private void OnInteractPressed()
         {
-            if (_player == null || _player.IsControlLocked)
+            if (_player.IsControlLocked)
                 return;
 
             if (_currentFocus == null || _currentFocus.CanInteract() == false)

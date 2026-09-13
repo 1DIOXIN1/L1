@@ -14,3 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Health>k__BackingField: 100
   <Speed>k__BackingField: 4
+  <SprintSpeedMultiplier>k__BackingField: 1.5
+  <CrouchSpeedMultiplier>k__BackingField: 0.5
+  <JumpHeight>k__BackingField: 1.5
+  <Gravity>k__BackingField: -20
+  <MaxStamina>k__BackingField: 100
+  <SprintStaminaSpendPerSecond>k__BackingField: 25
+  <StaminaRecoveryPerSecond>k__BackingField: 18
+  <StaminaRecoveryDelay>k__BackingField: 1
+  <StandingHeight>k__BackingField: 2
+  <CrouchHeight>k__BackingField: 1
+  <RotationSpeed>k__BackingField: 12
+  <GroundSnapDistance>k__BackingField: 5
+  <LookSensitivity>k__BackingField: 2
+  <MinPitch>k__BackingField: -70
+  <MaxPitch>k__BackingField: 70

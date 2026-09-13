@@ -13,15 +13,20 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
     [RequireComponent(typeof(NavMeshAgent))]
     public abstract class EnemyBase : Character
     {
+        [SerializeField] private Animator animator;
+
         private EnemyContext _context;
         private EnemyAttackBehaviorFactory _attackBehaviorFactory;
         private IEnemyAttackBehavior[] _attackBehaviors = Array.Empty<IEnemyAttackBehavior>();
         private IEnemyAttackBehavior _activeAttackBehavior;
         private bool _isInitialized;
+        private bool _isGameplaySuspended;
 
         public EnemyStateMachine StateMachine { get; private set; }
         public bool IsAlive => IsDead == false;
         public EnemyContext Context => _context;
+        public bool IsGameplaySuspended => _isGameplaySuspended;
+        public Animator Animator => animator;
         protected abstract EnemyType Type { get; }
 
         public void Initialize(
@@ -248,6 +253,29 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 _context.Agent.ResetPath();
         }
 
+        public void SetGameplaySuspended(bool suspended)
+        {
+            _isGameplaySuspended = suspended;
+
+            if (suspended)
+            {
+                StopAgent();
+                ResetCombat();
+            }
+            else if (_context?.Agent != null)
+            {
+                _context.Agent.isStopped = false;
+            }
+        }
+
+        public void ExecuteStealthKill()
+        {
+            if (IsDead)
+                return;
+
+            TakeDamage(CurrentHealth);
+        }
+
         public void RotateTowards(Vector3 direction, float deltaTime)
         {
             direction.y = 0f;
@@ -352,7 +380,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         private void Update()
         {
-            if (_isInitialized == false || IsDead)
+            if (_isInitialized == false || IsDead || _isGameplaySuspended)
                 return;
 
             StateMachine.Tick(Time.deltaTime);

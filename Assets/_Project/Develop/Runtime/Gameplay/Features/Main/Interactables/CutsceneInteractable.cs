@@ -6,10 +6,10 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 {
-    public sealed class Bed : Interactable
+    public sealed class CutsceneInteractable : Interactable
     {
         [SerializeField] private CutsceneConfig cutscene;
-        [SerializeField] private Transform sleepPoint;
+        [SerializeField] private Transform playPoint;
 
         private ICutsceneService _cutscenes;
         private Player _player;
@@ -54,7 +54,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
             try
             {
-                Transform point = sleepPoint != null ? sleepPoint : transform;
+                Transform point = playPoint != null ? playPoint : transform;
                 _player.transform.SetPositionAndRotation(point.position, point.rotation);
                 await _cutscenes.Play(cutscene.Id, point);
             }

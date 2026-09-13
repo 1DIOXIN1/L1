@@ -19,5 +19,8 @@ namespace _Project.Develop.Runtime.Configs.Meta.Characters.Player
         [field: SerializeField] public float CrouchHeight { get; private set; } = 1f;
         [field: SerializeField] public float RotationSpeed { get; private set; } = 12f;
         [field: SerializeField] public float GroundSnapDistance { get; private set; } = 5f;
+        [field: SerializeField] public float LookSensitivity { get; private set; } = 2f;
+        [field: SerializeField] public float MinPitch { get; private set; } = -70f;
+        [field: SerializeField] public float MaxPitch { get; private set; } = 70f;
     }
 }

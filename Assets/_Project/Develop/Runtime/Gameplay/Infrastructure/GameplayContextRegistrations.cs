@@ -9,6 +9,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Stealth;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Infrastructure.DI;
@@ -45,7 +46,22 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreatePlayerWeaponInventory);
             container.RegisterAsSingle(CreatePlayerGadgetInventory);
             container.RegisterAsSingle(CreateInteractionService);
+            container.RegisterAsSingle(CreateStealthKillPresentationFactory);
+            container.RegisterAsSingle(CreateStealthKillService);
         }
+
+        private static StealthKillService CreateStealthKillService(DIContainer container)
+        {
+            return new StealthKillService(
+                container.Resolve<ConfigsProviderService>().GetConfig<StealthKillConfig>(),
+                container.Resolve<StealthKillPresentationFactory>(),
+                container.Resolve<CoroutinesPerformer>(),
+                container.Resolve<GameplayScreenPresenter>(),
+                container.Resolve<CharactersFactory>());
+        }
+
+        private static StealthKillPresentationFactory CreateStealthKillPresentationFactory(DIContainer container)
+            => new StealthKillPresentationFactory(container.Resolve<ResourcesAssetsLoader>());
 
         private static GameMode CreateGameMode(DIContainer container)
         {
@@ -111,7 +127,10 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             => new EnemyAttackBehaviorFactory();
 
         private static EnemySpawnService CreateEnemySpawnService(DIContainer container)
-            => new EnemySpawnService(container.Resolve<CharactersFactory>());
+            => new EnemySpawnService(
+                container.Resolve<CharactersFactory>(),
+                container.Resolve<StealthKillService>(),
+                container.Resolve<InteractionService>());
 
         private static FireModeRegistry CreateFireModeRegistry(DIContainer container)
             => new FireModeRegistry();

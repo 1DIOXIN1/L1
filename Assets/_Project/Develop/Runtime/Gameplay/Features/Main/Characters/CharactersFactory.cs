@@ -33,6 +33,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
         private readonly NoiseService _noiseService;
 
         private Transform _playerTransform;
+        private PlayerCamera _playerCamera;
 
         public CharactersFactory(DIContainer container)
         {
@@ -47,6 +48,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             _noiseService = _container.Resolve<NoiseService>();
         }
 
+        public PlayerCamera PlayerCamera => _playerCamera;
+
         public Player CreatePlayer(PlayerSpawnPoint spawnPoint)
         {
             if (spawnPoint == null)
@@ -58,8 +61,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             GameObject instance = Object.Instantiate(playerPrefab, spawnPoint.Position, spawnPoint.Rotation);
 
             Player player = instance.GetComponent<Player>();
+            _playerCamera = instance.GetComponent<PlayerCamera>();
             CharacterController characterController = instance.GetComponent<CharacterController>();
             _playerTransform = instance.transform;
+
+            if (_playerCamera == null)
+                throw new InvalidOperationException("Player prefab is missing PlayerCamera.");
 
             var inventoryBuilder = _container.Resolve<PlayerWeaponInventory>();
             var inventory = inventoryBuilder.CreatePlayerWeaponInventory(_playerTransform, player.FirePoint, instance);
@@ -70,6 +77,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             var combat = new PlayerCombatController(inventory, gadgetInventory);
             var noiseEmitter = new PlayerNoiseEmitter(motor, _playerTransform, _noiseService, noiseConfig);
             var gameMode = _container.Resolve<GameMode>();
+
+            if (player.Animator != null)
+            {
+                player.Animator.runtimeAnimatorController = null;
+                player.Animator.enabled = false;
+            }
+
+            _playerCamera.Bind(player, _input, playerConfig);
 
             player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health, noiseEmitter);
 

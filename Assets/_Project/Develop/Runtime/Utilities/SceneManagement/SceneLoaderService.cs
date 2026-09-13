@@ -9,15 +9,23 @@ namespace _Project.Develop.Runtime.Utilities.SceneManagement
         public IEnumerator LoadAsync(string sceneName, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
         {
             AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+            if (operation == null)
+                throw new System.InvalidOperationException(
+                    $"Failed to load scene '{sceneName}'. Check Build Settings.");
 
-            yield return new WaitWhile(() => operation.isDone == false);
+            while (operation.isDone == false)
+                yield return null;
         }
-        
+
         public IEnumerator UnloadAsync(string sceneName)
         {
             AsyncOperation operation = SceneManager.UnloadSceneAsync(sceneName);
+            if (operation == null)
+                throw new System.InvalidOperationException(
+                    $"Failed to unload scene '{sceneName}'.");
 
-            yield return new WaitWhile(() => operation.isDone == false);
+            while (operation.isDone == false)
+                yield return null;
         }
     }
 }

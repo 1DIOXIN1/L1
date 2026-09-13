@@ -54,26 +54,26 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             EnemyAwareness awareness,
             EnemyDetectionIconView view,
             Transform followTarget,
-            Transform player,
-            float heightOffset)
+            float heightOffset,
+            Camera camera)
         {
             return new EnemyDetectionIconPresenter(
                 awareness,
                 view,
                 followTarget,
-                player,
-                heightOffset);
+                heightOffset,
+                camera);
         }
 
-        public InteractionPromptPresenter CreateInteractionPromptPresenter(Player player)
+        public InteractionHintPresenter CreateInteractionHintPresenter(PlayerCamera playerCamera)
         {
-            InteractionPromptView view =
-                _container.Resolve<ViewsFactory>().Create<InteractionPromptView>(ViewIDs.InteractionPrompt);
+            InteractionHintView view =
+                _container.Resolve<ViewsFactory>().Create<InteractionHintView>(ViewIDs.InteractionHint);
 
-            return new InteractionPromptPresenter(
+            return new InteractionHintPresenter(
                 _container.Resolve<InteractionService>(),
                 view,
-                player);
+                playerCamera);
         }
     }
 }

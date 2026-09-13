@@ -17,6 +17,7 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
+    [DefaultExecutionOrder(-100)]
     public class GameplayBootstrap : SceneBootstrap
     {
         [SerializeField] private PlayerSpawnPoint playerSpawnPoint;
@@ -82,27 +83,28 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             CharactersFactory charactersFactory = _container.Resolve<CharactersFactory>();
             Player player = charactersFactory.CreatePlayer(playerSpawnPoint);
-            _gameplayScreenPresenter.AttachPlayer(player);
+            PlayerCamera playerCamera = charactersFactory.PlayerCamera;
+            _gameplayScreenPresenter.AttachPlayer(player, playerCamera);
 
-            WireInteractions(player);
+            WireInteractions(player, playerCamera);
 
             if (enemySpawnRegistry != null)
             {
                 EnemySpawnService spawnService = _container.Resolve<EnemySpawnService>();
-                spawnService.SpawnFromRegistry(enemySpawnRegistry);
+                spawnService.SpawnFromRegistry(enemySpawnRegistry, player);
             }
 
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
             _isRunning = true;
         }
 
-        private void WireInteractions(Player player)
+        private void WireInteractions(Player player, PlayerCamera playerCamera)
         {
             ICutsceneService cutscenes = _container.Resolve<ICutsceneService>();
             cutscenes.SetPlayerBinding(player.Animator);
 
             _interactionService = _container.Resolve<InteractionService>();
-            _interactionService.BindPlayer(player);
+            _interactionService.BindPlayer(player, playerCamera);
 
             if (interactableRegistry == null)
                 return;

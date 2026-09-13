@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
 using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Progress;
@@ -108,9 +109,14 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
                 return;
 
             _isSwitchingScene = true;
-            _coroutinesPerformer.StartPerform(
-                _sceneSwitcherService.ProcessSwitchTo(Scenes.GamePlay, _gameplayInputArgs));
+            _coroutinesPerformer.StartPerform(RestartGameplay());
             _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
+        }
+
+        private IEnumerator RestartGameplay()
+        {
+            yield return null;
+            yield return _sceneSwitcherService.ProcessSwitchTo(Scenes.GamePlay, _gameplayInputArgs);
         }
 
         private void CaptureAndSavePlayerState()

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c4e2a91f8d4e6a9c0d1e2f3a4b5c6d, type: 3}
   m_Name: NoiseConfig
   m_EditorClassIdentifier: 
-  <WalkHearingRadius>k__BackingField: 8
+  <WalkHearingRadius>k__BackingField: 0
   <WalkSuspicion>k__BackingField: 0.35
   <WalkEmitInterval>k__BackingField: 0.45
-  <RunHearingRadius>k__BackingField: 16
+  <RunHearingRadius>k__BackingField: 0
   <RunSuspicion>k__BackingField: 0.7
   <RunEmitInterval>k__BackingField: 0.25
   <CrouchHearingRadius>k__BackingField: 0

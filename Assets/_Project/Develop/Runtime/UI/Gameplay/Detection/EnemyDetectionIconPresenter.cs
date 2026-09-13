@@ -9,23 +9,23 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
         private readonly EnemyAwareness _awareness;
         private readonly EnemyDetectionIconView _view;
         private readonly Transform _followTarget;
-        private readonly Transform _player;
         private readonly float _heightOffset;
 
         private Camera _camera;
+        private bool _visible = true;
 
         public EnemyDetectionIconPresenter(
             EnemyAwareness awareness,
             EnemyDetectionIconView view,
             Transform followTarget,
-            Transform player,
-            float heightOffset)
+            float heightOffset,
+            Camera camera)
         {
             _awareness = awareness;
             _view = view;
             _followTarget = followTarget;
-            _player = player;
             _heightOffset = heightOffset;
+            _camera = camera;
         }
 
         public EnemyDetectionIconView View => _view;
@@ -35,19 +35,27 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
             if (_awareness != null)
                 _awareness.Changed += OnAwarenessChanged;
 
+            _view.SetCamera(_camera);
+            _view.SetVisible(_visible);
             OnAwarenessChanged();
             Tick();
         }
 
+        public void BindCamera(Camera camera)
+        {
+            _camera = camera;
+            _view?.SetCamera(camera);
+        }
+
+        public void SetVisible(bool visible)
+        {
+            _visible = visible;
+            _view?.SetVisible(visible);
+        }
+
         public void Tick()
         {
-            if (_view == null || _followTarget == null)
-                return;
-
-            if (_camera == null || _camera.isActiveAndEnabled == false)
-                ResolveCamera();
-
-            if (_camera == null)
+            if (_view == null || _followTarget == null || _camera == null)
                 return;
 
             Vector3 position = _followTarget.position + Vector3.up * _heightOffset;
@@ -66,15 +74,6 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
                 return;
 
             _view.SetPhase(_awareness.Phase, _awareness.Meter);
-        }
-
-        private void ResolveCamera()
-        {
-            if (_player != null)
-                _camera = _player.GetComponentInChildren<Camera>(true);
-
-            if (_camera == null || _camera.isActiveAndEnabled == false)
-                _camera = Camera.main;
         }
     }
 }

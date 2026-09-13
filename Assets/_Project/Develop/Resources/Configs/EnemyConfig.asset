@@ -37,6 +37,7 @@ MonoBehaviour:
     <AttackOriginHeight>k__BackingField: 1
     attackBehaviors:
     - {fileID: 11400000, guid: 4a98329b71934738b31ccfe66c177c16, type: 2}
+    stealthKillPresentation: {fileID: 11400000, guid: 040eb78c58fa5eb47836d61791adf109, type: 2}
   - <Type>k__BackingField: 1
     <Id>k__BackingField: enemy_ranger
     <Health>k__BackingField: 35
@@ -50,6 +51,7 @@ MonoBehaviour:
     <AttackOriginHeight>k__BackingField: 1
     attackBehaviors:
     - {fileID: 11400000, guid: 9a607cd59f0f480c8f0e00d65bee2ac0, type: 2}
+    stealthKillPresentation: {fileID: 11400000, guid: 040eb78c58fa5eb47836d61791adf109, type: 2}
   - <Type>k__BackingField: 2
     <Id>k__BackingField: enemy_melee
     <Health>k__BackingField: 60
@@ -63,3 +65,4 @@ MonoBehaviour:
     <AttackOriginHeight>k__BackingField: 1
     attackBehaviors:
     - {fileID: 11400000, guid: 0eb267343b1242608a46957479b5f60d, type: 2}
+    stealthKillPresentation: {fileID: 0}

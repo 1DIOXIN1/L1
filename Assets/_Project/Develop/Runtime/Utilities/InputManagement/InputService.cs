@@ -22,6 +22,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         bool IsShootHeld { get; }
         bool IsSprintHeld { get; }
+        Vector2 LookDelta { get; }
         InputContext CurrentContext { get; }
 
         void Update(float deltaTime);

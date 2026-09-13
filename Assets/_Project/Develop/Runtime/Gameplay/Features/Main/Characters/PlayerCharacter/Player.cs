@@ -9,8 +9,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
     public class Player : Character
     {
         [SerializeField] private Transform firePoint;
+        [SerializeField] private Transform lookPivot;
         [SerializeField] private Transform viewTransform;
-        [SerializeField] private Camera lookCamera;
         [SerializeField] private Animator animator;
         [SerializeField] private CharacterController characterController;
 
@@ -23,8 +23,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         private PlayerControlMode _controlMode = PlayerControlMode.Free;
 
         public Transform FirePoint => firePoint;
-        public Transform ViewTransform => viewTransform;
-        public Camera LookCamera => lookCamera;
+        public Transform LookPivot => lookPivot;
+        public Transform ViewTransform => viewTransform != null ? viewTransform : lookPivot;
         public Animator Animator => animator;
         public CharacterController CharacterController => characterController;
         public PlayerCombatController Combat => _combat;
@@ -77,6 +77,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public void SetControlMode(PlayerControlMode mode)
         {
             _controlMode = mode;
+
+            if (mode == PlayerControlMode.Free)
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
         }
 
         private void Update()
@@ -90,14 +96,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _motor.Tick(deltaTime);
             _noiseEmitter?.Tick(deltaTime);
             _combat.Tick(deltaTime, _input.IsShootHeld);
-        }
-
-        private void LateUpdate()
-        {
-            if (_motor == null || _controlMode == PlayerControlMode.Locked)
-                return;
-
-            _motor.LateTick();
         }
 
         private void OnDestroy()

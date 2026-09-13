@@ -75,7 +75,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             else if (IsSprinting)
                 speed *= _config.SprintSpeedMultiplier;
 
-            Vector3 motion = GetCameraRelativeMoveDirection() * speed;
+            Vector3 motion = GetPlanarMoveDirection() * speed;
 
             if (_characterController.isGrounded && _verticalVelocity < 0f)
                 _verticalVelocity = -2f;
@@ -89,20 +89,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             planarVelocity.y = 0f;
             IsMovingHorizontally = planarVelocity.sqrMagnitude > 0.05f ||
                                    (_moveInput.sqrMagnitude > 0.01f && _characterController.isGrounded);
-        }
-
-        public void LateTick()
-        {
-            if (_viewTransform == null)
-                return;
-
-            Vector3 forward = _viewTransform.forward;
-            forward.y = 0f;
-
-            if (forward == Vector3.zero)
-                return;
-
-            _transform.rotation = Quaternion.LookRotation(forward.normalized, Vector3.up);
         }
 
         private bool CanSprint()
@@ -130,17 +116,20 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         private void ApplyCharacterHeight(float height)
         {
-            float feetY = _transform.position.y - _characterController.height * 0.5f;
+            float feetY = GetFeetY();
             _characterController.height = height;
-            _characterController.center = new Vector3(
-                _characterController.center.x,
-                0f,
-                _characterController.center.z);
+            _characterController.center = new Vector3(0f, height * 0.5f, 0f);
+            SetFeetY(feetY);
+        }
 
-            _transform.position = new Vector3(
-                _transform.position.x,
-                feetY + height * 0.5f,
-                _transform.position.z);
+        private float GetFeetY()
+        {
+            return _transform.position.y + _characterController.center.y - _characterController.height * 0.5f;
+        }
+
+        private void SetFeetY(float feetY)
+        {
+            _transform.position = new Vector3(_transform.position.x, feetY, _transform.position.z);
         }
 
         private void SnapToGround()
@@ -155,27 +144,29 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 if (hit.collider.transform.root == _transform)
                     continue;
 
-                _transform.position = new Vector3(
-                    _transform.position.x,
-                    hit.point.y + _characterController.height * 0.5f,
-                    _transform.position.z);
+                SetFeetY(hit.point.y);
                 return;
             }
         }
 
-        private Vector3 GetCameraRelativeMoveDirection()
+        private Vector3 GetPlanarMoveDirection()
         {
-            if (_viewTransform == null)
-                return _moveInput;
+            if (_moveInput.sqrMagnitude < 0.0001f)
+                return Vector3.zero;
 
-            Vector3 forward = _viewTransform.forward;
-            Vector3 right = _viewTransform.right;
+            Vector3 forward = _transform.forward;
+            Vector3 right = _transform.right;
 
-            forward.y = 0f;
-            right.y = 0f;
-
-            forward.Normalize();
-            right.Normalize();
+            if (_viewTransform != null)
+            {
+                Vector3 viewForward = _viewTransform.forward;
+                viewForward.y = 0f;
+                if (viewForward.sqrMagnitude > 0.001f)
+                {
+                    forward = viewForward.normalized;
+                    right = Vector3.Cross(Vector3.up, forward).normalized;
+                }
+            }
 
             return forward * _moveInput.z + right * _moveInput.x;
         }

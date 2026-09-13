@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using _Project.Develop.Runtime.UI.Core;
+using UnityEngine;
 
 namespace _Project.Develop.Runtime.UI.Gameplay.Detection
 {
@@ -11,6 +12,9 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
         private readonly ViewsFactory _viewsFactory;
         private readonly GameplayPresentersFactory _presentersFactory;
         private readonly Dictionary<EnemyBase, EnemyDetectionIconPresenter> _presenters = new();
+
+        private Camera _camera;
+        private bool _visible = true;
 
         public EnemyDetectionIconsPresenter(
             EnemyAIService enemyAIService,
@@ -32,10 +36,26 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
                 OnEnemyRegistered(enemies[i]);
         }
 
+        public void BindCamera(Camera camera)
+        {
+            _camera = camera;
+
+            foreach (KeyValuePair<EnemyBase, EnemyDetectionIconPresenter> pair in _presenters)
+                pair.Value.BindCamera(camera);
+        }
+
         public void Tick()
         {
             foreach (KeyValuePair<EnemyBase, EnemyDetectionIconPresenter> pair in _presenters)
                 pair.Value.Tick();
+        }
+
+        public void SetVisible(bool visible)
+        {
+            _visible = visible;
+
+            foreach (KeyValuePair<EnemyBase, EnemyDetectionIconPresenter> pair in _presenters)
+                pair.Value.SetVisible(visible);
         }
 
         public void Dispose()
@@ -60,15 +80,16 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
             EnemyDetectionIconView view =
                 _viewsFactory.Create<EnemyDetectionIconView>(ViewIDs.EnemyDetectionIcon);
 
-            float heightOffset = enemy.Context.Preset.AttackOriginHeight + 0.9f;
+            float heightOffset = enemy.Context.Agent.height + 0.35f;
             EnemyDetectionIconPresenter presenter = _presentersFactory.CreateEnemyDetectionIconPresenter(
                 enemy.Context.Awareness,
                 view,
                 enemy.transform,
-                enemy.Context.Player,
-                heightOffset);
+                heightOffset,
+                _camera);
 
             presenter.Initialize();
+            presenter.SetVisible(_visible);
             _presenters.Add(enemy, presenter);
         }
 

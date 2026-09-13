@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1000000000000000005}
   - component: {fileID: 1000000000000000006}
   m_Layer: 5
-  m_Name: InteractionPromptView
+  m_Name: InteractionHintView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -110,6 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6478901a2b3c4d5e6f718293a4b5c6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 1000000000000000003}
   iconImage: {fileID: 2000000000000000004}
   canvasGroup: {fileID: 1000000000000000005}
 --- !u!1 &2000000000000000001

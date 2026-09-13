@@ -78,7 +78,11 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
                  "Use a unique/duplicated asset to customize one enemy.")]
         [SerializeField] private EnemyAttackBehaviorConfig[] attackBehaviors = Array.Empty<EnemyAttackBehaviorConfig>();
 
+        [Tooltip("Stealth kill Timeline for this enemy type (animation, camera, VFX).")]
+        [SerializeField] private StealthKillPresentationConfig stealthKillPresentation;
+
         public IReadOnlyList<EnemyAttackBehaviorConfig> AttackBehaviors => attackBehaviors;
+        public StealthKillPresentationConfig StealthKillPresentation => stealthKillPresentation;
         public float Speed => PatrolSpeed;
 
         public EnemyPreset()

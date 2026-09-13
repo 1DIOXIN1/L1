@@ -655,10 +655,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7e4a91c2d5f4830a6e8c1d0f3b59274, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  promptAnchor: {fileID: 2100000002}
+  hintAnchor: {fileID: 2100000002}
   priority: 0
   cutscene: {fileID: 11400000, guid: 6a4d8c2e1b9f47a3b5c0e8d1f2a6b390, type: 2}
-  sleepPoint: {fileID: 1483696951}
+  playPoint: {fileID: 1483696951}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

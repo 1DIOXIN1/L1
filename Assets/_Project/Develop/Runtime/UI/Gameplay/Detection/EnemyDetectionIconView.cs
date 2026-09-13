@@ -7,10 +7,32 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
 {
     public sealed class EnemyDetectionIconView : MonoBehaviour, IView
     {
+        [SerializeField] private Canvas _canvas;
+        [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private Image _calmImage;
         [SerializeField] private Image _excitedImage;
         [SerializeField] private Image _noticedImage;
         [SerializeField] private Image _lostImage;
+
+        public void SetCamera(Camera camera)
+        {
+            if (_canvas != null)
+                _canvas.worldCamera = camera;
+        }
+
+        public void SetVisible(bool visible)
+        {
+            if (_canvasGroup != null)
+            {
+                _canvasGroup.alpha = visible ? 1f : 0f;
+                _canvasGroup.interactable = false;
+                _canvasGroup.blocksRaycasts = false;
+                return;
+            }
+
+            if (_canvas != null)
+                _canvas.enabled = visible;
+        }
 
         public void SetPhase(DetectionPhase phase, float meter)
         {

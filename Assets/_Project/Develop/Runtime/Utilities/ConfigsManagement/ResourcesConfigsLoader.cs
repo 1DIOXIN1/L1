@@ -30,7 +30,8 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(PlayerWeaponInventoryConfig), "Configs/PlayerWeaponInventoryConfig"},
             {typeof(EnemyConfig), "Configs/EnemyConfig"},
             {typeof(NoiseConfig), "Configs/NoiseConfig"},
-            {typeof(InteractionConfig), "Configs/InteractionConfig"}
+            {typeof(InteractionConfig), "Configs/InteractionConfig"},
+            {typeof(StealthKillConfig), "Configs/StealthKillConfig"}
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader resources)

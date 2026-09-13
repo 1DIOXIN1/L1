@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Cutscenes;
+using _Project.Develop.Runtime.Utilities.AssetsManagement;
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
@@ -14,9 +15,12 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
 {
     public sealed class CutsceneService : ICutsceneService
     {
+        private const string DirectorHostResourcePath = "Prefabs/Cutscenes/CutsceneDirectorHost";
+
         private readonly IGameplayBlocker _gameplayBlocker;
         private readonly IInputService _input;
         private readonly CoroutinesPerformer _coroutines;
+        private readonly ResourcesAssetsLoader _assetsLoader;
         private readonly Dictionary<string, CutsceneConfig> _configs = new();
 
         private PlayableDirector _director;
@@ -28,11 +32,13 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
         public CutsceneService(
             IGameplayBlocker gameplayBlocker,
             IInputService input,
-            CoroutinesPerformer coroutines)
+            CoroutinesPerformer coroutines,
+            ResourcesAssetsLoader assetsLoader)
         {
             _gameplayBlocker = gameplayBlocker;
             _input = input;
             _coroutines = coroutines;
+            _assetsLoader = assetsLoader;
             _input.ConfirmPressed += OnConfirmPressed;
         }
 
@@ -133,13 +139,22 @@ namespace _Project.Develop.Runtime.Utilities.CutsceneManagement
                 Skip();
         }
 
-        private static PlayableDirector CreateDirector(CutsceneConfig config, Transform spaceOrigin)
+        private PlayableDirector CreateDirector(CutsceneConfig config, Transform spaceOrigin)
         {
-            GameObject gameObject = new GameObject($"Cutscene_{config.Id}");
-            if (spaceOrigin != null)
-                gameObject.transform.SetPositionAndRotation(spaceOrigin.position, spaceOrigin.rotation);
+            GameObject hostPrefab = _assetsLoader.Load<GameObject>(DirectorHostResourcePath);
+            if (hostPrefab == null)
+                throw new InvalidOperationException(
+                    $"Missing cutscene director host prefab at Resources/{DirectorHostResourcePath}.");
 
-            PlayableDirector director = gameObject.AddComponent<PlayableDirector>();
+            Vector3 position = spaceOrigin != null ? spaceOrigin.position : Vector3.zero;
+            Quaternion rotation = spaceOrigin != null ? spaceOrigin.rotation : Quaternion.identity;
+            GameObject gameObject = UnityEngine.Object.Instantiate(hostPrefab, position, rotation);
+            gameObject.name = $"Cutscene_{config.Id}";
+
+            PlayableDirector director = gameObject.GetComponent<PlayableDirector>();
+            if (director == null)
+                throw new InvalidOperationException("CutsceneDirectorHost prefab requires PlayableDirector.");
+
             director.playOnAwake = false;
             director.extrapolationMode = DirectorWrapMode.None;
             director.playableAsset = config.Timeline;

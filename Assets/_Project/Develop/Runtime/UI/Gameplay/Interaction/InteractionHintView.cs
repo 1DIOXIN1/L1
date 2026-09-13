@@ -4,10 +4,17 @@ using UnityEngine.UI;
 
 namespace _Project.Develop.Runtime.UI.Gameplay.Interaction
 {
-    public sealed class InteractionPromptView : MonoBehaviour, IView
+    public sealed class InteractionHintView : MonoBehaviour, IView
     {
+        [SerializeField] private Canvas canvas;
         [SerializeField] private Image iconImage;
         [SerializeField] private CanvasGroup canvasGroup;
+
+        public void SetCamera(Camera worldCamera)
+        {
+            if (canvas != null)
+                canvas.worldCamera = worldCamera;
+        }
 
         public void SetVisible(bool visible)
         {

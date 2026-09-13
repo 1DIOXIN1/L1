@@ -55,7 +55,8 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             => new CutsceneService(
                 container.Resolve<IGameplayBlocker>(),
                 container.Resolve<IInputService>(),
-                container.Resolve<CoroutinesPerformer>());
+                container.Resolve<CoroutinesPerformer>(),
+                container.Resolve<ResourcesAssetsLoader>());
 
         private static ViewsFactory CreateViewsFactory(DIContainer container)
             => new ViewsFactory(container.Resolve<ResourcesAssetsLoader>());

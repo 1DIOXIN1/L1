@@ -15,7 +15,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         private PlayerVitalsPresenter _vitalsPresenter;
         private WeaponHudPresenter _weaponHudPresenter;
         private EnemyDetectionIconsPresenter _detectionIconsPresenter;
-        private InteractionPromptPresenter _interactionPromptPresenter;
+        private InteractionHintPresenter _interactionHintPresenter;
 
         public GameplayScreenPresenter(GameplayScreenView view, GameplayPresentersFactory presentersFactory)
         {
@@ -37,17 +37,18 @@ namespace _Project.Develop.Runtime.UI.Gameplay
                 childPresenter.Initialize();
         }
 
-        public void AttachPlayer(Player player)
+        public void AttachPlayer(Player player, PlayerCamera playerCamera)
         {
             _vitalsPresenter?.AttachPlayer(player);
             _weaponHudPresenter?.AttachPlayer(player);
+            _detectionIconsPresenter?.BindCamera(playerCamera != null ? playerCamera.LookCamera : null);
 
-            if (_interactionPromptPresenter != null || player == null)
+            if (_interactionHintPresenter != null || player == null || playerCamera == null)
                 return;
 
-            _interactionPromptPresenter = _presentersFactory.CreateInteractionPromptPresenter(player);
-            _interactionPromptPresenter.Initialize();
-            _childPresenters.Add(_interactionPromptPresenter);
+            _interactionHintPresenter = _presentersFactory.CreateInteractionHintPresenter(playerCamera);
+            _interactionHintPresenter.Initialize();
+            _childPresenters.Add(_interactionHintPresenter);
         }
 
         public void Tick()
@@ -58,7 +59,12 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public void TickInteraction()
         {
-            _interactionPromptPresenter?.Tick();
+            _interactionHintPresenter?.Tick();
+        }
+
+        public void SetDetectionIconsVisible(bool visible)
+        {
+            _detectionIconsPresenter?.SetVisible(visible);
         }
 
         public void Dispose()
@@ -70,7 +76,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _vitalsPresenter = null;
             _weaponHudPresenter = null;
             _detectionIconsPresenter = null;
-            _interactionPromptPresenter = null;
+            _interactionHintPresenter = null;
         }
     }
 }
