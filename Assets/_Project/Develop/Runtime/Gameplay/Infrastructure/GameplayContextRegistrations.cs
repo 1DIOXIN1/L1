@@ -105,7 +105,10 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             GameplayScreenView screenView = container.Resolve<ViewsFactory>().Create<GameplayScreenView>(ViewIDs.GameplayScreen, uiRoot.HUDLayer);
             GameplayPresentersFactory presentersFactory = container.Resolve<GameplayPresentersFactory>();
 
-            return new GameplayScreenPresenter(screenView, presentersFactory);
+            return new GameplayScreenPresenter(
+                screenView,
+                presentersFactory,
+                container.Resolve<IInputService>());
         }
 
         private static GameplayPresentersFactory CreateGameplayPresentersFactory(DIContainer container)

@@ -17,7 +17,6 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
-    [DefaultExecutionOrder(-100)]
     public class GameplayBootstrap : SceneBootstrap
     {
         [SerializeField] private PlayerSpawnPoint playerSpawnPoint;

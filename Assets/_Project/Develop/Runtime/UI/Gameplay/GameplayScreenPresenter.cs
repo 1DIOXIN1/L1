@@ -3,6 +3,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
+using _Project.Develop.Runtime.Utilities.InputManagement;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -10,6 +11,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
     {
         private readonly GameplayScreenView _view;
         private readonly GameplayPresentersFactory _presentersFactory;
+        private readonly IInputService _input;
         private readonly List<IPresenter> _childPresenters = new();
 
         private PlayerVitalsPresenter _vitalsPresenter;
@@ -17,10 +19,14 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         private EnemyDetectionIconsPresenter _detectionIconsPresenter;
         private InteractionHintPresenter _interactionHintPresenter;
 
-        public GameplayScreenPresenter(GameplayScreenView view, GameplayPresentersFactory presentersFactory)
+        public GameplayScreenPresenter(
+            GameplayScreenView view,
+            GameplayPresentersFactory presentersFactory,
+            IInputService input)
         {
             _view = view;
             _presentersFactory = presentersFactory;
+            _input = input;
         }
 
         public void Initialize()
@@ -35,6 +41,8 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
             foreach (IPresenter childPresenter in _childPresenters)
                 childPresenter.Initialize();
+
+            _input.PhonePressed += OnPhonePressed;
         }
 
         public void AttachPlayer(Player player, PlayerCamera playerCamera)
@@ -69,6 +77,8 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public void Dispose()
         {
+            _input.PhonePressed -= OnPhonePressed;
+
             foreach (IPresenter childPresenter in _childPresenters)
                 childPresenter.Dispose();
 
@@ -77,6 +87,11 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _weaponHudPresenter = null;
             _detectionIconsPresenter = null;
             _interactionHintPresenter = null;
+        }
+
+        private void OnPhonePressed()
+        {
+            _view.TogglePhoneVisible();
         }
     }
 }

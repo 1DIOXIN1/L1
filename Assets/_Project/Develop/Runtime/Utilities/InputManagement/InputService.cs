@@ -19,6 +19,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action SelectPrimarySlot;
         event Action Jump;
         event Action Crouch;
+        event Action PhonePressed;
 
         bool IsShootHeld { get; }
         bool IsSprintHeld { get; }

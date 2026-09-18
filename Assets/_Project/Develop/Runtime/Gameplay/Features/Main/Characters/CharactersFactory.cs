@@ -81,7 +81,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             if (player.Animator != null)
             {
                 player.Animator.runtimeAnimatorController = null;
-                player.Animator.enabled = false;
             }
 
             _playerCamera.Bind(player, _input, playerConfig);

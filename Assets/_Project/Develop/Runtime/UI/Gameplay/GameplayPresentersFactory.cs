@@ -8,6 +8,7 @@ using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
@@ -23,7 +24,10 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public GameplayScreenPresenter CreateGameplayScreenPresenter(GameplayScreenView gameplayScreenView)
         {
-            return new GameplayScreenPresenter(gameplayScreenView, this);
+            return new GameplayScreenPresenter(
+                gameplayScreenView,
+                this,
+                _container.Resolve<IInputService>());
         }
 
         public PlayerVitalsPresenter CreatePlayerVitalsPresenter(GameplayScreenView view)

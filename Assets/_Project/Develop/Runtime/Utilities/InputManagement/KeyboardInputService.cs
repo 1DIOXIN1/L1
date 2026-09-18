@@ -19,6 +19,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action SelectSecondarySlot;
         public event Action Jump;
         public event Action Crouch;
+        public event Action PhonePressed;
 
         public bool IsShootHeld { get; private set; }
         public bool IsSprintHeld { get; private set; }
@@ -115,6 +116,9 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
             if (Input.GetKeyDown(KeyCode.F))
                 InteractPressed?.Invoke();
+
+            if (Input.GetKeyDown(KeyCode.N))
+                PhonePressed?.Invoke();
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 ConfirmPressed?.Invoke();
