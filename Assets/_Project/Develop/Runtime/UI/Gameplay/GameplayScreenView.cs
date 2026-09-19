@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.UI.Core;
+using _Project.Develop.Runtime.UI.Gameplay.Phone;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,29 +15,17 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         [SerializeField] private TMP_Text weaponNameText;
         [SerializeField] private Image weaponIconImage;
         [SerializeField] private GameObject sequenceViewRoot;
-        [SerializeField] private GameObject phoneGroup;
+        [SerializeField] private PhoneView phoneView;
+
+        public PhoneView PhoneView => phoneView;
 
         private void Awake()
         {
             if (sequenceViewRoot != null)
                 sequenceViewRoot.SetActive(false);
 
-            if (phoneGroup != null)
-                phoneGroup.SetActive(false);
-        }
-
-        public void TogglePhoneVisible()
-        {
-            if (phoneGroup == null)
-                return;
-
-            phoneGroup.SetActive(phoneGroup.activeSelf == false);
-        }
-
-        public void SetPhoneVisible(bool visible)
-        {
-            if (phoneGroup != null)
-                phoneGroup.SetActive(visible);
+            if (phoneView != null)
+                phoneView.SetVisible(false);
         }
 
         public void SetHealth(float normalized)

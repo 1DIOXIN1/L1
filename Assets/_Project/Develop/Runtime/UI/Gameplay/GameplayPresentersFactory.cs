@@ -7,6 +7,7 @@ using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
+using _Project.Develop.Runtime.UI.Gameplay.Phone;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using UnityEngine;
@@ -24,10 +25,15 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public GameplayScreenPresenter CreateGameplayScreenPresenter(GameplayScreenView gameplayScreenView)
         {
-            return new GameplayScreenPresenter(
-                gameplayScreenView,
-                this,
-                _container.Resolve<IInputService>());
+            return new GameplayScreenPresenter(gameplayScreenView, this);
+        }
+
+        public PhonePresenter CreatePhonePresenter(PhoneView phoneView)
+        {
+            if (phoneView == null)
+                return null;
+
+            return new PhonePresenter(phoneView, _container.Resolve<IInputService>());
         }
 
         public PlayerVitalsPresenter CreatePlayerVitalsPresenter(GameplayScreenView view)

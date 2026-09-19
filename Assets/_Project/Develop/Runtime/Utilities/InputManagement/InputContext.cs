@@ -4,6 +4,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
     {
         Menu,
         Gameplay,
-        Cutscene
+        Cutscene,
+        Phone
     }
 }

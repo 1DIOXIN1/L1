@@ -43,6 +43,9 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
                 case InputContext.Cutscene:
                     ProcessCutsceneInput();
                     break;
+                case InputContext.Phone:
+                    ProcessPhoneInput();
+                    break;
                 default:
                     ClearGameplayAxes();
                     break;
@@ -60,6 +63,14 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             {
                 ConfirmPressed?.Invoke();
             }
+        }
+
+        private void ProcessPhoneInput()
+        {
+            ClearGameplayAxes();
+
+            if (Input.GetKeyDown(KeyCode.N))
+                PhonePressed?.Invoke();
         }
 
         private void ProcessMenuInput()

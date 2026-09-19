@@ -3,6 +3,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
+using _Project.Develop.Runtime.UI.Gameplay.Phone;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
@@ -11,22 +12,20 @@ namespace _Project.Develop.Runtime.UI.Gameplay
     {
         private readonly GameplayScreenView _view;
         private readonly GameplayPresentersFactory _presentersFactory;
-        private readonly IInputService _input;
         private readonly List<IPresenter> _childPresenters = new();
 
         private PlayerVitalsPresenter _vitalsPresenter;
         private WeaponHudPresenter _weaponHudPresenter;
         private EnemyDetectionIconsPresenter _detectionIconsPresenter;
         private InteractionHintPresenter _interactionHintPresenter;
+        private PhonePresenter _phonePresenter;
 
         public GameplayScreenPresenter(
             GameplayScreenView view,
-            GameplayPresentersFactory presentersFactory,
-            IInputService input)
+            GameplayPresentersFactory presentersFactory)
         {
             _view = view;
             _presentersFactory = presentersFactory;
-            _input = input;
         }
 
         public void Initialize()
@@ -34,15 +33,17 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _vitalsPresenter = _presentersFactory.CreatePlayerVitalsPresenter(_view);
             _weaponHudPresenter = _presentersFactory.CreateWeaponHudPresenter(_view);
             _detectionIconsPresenter = _presentersFactory.CreateEnemyDetectionIconsPresenter();
+            _phonePresenter = _presentersFactory.CreatePhonePresenter(_view.PhoneView);
 
             _childPresenters.Add(_vitalsPresenter);
             _childPresenters.Add(_weaponHudPresenter);
             _childPresenters.Add(_detectionIconsPresenter);
 
+            if (_phonePresenter != null)
+                _childPresenters.Add(_phonePresenter);
+
             foreach (IPresenter childPresenter in _childPresenters)
                 childPresenter.Initialize();
-
-            _input.PhonePressed += OnPhonePressed;
         }
 
         public void AttachPlayer(Player player, PlayerCamera playerCamera)
@@ -77,8 +78,6 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public void Dispose()
         {
-            _input.PhonePressed -= OnPhonePressed;
-
             foreach (IPresenter childPresenter in _childPresenters)
                 childPresenter.Dispose();
 
@@ -87,11 +86,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _weaponHudPresenter = null;
             _detectionIconsPresenter = null;
             _interactionHintPresenter = null;
-        }
-
-        private void OnPhonePressed()
-        {
-            _view.TogglePhoneVisible();
+            _phonePresenter = null;
         }
     }
 }
