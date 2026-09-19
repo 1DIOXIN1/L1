@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Progress;
+using _Project.Develop.Runtime.Meta.Features.Settings;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 using _Project.Develop.Runtime.UI;
 using _Project.Develop.Runtime.UI.Core;
@@ -38,6 +39,8 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreatePlayerDataProvider);
             container.RegisterAsSingle(CreatePlayerStateService).NonLazy();
             container.RegisterAsSingle(CreateGameplayDataProvider);
+            container.RegisterAsSingle(CreateSettingsDataProvider);
+            container.RegisterAsSingle(CreateSettingsService).NonLazy();
             container.RegisterAsSingle(CreateProgressService);
             container.RegisterAsSingle(CreateProjectPresentersFactory);
             container.RegisterAsSingle(CreateViewsFactory);
@@ -85,6 +88,16 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
 
             return new GameplayDataProvider(saveLoadService, configsProviderService);
+        }
+
+        private static SettingsDataProvider CreateSettingsDataProvider(DIContainer container)
+            => new SettingsDataProvider(container.Resolve<ISaveLoadService>());
+
+        private static SettingsService CreateSettingsService(DIContainer container)
+        {
+            return new SettingsService(
+                container.Resolve<SettingsDataProvider>(),
+                container.Resolve<CoroutinesPerformer>());
         }
 
         private static ProgressService CreateProgressService(DIContainer container)
@@ -168,6 +181,6 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
         }
 
         private static KeyboardInputService CreateKeyboardInputService(DIContainer container)
-            => new KeyboardInputService();
+            => new KeyboardInputService(container.Resolve<SettingsService>());
     }
 }

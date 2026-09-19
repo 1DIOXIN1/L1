@@ -51,6 +51,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             {
                 _projectContainer.Resolve<PlayerDataProvider>(),
                 _projectContainer.Resolve<GameplayDataProvider>(),
+                _projectContainer.Resolve<SettingsDataProvider>(),
             };
 
             foreach (var provider in providers)

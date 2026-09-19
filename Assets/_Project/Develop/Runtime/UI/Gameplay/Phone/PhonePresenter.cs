@@ -8,19 +8,26 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
     {
         private readonly PhoneView _view;
         private readonly IInputService _input;
+        private readonly SettingsPresenter _settingsPresenter;
 
         private bool _isOpen;
 
-        public PhonePresenter(PhoneView view, IInputService input)
+        public PhonePresenter(
+            PhoneView view,
+            IInputService input,
+            SettingsPresenter settingsPresenter)
         {
             _view = view;
             _input = input;
+            _settingsPresenter = settingsPresenter;
         }
 
         public void Initialize()
         {
             _view.SetVisible(false);
             _view.ShowTab(PhoneTab.None);
+
+            _settingsPresenter?.Initialize();
 
             _input.PhonePressed += OnPhonePressed;
             _view.SettingsClicked += OnSettingsClicked;
@@ -36,6 +43,8 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
             _view.MapClicked -= OnMapClicked;
             _view.QuestsClicked -= OnQuestsClicked;
             _view.MessageClicked -= OnMessageClicked;
+
+            _settingsPresenter?.Dispose();
 
             if (_isOpen)
                 Close();
@@ -62,6 +71,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
         private void Close()
         {
             _isOpen = false;
+            _settingsPresenter?.FlushSave();
             _view.ShowTab(PhoneTab.None);
             _view.SetVisible(false);
             _input.SetContext(InputContext.Gameplay);
@@ -72,18 +82,23 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
 
         private void OnSettingsClicked()
         {
+            _view.ShowTab(PhoneTab.Settings);
+            _settingsPresenter?.Show();
         }
 
         private void OnMapClicked()
         {
+            _view.ShowTab(PhoneTab.Map);
         }
 
         private void OnQuestsClicked()
         {
+            _view.ShowTab(PhoneTab.Quests);
         }
 
         private void OnMessageClicked()
         {
+            _view.ShowTab(PhoneTab.Message);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using _Project.Develop.Runtime.Meta.Features.Settings;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Utilities.InputManagement
@@ -26,7 +27,13 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public Vector2 LookDelta { get; private set; }
         public InputContext CurrentContext => _context;
 
+        private readonly SettingsService _settings;
         private InputContext _context = InputContext.Menu;
+
+        public KeyboardInputService(SettingsService settings)
+        {
+            _settings = settings;
+        }
 
         public void SetContext(InputContext context) => _context = context;
 
@@ -95,7 +102,8 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         private void ProcessGameplayInput()
         {
-            LookDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+            float sensitivity = _settings != null ? _settings.MouseSensitivity : 1f;
+            LookDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y")) * sensitivity;
 
             Vector3 direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
             Move?.Invoke(direction);

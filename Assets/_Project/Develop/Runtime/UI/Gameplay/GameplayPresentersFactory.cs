@@ -9,7 +9,11 @@ using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
 using _Project.Develop.Runtime.UI.Gameplay.Phone;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
+using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
+using _Project.Develop.Runtime.Utilities.SceneManagement;
+using _Project.Develop.Runtime.Meta.Features.Settings;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
@@ -33,7 +37,28 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             if (phoneView == null)
                 return null;
 
-            return new PhonePresenter(phoneView, _container.Resolve<IInputService>());
+            SettingsPresenter settingsPresenter = CreateSettingsPresenter(phoneView.SettingsPanelView);
+
+            return new PhonePresenter(
+                phoneView,
+                _container.Resolve<IInputService>(),
+                settingsPresenter);
+        }
+
+        public SettingsPresenter CreateSettingsPresenter(SettingsPanelView settingsPanelView)
+        {
+            if (settingsPanelView == null)
+                return null;
+
+            return new SettingsPresenter(
+                settingsPanelView,
+                _container.Resolve<SettingsService>(),
+                _container.Resolve<SettingsDataProvider>(),
+                _container.Resolve<PlayerDataProvider>(),
+                _container.Resolve<GameplayDataProvider>(),
+                _container.Resolve<SceneSwitcherService>(),
+                _container.Resolve<CoroutinesPerformer>(),
+                _container.Resolve<IInputService>());
         }
 
         public PlayerVitalsPresenter CreatePlayerVitalsPresenter(GameplayScreenView view)

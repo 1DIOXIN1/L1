@@ -9,6 +9,7 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.KeyStorage
         {
             { typeof(PlayerData), "PlayerData" },
             { typeof(GameplayData), "GameplayData" },
+            { typeof(SettingsData), "SettingsData" },
         };
 
         public string GetKeyFor<TData>() where TData : ISaveData

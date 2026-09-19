@@ -20,8 +20,10 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
         [SerializeField] private GameObject mapPanel;
         [SerializeField] private GameObject questsPanel;
         [SerializeField] private GameObject messagePanel;
+        [SerializeField] private SettingsPanelView settingsPanelView;
 
         public bool IsVisible => gameObject.activeSelf;
+        public SettingsPanelView SettingsPanelView => settingsPanelView;
 
         private void OnEnable()
         {
