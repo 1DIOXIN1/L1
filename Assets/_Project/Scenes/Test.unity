@@ -608,8 +608,6 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 1958080327}
   - {fileID: 1256010852}
-  - {fileID: 1451519281}
-  - {fileID: 1983076563}
 --- !u!1 &1130617145
 GameObject:
   m_ObjectHideFlags: 0

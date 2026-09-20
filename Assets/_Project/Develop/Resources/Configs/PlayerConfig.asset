@@ -29,3 +29,12 @@ MonoBehaviour:
   <LookSensitivity>k__BackingField: 2
   <MinPitch>k__BackingField: -70
   <MaxPitch>k__BackingField: 70
+  <CameraDefaultOffset>k__BackingField: {x: 0.35, y: -0.25, z: -2.5}
+  <CameraAimOffset>k__BackingField: {x: 0.85, y: -0.25, z: -1.4}
+  <CameraDefaultFov>k__BackingField: 60
+  <CameraAimFov>k__BackingField: 45
+  <CameraOffsetSmoothTime>k__BackingField: 0.12
+  <CameraFovLerpSpeed>k__BackingField: 12
+  <HipBodyTurnSpeed>k__BackingField: 270
+  <AimBodyTurnSpeed>k__BackingField: 720
+  <MaxFreeLookYaw>k__BackingField: 80

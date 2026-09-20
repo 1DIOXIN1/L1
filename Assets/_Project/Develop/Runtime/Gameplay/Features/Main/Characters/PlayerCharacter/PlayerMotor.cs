@@ -38,6 +38,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public bool IsCrouching => _isCrouching;
         public bool IsSprinting { get; private set; }
         public bool IsMovingHorizontally { get; private set; }
+        public Vector3 PlanarMoveDirection { get; private set; }
 
         public void SetMoveInput(Vector3 move)
         {
@@ -75,7 +76,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             else if (IsSprinting)
                 speed *= _config.SprintSpeedMultiplier;
 
-            Vector3 motion = GetPlanarMoveDirection() * speed;
+            Vector3 planarMove = GetPlanarMoveDirection();
+            PlanarMoveDirection = planarMove;
+            Vector3 motion = planarMove * speed;
 
             if (_characterController.isGrounded && _verticalVelocity < 0f)
                 _verticalVelocity = -2f;
@@ -116,20 +119,28 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         private void ApplyCharacterHeight(float height)
         {
-            float feetY = GetFeetY();
+            float bottomY = GetBottomY();
             _characterController.height = height;
-            _characterController.center = new Vector3(0f, height * 0.5f, 0f);
-            SetFeetY(feetY);
+            _characterController.center = new Vector3(
+                _characterController.center.x,
+                0f,
+                _characterController.center.z);
+            SetBottomY(bottomY);
         }
 
-        private float GetFeetY()
+        private float GetBottomY()
         {
-            return _transform.position.y + _characterController.center.y - _characterController.height * 0.5f;
+            return _transform.position.y
+                   + _characterController.center.y
+                   - _characterController.height * 0.5f;
         }
 
-        private void SetFeetY(float feetY)
+        private void SetBottomY(float bottomY)
         {
-            _transform.position = new Vector3(_transform.position.x, feetY, _transform.position.z);
+            float positionY = bottomY
+                              - _characterController.center.y
+                              + _characterController.height * 0.5f;
+            _transform.position = new Vector3(_transform.position.x, positionY, _transform.position.z);
         }
 
         private void SnapToGround()
@@ -144,7 +155,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 if (hit.collider.transform.root == _transform)
                     continue;
 
-                SetFeetY(hit.point.y);
+                SetBottomY(hit.point.y);
                 return;
             }
         }

@@ -22,6 +22,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action PhonePressed;
 
         bool IsShootHeld { get; }
+        bool IsAimHeld { get; }
         bool IsSprintHeld { get; }
         Vector2 LookDelta { get; }
         InputContext CurrentContext { get; }

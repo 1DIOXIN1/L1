@@ -10,8 +10,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
     {
         private readonly WeaponConfig _config;
         private readonly IFireMode _fireMode;
-        private readonly WeaponFireContext _fireContext;
+        private readonly Transform _firePoint;
+        private readonly GameObject _owner;
+        private readonly GameObject _bulletPrefab;
 
+        private Camera _aimCamera;
         private int _ammo;
         private int _reserveAmmo;
         private float _nextShotTime;
@@ -26,13 +29,17 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             GameObject owner,
             GameObject bulletPrefab = null,
             int? initialAmmo = null,
-            int? initialReserveAmmo = null)
+            int? initialReserveAmmo = null,
+            Camera aimCamera = null)
         {
             _config = config;
             _fireMode = fireMode;
+            _firePoint = firePoint;
+            _owner = owner;
+            _bulletPrefab = bulletPrefab;
+            _aimCamera = aimCamera;
             _ammo = Mathf.Clamp(initialAmmo ?? config.MagazineSize, 0, config.MagazineSize);
             _reserveAmmo = Mathf.Max(0, initialReserveAmmo ?? config.ReserveAmmo);
-            _fireContext = new WeaponFireContext(firePoint, owner, config, bulletPrefab);
         }
 
         public WeaponType Type => _config.Type;
@@ -52,6 +59,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             ? Vector3.one
             : _config.ViewLocalScale;
 
+        public void SetAimCamera(Camera aimCamera)
+        {
+            _aimCamera = aimCamera;
+        }
+
         public void Tick(float deltaTime)
         {
             if (_reloadEndTime <= 0f || IsReloading)
@@ -70,7 +82,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             if (CanShoot == false)
                 return;
 
-            _fireMode.Fire(_fireContext);
+            _fireMode.Fire(new WeaponFireContext(_firePoint, _owner, _config, _bulletPrefab, _aimCamera));
             _ammo--;
             _nextShotTime = Time.time + _config.FireInterval;
             AmmoChanged?.Invoke();

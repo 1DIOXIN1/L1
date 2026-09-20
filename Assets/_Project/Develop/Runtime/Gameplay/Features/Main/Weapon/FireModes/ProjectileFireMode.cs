@@ -12,10 +12,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
             if (context.BulletPrefab == null || context.FirePoint == null || context.Config == null)
                 return;
 
+            Vector3 direction = ResolveAimDirection(context);
+
             GameObject projectileObject = Object.Instantiate(
                 context.BulletPrefab,
                 context.FirePoint.position,
-                Quaternion.identity);
+                Quaternion.LookRotation(direction));
 
             if (projectileObject.TryGetComponent(out ProjectileShoot projectile) == false)
             {
@@ -24,11 +26,28 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
             }
 
             projectile.Initialize(
-                context.FirePoint.forward,
+                direction,
                 context.Config.ProjectileSpeed,
                 context.Config.Damage,
                 context.Config.BulletLifeTime,
                 context.Owner);
+        }
+
+        private static Vector3 ResolveAimDirection(WeaponFireContext context)
+        {
+            if (context.AimCamera == null)
+                return context.FirePoint.forward;
+
+            Ray aimRay = context.AimCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+            Vector3 aimPoint = aimRay.GetPoint(context.Config.Range);
+            if (Physics.Raycast(aimRay, out RaycastHit hit, context.Config.Range, ~0, QueryTriggerInteraction.Ignore))
+                aimPoint = hit.point;
+
+            Vector3 direction = aimPoint - context.FirePoint.position;
+            if (direction.sqrMagnitude < 0.0001f)
+                return context.AimCamera.transform.forward;
+
+            return direction.normalized;
         }
     }
 }

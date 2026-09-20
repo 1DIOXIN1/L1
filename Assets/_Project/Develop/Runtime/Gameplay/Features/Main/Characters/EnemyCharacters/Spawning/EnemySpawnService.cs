@@ -62,7 +62,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (_stealthTargets.Remove(enemy, out IInteractable target) == false)
                 return;
 
-            _interactions.Unregister(target);
+            _interactions?.Unregister(target);
         }
     }
 }

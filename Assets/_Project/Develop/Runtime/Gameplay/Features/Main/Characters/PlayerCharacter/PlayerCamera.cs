@@ -7,8 +7,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 {
     public sealed class PlayerCamera : MonoBehaviour
     {
-        private static readonly Vector3 GameplayLocalPosition = new(0f, 0.15f, -2.5f);
-
         [SerializeField] private Transform lookPivot;
         [SerializeField] private Transform gameplayVirtualCamera;
         [SerializeField] private CinemachineVirtualCamera gameplayVirtualCameraComponent;
@@ -17,7 +15,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         private Player _player;
         private IInputService _input;
+        private PlayerConfig _config;
         private PlayerCameraController _controller;
+        private Vector3 _offsetVelocity;
+        private float _currentFov;
 
         public Transform LookPivot => lookPivot;
         public Transform GameplayVirtualCamera => gameplayVirtualCamera;
@@ -25,12 +26,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public Camera LookCamera => lookCamera;
         public CinemachineBrain LookBrain => lookBrain;
         public Player Player => _player;
+        public bool IsAiming { get; private set; }
 
         public void Initialize(Player player, IInputService input, PlayerConfig config)
         {
             _player = player;
             _input = input;
+            _config = config;
             _controller = new PlayerCameraController(player.transform, lookPivot, config);
+            _currentFov = config.CameraDefaultFov;
             ConfigureForGameplay();
         }
 
@@ -49,9 +53,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
             if (lookCamera != null)
             {
+                lookCamera.enabled = true;
                 lookCamera.transform.SetParent(lookPivot, false);
-                lookCamera.transform.localPosition = GameplayLocalPosition;
+                lookCamera.transform.localPosition = _config != null
+                    ? _config.CameraDefaultOffset
+                    : new Vector3(0.35f, 0.2f, -2.5f);
                 lookCamera.transform.localRotation = Quaternion.identity;
+                lookCamera.fieldOfView = _currentFov > 0f ? _currentFov : 60f;
             }
 
             if (gameplayVirtualCameraComponent != null)
@@ -66,7 +74,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             if (_controller == null || _input == null || _player == null || _player.IsControlLocked)
                 return;
 
-            _controller.Tick(_input.LookDelta);
+            IsAiming = _input.IsAimHeld;
+            _controller.Tick(
+                _input.LookDelta,
+                IsAiming,
+                _input.IsShootHeld,
+                _player.PlanarMoveDirection,
+                Time.deltaTime);
         }
 
         private void LateUpdate()
@@ -75,6 +89,24 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 return;
 
             _controller.Apply();
+            UpdateCameraRig(Time.deltaTime);
+        }
+
+        private void UpdateCameraRig(float deltaTime)
+        {
+            if (lookCamera == null || _config == null)
+                return;
+
+            Vector3 targetOffset = IsAiming ? _config.CameraAimOffset : _config.CameraDefaultOffset;
+            lookCamera.transform.localPosition = Vector3.SmoothDamp(
+                lookCamera.transform.localPosition,
+                targetOffset,
+                ref _offsetVelocity,
+                _config.CameraOffsetSmoothTime);
+
+            float targetFov = IsAiming ? _config.CameraAimFov : _config.CameraDefaultFov;
+            _currentFov = Mathf.Lerp(_currentFov, targetFov, 1f - Mathf.Exp(-_config.CameraFovLerpSpeed * deltaTime));
+            lookCamera.fieldOfView = _currentFov;
         }
     }
 }

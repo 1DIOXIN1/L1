@@ -23,6 +23,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action PhonePressed;
 
         public bool IsShootHeld { get; private set; }
+        public bool IsAimHeld { get; private set; }
         public bool IsSprintHeld { get; private set; }
         public Vector2 LookDelta { get; private set; }
         public InputContext CurrentContext => _context;
@@ -123,6 +124,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
                 SelectSecondarySlot?.Invoke();
 
             IsShootHeld = Input.GetMouseButton(0);
+            IsAimHeld = Input.GetMouseButton(1);
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 Shoot?.Invoke();
@@ -146,6 +148,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         private void ClearGameplayAxes()
         {
             IsShootHeld = false;
+            IsAimHeld = false;
             IsSprintHeld = false;
             LookDelta = Vector2.zero;
         }

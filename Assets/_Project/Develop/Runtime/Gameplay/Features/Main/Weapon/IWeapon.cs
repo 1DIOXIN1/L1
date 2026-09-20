@@ -28,5 +28,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         void Reload();
         void SetAmmo(int ammo);
         void SetReserveAmmo(int reserveAmmo);
+        void SetAimCamera(Camera aimCamera);
     }
 }

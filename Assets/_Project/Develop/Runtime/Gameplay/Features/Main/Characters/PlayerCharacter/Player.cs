@@ -32,6 +32,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public float MaxStamina => _motor?.MaxStamina ?? 0f;
         public bool IsCrouching => _motor != null && _motor.IsCrouching;
         public bool IsSprinting => _motor != null && _motor.IsSprinting;
+        public Vector3 PlanarMoveDirection => _motor != null ? _motor.PlanarMoveDirection : Vector3.zero;
         public bool IsControlLocked => _controlMode == PlayerControlMode.Locked;
         public PlayerControlMode ControlMode => _controlMode;
 

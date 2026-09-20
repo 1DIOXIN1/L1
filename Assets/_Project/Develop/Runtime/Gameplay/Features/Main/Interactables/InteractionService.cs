@@ -14,6 +14,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
         private readonly Player _player;
         private readonly PlayerCamera _playerCamera;
         private readonly List<IInteractable> _interactables = new();
+        private readonly RaycastHit[] _occlusionHits = new RaycastHit[16];
 
         private IInteractable _currentFocus;
 
@@ -69,11 +70,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
                 return null;
 
             Camera lookCamera = _playerCamera.LookCamera;
-            if (lookCamera == null || lookCamera.isActiveAndEnabled == false)
+            if (lookCamera == null)
                 return null;
 
-            Transform cameraTransform = lookCamera.transform;
-            Vector3 origin = cameraTransform.position;
+            Transform lookPivot = _playerCamera.LookPivot;
+            Vector3 occlusionOrigin = lookPivot != null
+                ? lookPivot.position
+                : _player.transform.position;
+            Vector3 distanceOrigin = _player.transform.position;
             float maxDistanceSqr = _config.MaxDistanceSqr;
             float maxScreenRadiusSqr = _config.MaxScreenRadiusSqr;
 
@@ -89,8 +93,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
                     continue;
 
                 Vector3 target = interactable.HintAnchor.position;
-                Vector3 toTarget = target - origin;
-                float distanceSqr = toTarget.sqrMagnitude;
+                float distanceSqr = (target - distanceOrigin).sqrMagnitude;
                 if (distanceSqr > maxDistanceSqr || distanceSqr < 0.0001f)
                     continue;
 
@@ -102,7 +105,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
                 if (screenDistSqr > maxScreenRadiusSqr)
                     continue;
 
-                if (_config.CheckOcclusion && IsOccluded(origin, target, interactable.HierarchyRoot))
+                if (_config.CheckOcclusion && IsOccluded(occlusionOrigin, target, interactable.HierarchyRoot))
                     continue;
 
                 int priority = interactable.Priority;
@@ -149,24 +152,37 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         private bool IsOccluded(Vector3 origin, Vector3 target, Transform hierarchyRoot)
         {
-            if (Physics.Linecast(
-                    origin,
-                    target,
-                    out RaycastHit hit,
-                    _config.OcclusionMask,
-                    QueryTriggerInteraction.Ignore) == false)
-            {
+            Vector3 toTarget = target - origin;
+            float distance = toTarget.magnitude;
+            if (distance < 0.05f)
                 return false;
+
+            Vector3 direction = toTarget / distance;
+            int hitCount = Physics.RaycastNonAlloc(
+                origin,
+                direction,
+                _occlusionHits,
+                distance,
+                _config.OcclusionMask,
+                QueryTriggerInteraction.Ignore);
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                RaycastHit hit = _occlusionHits[i];
+                if (hit.distance >= distance - 0.05f)
+                    continue;
+
+                Transform hitTransform = hit.transform;
+                if (BelongsToHierarchy(_player.transform, hitTransform))
+                    continue;
+
+                if (BelongsToHierarchy(hierarchyRoot, hitTransform))
+                    continue;
+
+                return true;
             }
 
-            Transform hitTransform = hit.transform;
-            if (BelongsToHierarchy(_player.transform, hitTransform))
-                return false;
-
-            if (BelongsToHierarchy(hierarchyRoot, hitTransform))
-                return false;
-
-            return true;
+            return false;
         }
 
         private static bool BelongsToHierarchy(Transform root, Transform hit)
