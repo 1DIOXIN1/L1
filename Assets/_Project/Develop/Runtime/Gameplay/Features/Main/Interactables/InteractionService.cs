@@ -7,33 +7,32 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 {
-    public sealed class InteractionService
+    public sealed class InteractionService : IDisposable
     {
         private readonly IInputService _input;
         private readonly InteractionConfig _config;
+        private readonly Player _player;
+        private readonly PlayerCamera _playerCamera;
         private readonly List<IInteractable> _interactables = new();
 
-        private Player _player;
-        private PlayerCamera _playerCamera;
         private IInteractable _currentFocus;
 
         public event Action<IInteractable> FocusChanged;
 
-        public InteractionService(IInputService input, InteractionConfig config)
+        public InteractionService(
+            IInputService input,
+            InteractionConfig config,
+            Player player,
+            PlayerCamera playerCamera)
         {
-            _input = input ?? throw new ArgumentNullException(nameof(input));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _input = input;
+            _config = config;
+            _player = player;
+            _playerCamera = playerCamera;
             _input.InteractPressed += OnInteractPressed;
         }
 
         public IInteractable CurrentFocus => _currentFocus;
-
-        public void BindPlayer(Player player, PlayerCamera playerCamera)
-        {
-            _player = player ?? throw new ArgumentNullException(nameof(player));
-            _playerCamera = playerCamera ?? throw new ArgumentNullException(nameof(playerCamera));
-            ClearFocus();
-        }
 
         public void Register(IInteractable interactable)
         {
@@ -43,19 +42,23 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
             _interactables.Add(interactable);
         }
 
-        public void RegisterFrom(InteractableRegistry registry)
+        public void Unregister(IInteractable interactable)
         {
-            IReadOnlyList<Interactable> interactables = registry.Interactables;
-            for (int i = 0; i < interactables.Count; i++)
-                Register(interactables[i]);
+            if (_interactables.Remove(interactable) == false)
+                return;
+
+            if (_currentFocus == interactable)
+                SetFocus(null);
+        }
+
+        public void Dispose()
+        {
+            _input.InteractPressed -= OnInteractPressed;
+            _interactables.Clear();
+            _currentFocus = null;
         }
 
         public void Tick()
-        {
-            UpdateFocus();
-        }
-
-        private void UpdateFocus()
         {
             SetFocus(FindBestInteractable());
         }
@@ -180,11 +183,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
             _currentFocus = focus;
             FocusChanged?.Invoke(_currentFocus);
-        }
-
-        private void ClearFocus()
-        {
-            SetFocus(null);
         }
 
         private void OnInteractPressed()

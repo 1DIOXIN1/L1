@@ -4,11 +4,11 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
     public class GameplayInputArgs : IInputSceneArgs
     {
-        public GameplayInputArgs(GameplayType gameplayType)
+        public GameplayInputArgs(string missionId)
         {
-            GameplayType =  gameplayType;
+            MissionId = missionId;
         }
-        
-        public GameplayType GameplayType { get; }
+
+        public string MissionId { get; }
     }
 }

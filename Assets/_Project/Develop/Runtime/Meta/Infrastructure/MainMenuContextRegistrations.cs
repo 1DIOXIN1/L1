@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.UI;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.MainMenu;
@@ -27,8 +28,8 @@ namespace _Project.Develop.Runtime.Meta.Infrastructure
         private static MainMenuNavigationService CreateMainMenuNavigationService(DIContainer container)
         {
             return new MainMenuNavigationService(
+                container.Resolve<LocationTravelService>(),
                 container.Resolve<CoroutinesPerformer>(),
-                container.Resolve<SceneSwitcherService>(),
                 container.Resolve<PlayerDataProvider>(),
                 container.Resolve<IInputService>());
         }

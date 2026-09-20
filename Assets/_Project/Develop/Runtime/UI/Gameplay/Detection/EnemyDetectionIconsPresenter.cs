@@ -36,12 +36,12 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
                 OnEnemyRegistered(enemies[i]);
         }
 
-        public void BindCamera(Camera camera)
+        public void SetCamera(Camera camera)
         {
             _camera = camera;
 
             foreach (KeyValuePair<EnemyBase, EnemyDetectionIconPresenter> pair in _presenters)
-                pair.Value.BindCamera(camera);
+                pair.Value.SetCamera(camera);
         }
 
         public void Tick()
@@ -66,7 +66,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
             foreach (KeyValuePair<EnemyBase, EnemyDetectionIconPresenter> pair in _presenters)
             {
                 pair.Value.Dispose();
-                _viewsFactory.Release(pair.Value.View);
+                ReleaseView(pair.Value.View);
             }
 
             _presenters.Clear();
@@ -98,9 +98,17 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
             if (enemy == null || _presenters.TryGetValue(enemy, out EnemyDetectionIconPresenter presenter) == false)
                 return;
 
-            presenter.Dispose();
-            _viewsFactory.Release(presenter.View);
             _presenters.Remove(enemy);
+            presenter.Dispose();
+            ReleaseView(presenter.View);
+        }
+
+        private void ReleaseView(EnemyDetectionIconView view)
+        {
+            if (view == null)
+                return;
+
+            _viewsFactory.Release(view);
         }
     }
 }

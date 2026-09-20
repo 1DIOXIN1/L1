@@ -12,7 +12,9 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Stealth;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
+using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.UI.Core;
@@ -31,6 +33,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public static void Process(DIContainer container)
         {
             container.RegisterAsSingle(CreateGameplayUIRoot).NonLazy();
+            container.RegisterAsSingle(CreateStealItemService);
+            container.RegisterAsSingle(CreateMissionQuestTracker);
+            container.RegisterAsSingle(CreateMissionObjectiveFactory);
             container.RegisterAsSingle(CreateGameMode);
             container.RegisterAsSingle(CreateGameplayCycle).NonLazy();
             container.RegisterAsSingle(CreateGameplayPresentersFactory).NonLazy();
@@ -45,7 +50,6 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateGadgetFactory);
             container.RegisterAsSingle(CreatePlayerWeaponInventory);
             container.RegisterAsSingle(CreatePlayerGadgetInventory);
-            container.RegisterAsSingle(CreateInteractionService);
             container.RegisterAsSingle(CreateStealthKillPresentationFactory);
             container.RegisterAsSingle(CreateStealthKillService);
         }
@@ -63,32 +67,38 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private static StealthKillPresentationFactory CreateStealthKillPresentationFactory(DIContainer container)
             => new StealthKillPresentationFactory(container.Resolve<ResourcesAssetsLoader>());
 
+        private static StealItemService CreateStealItemService(DIContainer container)
+            => new StealItemService();
+
+        private static MissionQuestTracker CreateMissionQuestTracker(DIContainer container)
+            => new MissionQuestTracker();
+
+        private static MissionObjectiveFactory CreateMissionObjectiveFactory(DIContainer container)
+            => new MissionObjectiveFactory(
+                container.Resolve<EnemyAIService>(),
+                container.Resolve<StealItemService>());
+
         private static GameMode CreateGameMode(DIContainer container)
         {
-            EnemyAIService enemyAIService = container.Resolve<EnemyAIService>();
-            return new GameMode(enemyAIService);
+            return new GameMode(
+                container.Resolve<EnemyAIService>(),
+                container.Resolve<MissionService>(),
+                container.Resolve<MissionObjectiveFactory>(),
+                container.Resolve<MissionQuestTracker>());
         }
 
         private static GameplayCycle CreateGameplayCycle(DIContainer container)
         {
-            GameMode gameMode = container.Resolve<GameMode>();
-            IInputService input = container.Resolve<IInputService>();
-            SceneSwitcherService sceneSwitcher = container.Resolve<SceneSwitcherService>();
-            CoroutinesPerformer coroutinesPerformer = container.Resolve<CoroutinesPerformer>();
-            GameplayDataProvider gameplayDataProvider = container.Resolve<GameplayDataProvider>();
-            PlayerDataProvider playerDataProvider = container.Resolve<PlayerDataProvider>();
-            PlayerStateService playerStateService = container.Resolve<PlayerStateService>();
-            ProgressService progressService = container.Resolve<ProgressService>();
-
             return new GameplayCycle(
-                gameMode,
-                input,
-                sceneSwitcher,
-                coroutinesPerformer,
-                gameplayDataProvider,
-                playerDataProvider,
-                playerStateService,
-                progressService);
+                container.Resolve<GameMode>(),
+                container.Resolve<IInputService>(),
+                container.Resolve<CoroutinesPerformer>(),
+                container.Resolve<GameplayDataProvider>(),
+                container.Resolve<PlayerDataProvider>(),
+                container.Resolve<PlayerStateService>(),
+                container.Resolve<ProgressService>(),
+                container.Resolve<MissionService>(),
+                container.Resolve<LocationTravelService>());
         }
 
         private static GameplayUIRoot CreateGameplayUIRoot(DIContainer container)
@@ -130,7 +140,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             => new EnemySpawnService(
                 container.Resolve<CharactersFactory>(),
                 container.Resolve<StealthKillService>(),
-                container.Resolve<InteractionService>());
+                container.Resolve<EnemyAIService>());
 
         private static FireModeRegistry CreateFireModeRegistry(DIContainer container)
             => new FireModeRegistry();
@@ -158,12 +168,5 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             return new PlayerGadgetInventory(configsProviderService, factory);
         }
 
-        private static InteractionService CreateInteractionService(DIContainer container)
-        {
-            ConfigsProviderService configsProviderService = container.Resolve<ConfigsProviderService>();
-            return new InteractionService(
-                container.Resolve<IInputService>(),
-                configsProviderService.GetConfig<InteractionConfig>());
-        }
     }
 }

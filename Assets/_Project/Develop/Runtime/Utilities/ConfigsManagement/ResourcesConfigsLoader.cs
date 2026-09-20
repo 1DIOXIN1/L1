@@ -5,6 +5,7 @@ using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
+using _Project.Develop.Runtime.Configs.Meta.Missions;
 using _Project.Develop.Runtime.Configs.Meta.Noise;
 using _Project.Develop.Runtime.Configs.Meta.Progress;
 using _Project.Develop.Runtime.Configs.Meta.Wallet;
@@ -23,6 +24,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(StartWalletConfig), "Configs/StartWalletConfig"},
             {typeof(StartGameplayConfig), "Configs/StartGameplayConfig"},
             {typeof(ProgressConfig), "Configs/ProgressConfig"},
+            {typeof(MissionsCatalogConfig), "Configs/MissionsCatalogConfig"},
             {typeof(CurrencyIconsConfig), "Configs/CurrencyIconsConfig"},
             {typeof(WeaponsCatalogConfig), "Configs/WeaponsCatalogConfig"},
             {typeof(GrenadeConfig), "Configs/GrenadeConfig"},

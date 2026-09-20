@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Meta.Features.Settings;
@@ -41,6 +42,8 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             container.RegisterAsSingle(CreateGameplayDataProvider);
             container.RegisterAsSingle(CreateSettingsDataProvider);
             container.RegisterAsSingle(CreateSettingsService).NonLazy();
+            container.RegisterAsSingle(CreateMissionService).NonLazy();
+            container.RegisterAsSingle(CreateLocationTravelService);
             container.RegisterAsSingle(CreateProgressService);
             container.RegisterAsSingle(CreateProjectPresentersFactory);
             container.RegisterAsSingle(CreateViewsFactory);
@@ -98,6 +101,26 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             return new SettingsService(
                 container.Resolve<SettingsDataProvider>(),
                 container.Resolve<CoroutinesPerformer>());
+        }
+
+        private static MissionService CreateMissionService(DIContainer container)
+        {
+            return new MissionService(
+                container.Resolve<ConfigsProviderService>(),
+                container.Resolve<GameplayDataProvider>(),
+                container.Resolve<CoroutinesPerformer>());
+        }
+
+        private static LocationTravelService CreateLocationTravelService(DIContainer container)
+        {
+            return new LocationTravelService(
+                container.Resolve<SceneSwitcherService>(),
+                container.Resolve<CoroutinesPerformer>(),
+                container.Resolve<MissionService>(),
+                container.Resolve<PlayerDataProvider>(),
+                container.Resolve<GameplayDataProvider>(),
+                container.Resolve<SettingsDataProvider>(),
+                container.Resolve<IInputService>());
         }
 
         private static ProgressService CreateProgressService(DIContainer container)

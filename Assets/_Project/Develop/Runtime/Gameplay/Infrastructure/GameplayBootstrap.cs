@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Cutscenes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
@@ -58,7 +59,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
                 return;
 
             _input.Update(Time.deltaTime);
-            _gameplayScreenPresenter?.Tick();
+            _gameplayScreenPresenter.Tick();
         }
 
         public void LateUpdate()
@@ -67,8 +68,16 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
                 return;
 
             // After Cinemachine updates the look camera.
-            _interactionService?.Tick();
-            _gameplayScreenPresenter?.TickInteraction();
+            _interactionService.Tick();
+            _gameplayScreenPresenter.TickInteraction();
+        }
+
+        private void OnDestroy()
+        {
+            _isRunning = false;
+            _interactionService?.Dispose();
+            _interactionService = null;
+            _gameplayScreenPresenter = null;
         }
 
         public override void Run()
@@ -83,14 +92,14 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             CharactersFactory charactersFactory = _container.Resolve<CharactersFactory>();
             Player player = charactersFactory.CreatePlayer(playerSpawnPoint);
             PlayerCamera playerCamera = charactersFactory.PlayerCamera;
-            _gameplayScreenPresenter.AttachPlayer(player, playerCamera);
 
             WireInteractions(player, playerCamera);
+            _gameplayScreenPresenter.AttachPlayer(player, playerCamera, _interactionService);
 
             if (enemySpawnRegistry != null)
             {
                 EnemySpawnService spawnService = _container.Resolve<EnemySpawnService>();
-                spawnService.SpawnFromRegistry(enemySpawnRegistry, player);
+                spawnService.SpawnFromRegistry(enemySpawnRegistry, player, _interactionService);
             }
 
             _container.Resolve<GameplayCycle>().StartGame(_gameplayInputArgs);
@@ -102,24 +111,27 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             ICutsceneService cutscenes = _container.Resolve<ICutsceneService>();
             cutscenes.SetPlayerBinding(player.Animator);
 
-            _interactionService = _container.Resolve<InteractionService>();
-            _interactionService.BindPlayer(player, playerCamera);
+            InteractionConfig interactionConfig =
+                _container.Resolve<ConfigsProviderService>().GetConfig<InteractionConfig>();
+
+            _interactionService = new InteractionService(
+                _input,
+                interactionConfig,
+                player,
+                playerCamera);
 
             if (interactableRegistry == null)
                 return;
 
-            InteractionSetup setup = new InteractionSetup(cutscenes, player);
-            var interactables = interactableRegistry.Interactables;
+            InteractionSetup setup = new InteractionSetup(
+                cutscenes,
+                player,
+                _container.Resolve<StealItemService>(),
+                _interactionService);
+
+            IReadOnlyList<Interactable> interactables = interactableRegistry.Interactables;
             for (int i = 0; i < interactables.Count; i++)
-            {
-                Interactable interactable = interactables[i];
-                if (interactable == null)
-                    continue;
-
-                interactable.Construct(setup);
-            }
-
-            _interactionService.RegisterFrom(interactableRegistry);
+                interactables[i].Construct(setup);
         }
     }
 }

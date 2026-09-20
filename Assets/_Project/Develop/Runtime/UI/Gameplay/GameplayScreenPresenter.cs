@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
@@ -38,24 +39,22 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _childPresenters.Add(_vitalsPresenter);
             _childPresenters.Add(_weaponHudPresenter);
             _childPresenters.Add(_detectionIconsPresenter);
-
-            if (_phonePresenter != null)
-                _childPresenters.Add(_phonePresenter);
+            _childPresenters.Add(_phonePresenter);
 
             foreach (IPresenter childPresenter in _childPresenters)
                 childPresenter.Initialize();
         }
 
-        public void AttachPlayer(Player player, PlayerCamera playerCamera)
+        public void AttachPlayer(Player player, PlayerCamera playerCamera, InteractionService interactionService)
         {
-            _vitalsPresenter?.AttachPlayer(player);
-            _weaponHudPresenter?.AttachPlayer(player);
-            _detectionIconsPresenter?.BindCamera(playerCamera != null ? playerCamera.LookCamera : null);
+            _vitalsPresenter.AttachPlayer(player);
+            _weaponHudPresenter.AttachPlayer(player);
+            _detectionIconsPresenter.SetCamera(playerCamera.LookCamera);
 
-            if (_interactionHintPresenter != null || player == null || playerCamera == null)
+            if (_interactionHintPresenter != null)
                 return;
 
-            _interactionHintPresenter = _presentersFactory.CreateInteractionHintPresenter(playerCamera);
+            _interactionHintPresenter = _presentersFactory.CreateInteractionHintPresenter(playerCamera, interactionService);
             _interactionHintPresenter.Initialize();
             _childPresenters.Add(_interactionHintPresenter);
         }

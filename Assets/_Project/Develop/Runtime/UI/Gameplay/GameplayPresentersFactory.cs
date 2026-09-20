@@ -2,8 +2,11 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Detection;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
+using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
 using _Project.Develop.Runtime.Infrastructure.DI;
+using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.Meta.Features.Player;
+using _Project.Develop.Runtime.Meta.Features.Settings;
 using _Project.Develop.Runtime.UI.Core;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
@@ -13,7 +16,6 @@ using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
-using _Project.Develop.Runtime.Meta.Features.Settings;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
@@ -34,22 +36,16 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public PhonePresenter CreatePhonePresenter(PhoneView phoneView)
         {
-            if (phoneView == null)
-                return null;
-
-            SettingsPresenter settingsPresenter = CreateSettingsPresenter(phoneView.SettingsPanelView);
-
             return new PhonePresenter(
                 phoneView,
                 _container.Resolve<IInputService>(),
-                settingsPresenter);
+                CreateSettingsPresenter(phoneView.SettingsPanelView),
+                CreateMapPresenter(phoneView.MapPanelView),
+                CreateQuestsPresenter(phoneView.QuestsPanelView));
         }
 
         public SettingsPresenter CreateSettingsPresenter(SettingsPanelView settingsPanelView)
         {
-            if (settingsPanelView == null)
-                return null;
-
             return new SettingsPresenter(
                 settingsPanelView,
                 _container.Resolve<SettingsService>(),
@@ -59,6 +55,21 @@ namespace _Project.Develop.Runtime.UI.Gameplay
                 _container.Resolve<SceneSwitcherService>(),
                 _container.Resolve<CoroutinesPerformer>(),
                 _container.Resolve<IInputService>());
+        }
+
+        public MapPresenter CreateMapPresenter(MapPanelView mapPanelView)
+        {
+            return new MapPresenter(
+                mapPanelView,
+                _container.Resolve<MissionService>(),
+                _container.Resolve<LocationTravelService>());
+        }
+
+        public QuestsPresenter CreateQuestsPresenter(QuestsPanelView questsPanelView)
+        {
+            return new QuestsPresenter(
+                questsPanelView,
+                _container.Resolve<MissionQuestTracker>());
         }
 
         public PlayerVitalsPresenter CreatePlayerVitalsPresenter(GameplayScreenView view)
@@ -100,13 +111,15 @@ namespace _Project.Develop.Runtime.UI.Gameplay
                 camera);
         }
 
-        public InteractionHintPresenter CreateInteractionHintPresenter(PlayerCamera playerCamera)
+        public InteractionHintPresenter CreateInteractionHintPresenter(
+            PlayerCamera playerCamera,
+            InteractionService interactionService)
         {
             InteractionHintView view =
                 _container.Resolve<ViewsFactory>().Create<InteractionHintView>(ViewIDs.InteractionHint);
 
             return new InteractionHintPresenter(
-                _container.Resolve<InteractionService>(),
+                interactionService,
                 view,
                 playerCamera);
         }

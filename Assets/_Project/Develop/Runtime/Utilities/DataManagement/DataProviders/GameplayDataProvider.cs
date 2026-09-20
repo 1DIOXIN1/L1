@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
+using _Project.Develop.Runtime.Utilities.DataManagement;
 
 namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
 {
@@ -17,6 +19,8 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
             {
                 CountWins = 0,
                 CountLoss = 0,
+                CompletedMissionIds = new List<string>(),
+                CompletedOptionalObjectives = new List<MissionOptionalSaveData>(),
             };
         }
     }

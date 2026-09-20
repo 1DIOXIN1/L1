@@ -83,13 +83,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 player.Animator.runtimeAnimatorController = null;
             }
 
-            _playerCamera.Bind(player, _input, playerConfig);
+            _playerCamera.Initialize(player, _input, playerConfig);
 
             player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health, noiseEmitter);
 
             Transform weaponSocket = PlayerWeaponView.CreateSocket(player.FirePoint);
             PlayerWeaponView weaponView = new PlayerWeaponView(weaponSocket);
-            player.BindWeaponView(weaponView, inventory);
+            player.SetWeaponView(weaponView, inventory);
 
             gameMode.RegisterPlayer(player, inventory);
             player.SetDeathHandler(gameMode.TriggerDefeat);

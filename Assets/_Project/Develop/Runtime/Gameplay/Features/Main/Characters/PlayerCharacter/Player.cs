@@ -60,15 +60,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.SelectSecondarySlot += OnSelectSecondarySlot;
         }
 
-        public void BindWeaponView(PlayerWeaponView weaponView, WeaponInventory weaponInventory)
+        public void SetWeaponView(PlayerWeaponView weaponView, WeaponInventory weaponInventory)
         {
-            UnbindWeaponView();
+            ClearWeaponView();
 
             _weaponView = weaponView;
             _weaponInventory = weaponInventory;
-
-            if (_weaponInventory == null || _weaponView == null)
-                return;
 
             _weaponInventory.WeaponChanged += OnWeaponViewChanged;
             _weaponView.Show(_weaponInventory.CurrentWeapon);
@@ -100,7 +97,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         private void OnDestroy()
         {
-            UnbindWeaponView();
+            ClearWeaponView();
 
             if (_input == null)
                 return;
@@ -120,7 +117,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _weaponView?.Show(weapon);
         }
 
-        private void UnbindWeaponView()
+        private void ClearWeaponView()
         {
             if (_weaponInventory != null)
             {

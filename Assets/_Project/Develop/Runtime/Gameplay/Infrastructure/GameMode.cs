@@ -4,6 +4,7 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
+using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.Meta.Features.Player;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
@@ -13,15 +14,28 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public event Action<MissionResult> MissionEnded;
 
         private readonly EnemyAIService _enemyAIService;
-        private readonly List<IMissionObjective> _objectives = new();
+        private readonly MissionService _missionService;
+        private readonly MissionObjectiveFactory _objectiveFactory;
+        private readonly MissionQuestTracker _questTracker;
+        private readonly List<IMissionObjective> _optionalObjectives = new();
+        private readonly List<Action> _optionalCompletedHandlers = new();
 
         private Player _player;
         private WeaponInventory _weaponInventory;
+        private SequenceObjective _primarySequence;
+        private string _missionId;
         private bool _isFinished;
 
-        public GameMode(EnemyAIService enemyAIService)
+        public GameMode(
+            EnemyAIService enemyAIService,
+            MissionService missionService,
+            MissionObjectiveFactory objectiveFactory,
+            MissionQuestTracker questTracker)
         {
             _enemyAIService = enemyAIService;
+            _missionService = missionService;
+            _objectiveFactory = objectiveFactory;
+            _questTracker = questTracker;
         }
 
         public void RegisterPlayer(Player player, WeaponInventory weaponInventory)
@@ -43,33 +57,69 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             Complete(MissionEndReason.PlayerDied);
         }
 
-        public void Start()
+        public void Start(string missionId)
         {
+            if (string.IsNullOrEmpty(missionId))
+                throw new ArgumentException("Mission id is required.", nameof(missionId));
+
+            if (_missionService.TryGetMission(missionId, out MissionDefinition mission) == false)
+                throw new InvalidOperationException($"Mission '{missionId}' is not configured.");
+
+            _missionId = missionId;
             _isFinished = false;
             StopObjectives();
 
             _enemyAIService.MarkSpawnComplete();
+            _questTracker.BeginMission(mission);
 
-            var clearEnemies = new ClearAllEnemiesObjective(_enemyAIService);
-            clearEnemies.Completed += OnObjectiveCompleted;
-            _objectives.Add(clearEnemies);
+            _primarySequence = _objectiveFactory.CreatePrimarySequence(mission.PrimarySteps);
+            _primarySequence.Completed += OnPrimaryCompleted;
+            _primarySequence.StepCompleted += OnPrimaryStepCompleted;
+            _primarySequence.StepStarted += OnPrimaryStepStarted;
 
-            foreach (IMissionObjective objective in _objectives)
-                objective.Start();
+            for (int i = 0; i < mission.OptionalObjectives.Count; i++)
+            {
+                MissionObjectiveDefinition definition = mission.OptionalObjectives[i];
+                if (definition == null)
+                    continue;
+
+                IMissionObjective objective = _objectiveFactory.Create(definition);
+                string objectiveId = definition.Id;
+                Action handler = () => OnOptionalObjectiveCompleted(objectiveId);
+                objective.Completed += handler;
+                _optionalCompletedHandlers.Add(handler);
+                _optionalObjectives.Add(objective);
+            }
+
+            _primarySequence.Start();
+
+            for (int i = 0; i < _optionalObjectives.Count; i++)
+                _optionalObjectives[i].Start();
         }
 
-        private void OnObjectiveCompleted()
+        private void OnPrimaryStepStarted(int stepIndex)
+        {
+            _questTracker.SetActivePrimary(stepIndex);
+        }
+
+        private void OnPrimaryStepCompleted(int stepIndex)
+        {
+            _questTracker.CompletePrimaryStep(stepIndex);
+        }
+
+        private void OnPrimaryCompleted()
+        {
+            _questTracker.ClearActivePrimary();
+            Complete(MissionEndReason.ObjectivesComplete);
+        }
+
+        private void OnOptionalObjectiveCompleted(string objectiveId)
         {
             if (_isFinished)
                 return;
 
-            for (int i = 0; i < _objectives.Count; i++)
-            {
-                if (_objectives[i].IsComplete == false)
-                    return;
-            }
-
-            Complete(MissionEndReason.ObjectivesComplete);
+            _questTracker.CompleteOptional(objectiveId);
+            _missionService.CompleteOptional(_missionId, objectiveId);
         }
 
         private void Complete(MissionEndReason reason)
@@ -86,31 +136,25 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
         private void StopObjectives()
         {
-            foreach (IMissionObjective objective in _objectives)
+            if (_primarySequence != null)
             {
-                objective.Completed -= OnObjectiveCompleted;
-                objective.Stop();
+                _primarySequence.Completed -= OnPrimaryCompleted;
+                _primarySequence.StepCompleted -= OnPrimaryStepCompleted;
+                _primarySequence.StepStarted -= OnPrimaryStepStarted;
+                _primarySequence.Stop();
+                _primarySequence = null;
             }
 
-            _objectives.Clear();
-        }
+            for (int i = 0; i < _optionalObjectives.Count; i++)
+            {
+                if (i < _optionalCompletedHandlers.Count)
+                    _optionalObjectives[i].Completed -= _optionalCompletedHandlers[i];
 
-        // Sequence minigame rules (legacy, disabled for shooter sortie loop):
-        //
-        // private void OnRightSequence()
-        // {
-        //     _walletService.Add(CurrencyTypes.Gold, _configsProviderService.GetConfig<StartWalletConfig>().ValueToAdd);
-        //     Complete(MissionEndReason.ObjectivesComplete);
-        // }
-        //
-        // private void OnWrongSequence()
-        // {
-        //     var valueToSpend = _configsProviderService.GetConfig<StartWalletConfig>().ValueToSpend;
-        //
-        //     if (_walletService.Enough(CurrencyTypes.Gold, valueToSpend))
-        //         _walletService.Spend(CurrencyTypes.Gold, valueToSpend);
-        //
-        //     Complete(MissionEndReason.PlayerDied);
-        // }
+                _optionalObjectives[i].Stop();
+            }
+
+            _optionalObjectives.Clear();
+            _optionalCompletedHandlers.Clear();
+        }
     }
 }

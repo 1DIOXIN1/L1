@@ -9,17 +9,23 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
         private readonly PhoneView _view;
         private readonly IInputService _input;
         private readonly SettingsPresenter _settingsPresenter;
+        private readonly MapPresenter _mapPresenter;
+        private readonly QuestsPresenter _questsPresenter;
 
         private bool _isOpen;
 
         public PhonePresenter(
             PhoneView view,
             IInputService input,
-            SettingsPresenter settingsPresenter)
+            SettingsPresenter settingsPresenter,
+            MapPresenter mapPresenter,
+            QuestsPresenter questsPresenter)
         {
             _view = view;
             _input = input;
             _settingsPresenter = settingsPresenter;
+            _mapPresenter = mapPresenter;
+            _questsPresenter = questsPresenter;
         }
 
         public void Initialize()
@@ -27,7 +33,9 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
             _view.SetVisible(false);
             _view.ShowTab(PhoneTab.None);
 
-            _settingsPresenter?.Initialize();
+            _settingsPresenter.Initialize();
+            _mapPresenter.Initialize();
+            _questsPresenter.Initialize();
 
             _input.PhonePressed += OnPhonePressed;
             _view.SettingsClicked += OnSettingsClicked;
@@ -44,7 +52,9 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
             _view.QuestsClicked -= OnQuestsClicked;
             _view.MessageClicked -= OnMessageClicked;
 
-            _settingsPresenter?.Dispose();
+            _settingsPresenter.Dispose();
+            _mapPresenter.Dispose();
+            _questsPresenter.Dispose();
 
             if (_isOpen)
                 Close();
@@ -71,7 +81,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
         private void Close()
         {
             _isOpen = false;
-            _settingsPresenter?.FlushSave();
+            _settingsPresenter.FlushSave();
             _view.ShowTab(PhoneTab.None);
             _view.SetVisible(false);
             _input.SetContext(InputContext.Gameplay);
@@ -83,17 +93,19 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
         private void OnSettingsClicked()
         {
             _view.ShowTab(PhoneTab.Settings);
-            _settingsPresenter?.Show();
+            _settingsPresenter.Show();
         }
 
         private void OnMapClicked()
         {
             _view.ShowTab(PhoneTab.Map);
+            _mapPresenter.Show();
         }
 
         private void OnQuestsClicked()
         {
             _view.ShowTab(PhoneTab.Quests);
+            _questsPresenter.Show();
         }
 
         private void OnMessageClicked()

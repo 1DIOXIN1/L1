@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f2a3b4c5d6e7f8091a2b3c4d5e6f70, type: 3}
+  m_Name: MissionsCatalogConfig
+  m_EditorClassIdentifier: 
+  _missions:
+  - _id: Yard
+    _displayName: Yard
+    _sceneName: Test
+    _prerequisiteMissionId: 
+    _primarySteps:
+    - _id: clear_enemies
+      _title: Clear the yard
+      _description: Eliminate all enemies in the yard.
+      _role: 0
+      _type: 0
+      _targetId: 
+    - _id: steal_test_case
+      _title: Steal the case
+      _description: Steal the marked case.
+      _role: 0
+      _type: 1
+      _targetId: test_case
+    _optionalObjectives:
+    - _id: steal_optional_case
+      _title: Optional case
+      _description: Optionally steal the second case.
+      _role: 1
+      _type: 1
+      _targetId: test_case_2

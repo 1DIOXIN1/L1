@@ -568,11 +568,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1546016455}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cff35bd52f0645d78f3970a43c47a199, type: 3}
+  m_Script: {fileID: 11500000, guid: a7c4e91b2d3f4a5e8b6c0d1e2f3a4b5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerSpawnPoint: {fileID: 690107664}
-  enemySpawnRegistry: {fileID: 0}
   interactableRegistry: {fileID: 354944896}
 --- !u!4 &1546016457
 Transform:

@@ -43,6 +43,9 @@ namespace _Project.Develop.Runtime.UI.Core
 
         public void Release<TView>(TView view) where TView : MonoBehaviour, IView
         {
+            if (view == null)
+                return;
+
             Object.Destroy(view.gameObject);
         }
     }

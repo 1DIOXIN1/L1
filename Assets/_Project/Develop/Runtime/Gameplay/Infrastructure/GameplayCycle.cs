@@ -1,27 +1,24 @@
 using System;
-using System.Collections;
 using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
+using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Progress;
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
 using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
-using _Project.Develop.Runtime.Utilities.SceneManagement;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
     public class GameplayCycle : IDisposable
     {
-        // TEMP: instant GamePlay reload for test loop. Restore hub flow later.
-        private const bool InstantRestartGameplayOnMissionEnd = true;
-
         private readonly GameMode _gameMode;
-        private readonly SceneSwitcherService _sceneSwitcherService;
         private readonly CoroutinesPerformer _coroutinesPerformer;
         private readonly GameplayDataProvider _gameplayDataProvider;
         private readonly PlayerDataProvider _playerDataProvider;
         private readonly PlayerStateService _playerStateService;
         private readonly ProgressService _progressService;
+        private readonly MissionService _missionService;
+        private readonly LocationTravelService _locationTravel;
         private readonly IInputService _inputService;
 
         private GameplayInputArgs _gameplayInputArgs;
@@ -32,23 +29,24 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public GameplayCycle(
             GameMode gameMode,
             IInputService inputService,
-            SceneSwitcherService sceneSwitcherService,
             CoroutinesPerformer coroutinesPerformer,
             GameplayDataProvider gameplayDataProvider,
             PlayerDataProvider playerDataProvider,
             PlayerStateService playerStateService,
-            ProgressService progressService)
+            ProgressService progressService,
+            MissionService missionService,
+            LocationTravelService locationTravel)
         {
             _gameMode = gameMode;
             _inputService = inputService;
-            _sceneSwitcherService = sceneSwitcherService;
             _coroutinesPerformer = coroutinesPerformer;
             _gameplayDataProvider = gameplayDataProvider;
             _playerDataProvider = playerDataProvider;
             _playerStateService = playerStateService;
             _progressService = progressService;
+            _missionService = missionService;
+            _locationTravel = locationTravel;
 
-            _inputService.ConfirmPressed += OnConfirmPressed;
             _gameMode.MissionEnded += OnMissionEnded;
         }
 
@@ -59,64 +57,44 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _isSwitchingScene = false;
             _playerStateCaptured = false;
 
-            _gameMode.Start();
+            _gameMode.Start(gameplayInputArgs.MissionId);
         }
 
         public void Dispose()
         {
-            _inputService.ConfirmPressed -= OnConfirmPressed;
             _gameMode.MissionEnded -= OnMissionEnded;
-        }
-
-        private void OnConfirmPressed()
-        {
-            if (InstantRestartGameplayOnMissionEnd)
-                return;
-
-            if (_isGameFinished == false)
-                return;
-
-            if (_isSwitchingScene)
-                return;
-
-            _isSwitchingScene = true;
-
-            _coroutinesPerformer.StartPerform(
-                _sceneSwitcherService.ProcessSwitchTo(Scenes.MainMenu));
-
-            _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
         }
 
         private void OnMissionEnded(MissionResult result)
         {
-            if (result.IsSuccess)
-                _progressService.Win();
-            else
-                _progressService.Lose();
-
-            CaptureAndSavePlayerState();
-            _isGameFinished = true;
-
-            if (InstantRestartGameplayOnMissionEnd == false)
+            if (_isGameFinished)
                 return;
 
-            // TEMP test loop: keep next run playable.
+            _isGameFinished = true;
+
+            if (result.IsSuccess)
+            {
+                _progressService.Win();
+
+                if (_gameplayInputArgs != null && string.IsNullOrEmpty(_gameplayInputArgs.MissionId) == false)
+                    _missionService.Complete(_gameplayInputArgs.MissionId);
+            }
+            else
+            {
+                _progressService.Lose();
+            }
+
+            CaptureAndSavePlayerState();
             _playerStateService.RestoreHealth();
             _playerStateService.RefillAmmo();
             _coroutinesPerformer.StartPerform(_playerDataProvider.Save());
+            _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
 
             if (_isSwitchingScene)
                 return;
 
             _isSwitchingScene = true;
-            _coroutinesPerformer.StartPerform(RestartGameplay());
-            _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
-        }
-
-        private IEnumerator RestartGameplay()
-        {
-            yield return null;
-            yield return _sceneSwitcherService.ProcessSwitchTo(Scenes.GamePlay, _gameplayInputArgs);
+            _locationTravel.GoToHub();
         }
 
         private void CaptureAndSavePlayerState()

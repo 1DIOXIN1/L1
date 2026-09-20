@@ -26,7 +26,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public CinemachineBrain LookBrain => lookBrain;
         public Player Player => _player;
 
-        public void Bind(Player player, IInputService input, PlayerConfig config)
+        public void Initialize(Player player, IInputService input, PlayerConfig config)
         {
             _player = player;
             _input = input;

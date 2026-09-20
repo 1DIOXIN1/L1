@@ -41,10 +41,10 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Detection
             Tick();
         }
 
-        public void BindCamera(Camera camera)
+        public void SetCamera(Camera camera)
         {
             _camera = camera;
-            _view?.SetCamera(camera);
+            _view.SetCamera(camera);
         }
 
         public void SetVisible(bool visible)

@@ -12,8 +12,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         private void OnValidate()
         {
-            if (interactables == null || interactables.Length == 0)
-                interactables = GetComponentsInChildren<Interactable>(true);
+            interactables = GetComponentsInChildren<Interactable>(true);
         }
     }
 }

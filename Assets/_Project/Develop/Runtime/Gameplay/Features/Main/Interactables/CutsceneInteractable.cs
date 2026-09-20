@@ -17,6 +17,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         public override void Construct(InteractionSetup setup)
         {
+            base.Construct(setup);
             _cutscenes = setup.Cutscenes;
             _player = setup.Player;
 
