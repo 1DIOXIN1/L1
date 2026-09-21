@@ -24,6 +24,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
         public bool IsShootHeld { get; private set; }
         public bool IsAimHeld { get; private set; }
+        public bool IsArsenalHeld { get; private set; }
         public bool IsSprintHeld { get; private set; }
         public Vector2 LookDelta { get; private set; }
         public InputContext CurrentContext => _context;
@@ -54,6 +55,9 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
                 case InputContext.Phone:
                     ProcessPhoneInput();
                     break;
+                case InputContext.Arsenal:
+                    ProcessArsenalInput();
+                    break;
                 default:
                     ClearGameplayAxes();
                     break;
@@ -71,6 +75,15 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             {
                 ConfirmPressed?.Invoke();
             }
+        }
+
+        private void ProcessArsenalInput()
+        {
+            IsShootHeld = false;
+            IsAimHeld = false;
+            IsSprintHeld = false;
+            LookDelta = Vector2.zero;
+            IsArsenalHeld = Input.GetKey(KeyCode.E);
         }
 
         private void ProcessPhoneInput()
@@ -117,14 +130,9 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             if (Input.GetKeyDown(KeyCode.Space))
                 Jump?.Invoke();
 
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                SelectPrimarySlot?.Invoke();
-
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-                SelectSecondarySlot?.Invoke();
-
             IsShootHeld = Input.GetMouseButton(0);
             IsAimHeld = Input.GetMouseButton(1);
+            IsArsenalHeld = Input.GetKey(KeyCode.E);
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 Shoot?.Invoke();
@@ -149,6 +157,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         {
             IsShootHeld = false;
             IsAimHeld = false;
+            IsArsenalHeld = false;
             IsSprintHeld = false;
             LookDelta = Vector2.zero;
         }

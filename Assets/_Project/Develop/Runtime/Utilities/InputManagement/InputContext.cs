@@ -5,6 +5,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         Menu,
         Gameplay,
         Cutscene,
-        Phone
+        Phone,
+        Arsenal
     }
 }

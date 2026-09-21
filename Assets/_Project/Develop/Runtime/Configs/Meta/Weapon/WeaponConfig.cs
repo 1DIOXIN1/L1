@@ -18,7 +18,6 @@ namespace _Project.Develop.Runtime.Configs.Meta.Weapon
         [field: SerializeField] public float Range { get; private set; } = 50f;
         [field: SerializeField] public bool IsAutomatic { get; private set; }
         [field: SerializeField] public Sprite HudIconActive { get; private set; }
-        [field: SerializeField] public Sprite HudIconReloading { get; private set; }
         [field: SerializeField] public GameObject ViewPrefab { get; private set; }
         [field: SerializeField] public Vector3 ViewLocalPosition { get; private set; }
         [field: SerializeField] public Vector3 ViewLocalEulerAngles { get; private set; }

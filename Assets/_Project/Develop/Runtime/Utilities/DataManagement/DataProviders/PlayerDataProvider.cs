@@ -20,11 +20,14 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
 
         protected override PlayerData GetOriginData()
         {
+            PlayerWeaponInventoryConfig inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
+
             return new PlayerData
             {
                 WalletData = InitWalletData(),
                 Health = _configsProviderService.GetConfig<PlayerConfig>().Health,
-                SelectedWeaponSlot = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>().DefaultSelectedSlot,
+                SelectedWeaponType = inventoryConfig.DefaultSelectedWeapon,
+                OwnedWeapons = new List<WeaponType>(inventoryConfig.StartingWeapons),
                 AmmoByWeapon = InitAmmoData(),
                 ReserveAmmoByWeapon = InitReserveAmmoData()
             };
@@ -47,10 +50,10 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
             PlayerWeaponInventoryConfig inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
             WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
 
-            foreach (PlayerWeaponInventoryConfig.StartWeaponSlot slot in inventoryConfig.Slots)
+            for (int i = 0; i < inventoryConfig.StartingWeapons.Count; i++)
             {
-                WeaponConfig weaponConfig = catalog.GetWeapon(slot.WeaponType);
-                ammo[slot.WeaponType] = weaponConfig.MagazineSize;
+                WeaponType type = inventoryConfig.StartingWeapons[i];
+                ammo[type] = catalog.GetWeapon(type).MagazineSize;
             }
 
             return ammo;
@@ -62,10 +65,10 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
             PlayerWeaponInventoryConfig inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
             WeaponsCatalogConfig catalog = _configsProviderService.GetConfig<WeaponsCatalogConfig>();
 
-            foreach (PlayerWeaponInventoryConfig.StartWeaponSlot slot in inventoryConfig.Slots)
+            for (int i = 0; i < inventoryConfig.StartingWeapons.Count; i++)
             {
-                WeaponConfig weaponConfig = catalog.GetWeapon(slot.WeaponType);
-                reserve[slot.WeaponType] = weaponConfig.ReserveAmmo;
+                WeaponType type = inventoryConfig.StartingWeapons[i];
+                reserve[type] = catalog.GetWeapon(type).ReserveAmmo;
             }
 
             return reserve;

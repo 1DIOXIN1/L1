@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Configs.Meta.Noise;
-using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
@@ -86,8 +85,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
             _playerCamera.Initialize(player, _input, playerConfig);
 
-            foreach (KeyValuePair<SlotWeaponType, WeaponSlot> pair in inventory.Slots)
-                pair.Value.Weapon?.SetAimCamera(_playerCamera.LookCamera);
+            IReadOnlyList<IWeapon> weapons = inventory.Weapons;
+            for (int i = 0; i < weapons.Count; i++)
+                weapons[i].SetAimCamera(_playerCamera.LookCamera);
 
             player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health, noiseEmitter);
 

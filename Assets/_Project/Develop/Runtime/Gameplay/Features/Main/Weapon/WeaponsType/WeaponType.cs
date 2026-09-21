@@ -4,8 +4,7 @@
     {
         Ak74 = 0,
         Usp = 1,
-
-        /// <summary>Legacy save key. Prefer <see cref="Ak74"/>.</summary>
-        Smg = Ak74
+        Smg = Ak74,
+        MP5 = 3,
     }
 }

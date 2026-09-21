@@ -17,9 +17,10 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
         private readonly ConfigsProviderService _configsProviderService;
         private readonly Dictionary<WeaponType, int> _ammoByWeapon = new();
         private readonly Dictionary<WeaponType, int> _reserveAmmoByWeapon = new();
+        private readonly List<WeaponType> _ownedWeapons = new();
 
         private int _health;
-        private SlotWeaponType _selectedWeaponSlot;
+        private WeaponType _selectedWeaponType;
 
         public PlayerStateService(PlayerDataProvider playerDataProvider, ConfigsProviderService configsProviderService)
         {
@@ -31,7 +32,8 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
 
         public int Health => _health;
         public int MaxHealth => _configsProviderService.GetConfig<PlayerConfig>().Health;
-        public SlotWeaponType SelectedWeaponSlot => _selectedWeaponSlot;
+        public WeaponType SelectedWeaponType => _selectedWeaponType;
+        public IReadOnlyList<WeaponType> OwnedWeapons => _ownedWeapons;
         public IReadOnlyDictionary<WeaponType, int> AmmoByWeapon => _ammoByWeapon;
         public IReadOnlyDictionary<WeaponType, int> ReserveAmmoByWeapon => _reserveAmmoByWeapon;
 
@@ -59,17 +61,17 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
                 throw new ArgumentNullException(nameof(weaponInventory));
 
             _health = player.CurrentHealth;
-            _selectedWeaponSlot = weaponInventory.CurrentSlot ?? _selectedWeaponSlot;
+            _selectedWeaponType = weaponInventory.CurrentWeaponType ?? _selectedWeaponType;
 
             _ammoByWeapon.Clear();
             _reserveAmmoByWeapon.Clear();
+            _ownedWeapons.Clear();
 
-            foreach (KeyValuePair<SlotWeaponType, WeaponSlot> pair in weaponInventory.Slots)
+            IReadOnlyList<IWeapon> weapons = weaponInventory.Weapons;
+            for (int i = 0; i < weapons.Count; i++)
             {
-                if (pair.Value?.Weapon == null)
-                    continue;
-
-                IWeapon weapon = pair.Value.Weapon;
+                IWeapon weapon = weapons[i];
+                _ownedWeapons.Add(weapon.Type);
                 _ammoByWeapon[weapon.Type] = weapon.Ammo;
                 _reserveAmmoByWeapon[weapon.Type] = weapon.ReserveAmmo;
             }
@@ -80,6 +82,11 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
             _health = MaxHealth;
         }
 
+        public void SetSelectedWeaponType(WeaponType type)
+        {
+            _selectedWeaponType = type;
+        }
+
         public void RefillAmmo()
         {
             ApplyOriginCombatStats();
@@ -88,7 +95,8 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
         public void WriteTo(PlayerData data)
         {
             data.Health = _health;
-            data.SelectedWeaponSlot = _selectedWeaponSlot;
+            data.SelectedWeaponType = _selectedWeaponType;
+            data.OwnedWeapons = new List<WeaponType>(_ownedWeapons);
             data.AmmoByWeapon = new Dictionary<WeaponType, int>(_ammoByWeapon);
             data.ReserveAmmoByWeapon = new Dictionary<WeaponType, int>(_reserveAmmoByWeapon);
         }
@@ -101,10 +109,28 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
                 return;
             }
 
+            PlayerWeaponInventoryConfig inventoryConfig =
+                _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
+
             _health = Mathf.Clamp(data.Health, 0, MaxHealth);
-            _selectedWeaponSlot = data.SelectedWeaponSlot == SlotWeaponType.None
-                ? _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>().DefaultSelectedSlot
-                : data.SelectedWeaponSlot;
+            _selectedWeaponType = data.SelectedWeaponType;
+
+            _ownedWeapons.Clear();
+            if (data.OwnedWeapons != null && data.OwnedWeapons.Count > 0)
+            {
+                for (int i = 0; i < data.OwnedWeapons.Count; i++)
+                    _ownedWeapons.Add(data.OwnedWeapons[i]);
+            }
+            else
+            {
+                for (int i = 0; i < inventoryConfig.StartingWeapons.Count; i++)
+                    _ownedWeapons.Add(inventoryConfig.StartingWeapons[i]);
+            }
+
+            if (_ownedWeapons.Count > 0 && _ownedWeapons.Contains(_selectedWeaponType) == false)
+                _selectedWeaponType = _ownedWeapons[0];
+            else if (_ownedWeapons.Count == 0)
+                _selectedWeaponType = inventoryConfig.DefaultSelectedWeapon;
 
             _ammoByWeapon.Clear();
             _reserveAmmoByWeapon.Clear();
@@ -133,16 +159,19 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
             PlayerWeaponInventoryConfig inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
 
             _health = playerConfig.Health;
-            _selectedWeaponSlot = inventoryConfig.DefaultSelectedSlot;
+            _selectedWeaponType = inventoryConfig.DefaultSelectedWeapon;
 
+            _ownedWeapons.Clear();
             _ammoByWeapon.Clear();
             _reserveAmmoByWeapon.Clear();
 
-            foreach (PlayerWeaponInventoryConfig.StartWeaponSlot slot in inventoryConfig.Slots)
+            for (int i = 0; i < inventoryConfig.StartingWeapons.Count; i++)
             {
-                WeaponConfig weaponConfig = GetWeaponConfig(slot.WeaponType);
-                _ammoByWeapon[slot.WeaponType] = weaponConfig.MagazineSize;
-                _reserveAmmoByWeapon[slot.WeaponType] = weaponConfig.ReserveAmmo;
+                WeaponType type = inventoryConfig.StartingWeapons[i];
+                WeaponConfig weaponConfig = GetWeaponConfig(type);
+                _ownedWeapons.Add(type);
+                _ammoByWeapon[type] = weaponConfig.MagazineSize;
+                _reserveAmmoByWeapon[type] = weaponConfig.ReserveAmmo;
             }
         }
 

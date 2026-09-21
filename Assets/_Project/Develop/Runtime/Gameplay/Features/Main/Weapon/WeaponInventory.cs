@@ -1,56 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
-using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 {
     public class WeaponInventory
     {
-        private SlotWeaponType? _currentSlot;
+        private readonly List<IWeapon> _weapons = new();
         private IWeapon _currentWeapon;
 
-        private readonly Dictionary<SlotWeaponType, WeaponSlot> _slots;
-
         public event Action<IWeapon> WeaponChanged;
-
-        public WeaponInventory(Dictionary<SlotWeaponType, WeaponSlot> weaponSlots)
-        {
-            _slots = new Dictionary<SlotWeaponType, WeaponSlot>(weaponSlots);
-        }
+        public event Action Changed;
 
         public IWeapon CurrentWeapon => _currentWeapon;
-        public SlotWeaponType? CurrentSlot => _currentSlot;
-        public IReadOnlyDictionary<SlotWeaponType, WeaponSlot> Slots => _slots;
+        public WeaponType? CurrentWeaponType => _currentWeapon?.Type;
+        public IReadOnlyList<IWeapon> Weapons => _weapons;
 
-        public void EquipWeapon(SlotWeaponType slotType)
+        public bool Add(IWeapon weapon)
         {
-            if (!_slots.TryGetValue(slotType, out WeaponSlot slot))
-                return;
+            if (weapon == null)
+                return false;
 
-            if (slot.Weapon == null)
-                return;
+            if (Contains(weapon.Type))
+                return false;
 
-            if (_currentWeapon == slot.Weapon)
-                return;
+            _weapons.Add(weapon);
+            Changed?.Invoke();
 
-            _currentSlot = slot.SlotType;
-            _currentWeapon = slot.Weapon;
-            WeaponChanged?.Invoke(_currentWeapon);
+            if (_currentWeapon == null)
+                Equip(weapon.Type);
+
+            return true;
         }
 
-        public void RemoveWeaponOutInventory(SlotWeaponType slotType)
+        public bool Remove(WeaponType type)
         {
-            if (!_slots.TryGetValue(slotType, out WeaponSlot slot))
-                return;
+            int index = IndexOf(type);
+            if (index < 0)
+                return false;
 
-            slot.Clear();
+            IWeapon removed = _weapons[index];
+            _weapons.RemoveAt(index);
+            Changed?.Invoke();
 
-            if (_currentSlot.HasValue && _currentSlot.Value == slotType)
+            if (_currentWeapon == removed)
             {
-                _currentSlot = null;
-                _currentWeapon = null;
-                WeaponChanged?.Invoke(null);
+                _currentWeapon = _weapons.Count > 0 ? _weapons[0] : null;
+                WeaponChanged?.Invoke(_currentWeapon);
             }
+
+            return true;
+        }
+
+        public bool Equip(WeaponType type)
+        {
+            int index = IndexOf(type);
+            if (index < 0)
+                return false;
+
+            IWeapon weapon = _weapons[index];
+            if (_currentWeapon == weapon)
+                return true;
+
+            _currentWeapon = weapon;
+            WeaponChanged?.Invoke(_currentWeapon);
+            return true;
+        }
+
+        public bool Contains(WeaponType type) => IndexOf(type) >= 0;
+
+        public bool TryGet(WeaponType type, out IWeapon weapon)
+        {
+            int index = IndexOf(type);
+            if (index < 0)
+            {
+                weapon = null;
+                return false;
+            }
+
+            weapon = _weapons[index];
+            return true;
+        }
+
+        private int IndexOf(WeaponType type)
+        {
+            for (int i = 0; i < _weapons.Count; i++)
+            {
+                if (_weapons[i].Type == type)
+                    return i;
+            }
+
+            return -1;
         }
     }
 }

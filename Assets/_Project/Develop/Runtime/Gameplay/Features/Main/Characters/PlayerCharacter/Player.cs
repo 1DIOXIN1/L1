@@ -57,8 +57,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Reload += OnReload;
             _input.UseGadget += OnUseGadget;
             _input.Crouch += OnCrouch;
-            _input.SelectPrimarySlot += OnSelectPrimarySlot;
-            _input.SelectSecondarySlot += OnSelectSecondarySlot;
         }
 
         public void SetWeaponView(PlayerWeaponView weaponView, WeaponInventory weaponInventory)
@@ -109,8 +107,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Reload -= OnReload;
             _input.UseGadget -= OnUseGadget;
             _input.Crouch -= OnCrouch;
-            _input.SelectPrimarySlot -= OnSelectPrimarySlot;
-            _input.SelectSecondarySlot -= OnSelectSecondarySlot;
         }
 
         private void OnWeaponViewChanged(IWeapon weapon)
@@ -168,22 +164,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 return;
 
             _combat.UseGadget();
-        }
-
-        private void OnSelectPrimarySlot()
-        {
-            if (_controlMode == PlayerControlMode.Locked)
-                return;
-
-            _combat.SelectPrimary();
-        }
-
-        private void OnSelectSecondarySlot()
-        {
-            if (_controlMode == PlayerControlMode.Locked)
-                return;
-
-            _combat.SelectSecondary();
         }
 
         private void OnMove(Vector3 move)

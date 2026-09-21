@@ -8,6 +8,7 @@ using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Meta.Features.Settings;
 using _Project.Develop.Runtime.UI.Core;
+using _Project.Develop.Runtime.UI.Gameplay.Arsenal;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
 using _Project.Develop.Runtime.UI.Gameplay.Phone;
@@ -122,6 +123,17 @@ namespace _Project.Develop.Runtime.UI.Gameplay
                 interactionService,
                 view,
                 playerCamera);
+        }
+
+        public WeaponArsenalPresenter CreateWeaponArsenalPresenter(GameplayScreenView screenView)
+        {
+            WeaponArsenalView arsenalView =
+                _container.Resolve<ViewsFactory>().Create<WeaponArsenalView>(ViewIDs.WeaponArsenal, screenView.transform);
+
+            return new WeaponArsenalPresenter(
+                arsenalView,
+                _container.Resolve<IInputService>(),
+                _container.Resolve<PlayerStateService>());
         }
     }
 }

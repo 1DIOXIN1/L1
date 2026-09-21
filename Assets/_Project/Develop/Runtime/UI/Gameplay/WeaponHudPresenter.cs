@@ -1,4 +1,3 @@
-using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
@@ -30,24 +29,13 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
         public void Initialize()
         {
-            SlotWeaponType selectedSlot = _playerStateService.SelectedWeaponSlot;
-            WeaponType? weaponType = ResolveWeaponTypeFromSlot(selectedSlot);
-
-            if (weaponType.HasValue)
-            {
-                WeaponConfig config = _configsProviderService.GetConfig<WeaponsCatalogConfig>().GetWeapon(weaponType.Value);
-                int ammo = _playerStateService.GetAmmo(weaponType.Value);
-                int reserve = _playerStateService.GetReserveAmmo(weaponType.Value);
-                _view.SetAmmo(ammo, reserve);
-                _view.SetWeaponName(weaponType.Value.ToString());
-                _view.SetWeaponIcon(config.HudIconActive);
-            }
-            else
-            {
-                _view.SetAmmo(0, 0);
-                _view.SetWeaponName(string.Empty);
-                _view.SetWeaponIcon(null);
-            }
+            WeaponType selected = _playerStateService.SelectedWeaponType;
+            WeaponConfig config = _configsProviderService.GetConfig<WeaponsCatalogConfig>().GetWeapon(selected);
+            int ammo = _playerStateService.GetAmmo(selected);
+            int reserve = _playerStateService.GetReserveAmmo(selected);
+            _view.SetAmmo(ammo, reserve);
+            _view.SetWeaponName(selected.ToString());
+            _view.SetWeaponIcon(config.HudIconActive);
         }
 
         public void AttachPlayer(Player player)
@@ -115,22 +103,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
             _view.SetAmmo(weapon.Ammo, weapon.ReserveAmmo);
             _view.SetWeaponName(weapon.Type.ToString());
-            _view.SetWeaponIcon(weapon.IsReloading
-                ? weapon.HudIconReloading
-                : weapon.HudIconActive);
-        }
-
-        private WeaponType? ResolveWeaponTypeFromSlot(SlotWeaponType slotType)
-        {
-            var inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
-
-            foreach (var slot in inventoryConfig.Slots)
-            {
-                if (slot.SlotType == slotType)
-                    return slot.WeaponType;
-            }
-
-            return null;
+            _view.SetWeaponIcon(weapon.HudIconActive);
         }
     }
 }

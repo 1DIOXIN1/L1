@@ -51,7 +51,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         public bool IsReloading => _reloadEndTime > 0f && Time.time < _reloadEndTime;
         public bool IsAutomatic => _config.IsAutomatic;
         public Sprite HudIconActive => _config.HudIconActive;
-        public Sprite HudIconReloading => _config.HudIconReloading;
         public GameObject ViewPrefab => _config.ViewPrefab;
         public Vector3 ViewLocalPosition => _config.ViewLocalPosition;
         public Vector3 ViewLocalEulerAngles => _config.ViewLocalEulerAngles;

@@ -18,7 +18,8 @@ namespace _Project.Develop.Runtime.UI.Core
             {ViewIDs.ProgressItem, "UI/Progress/ProgressItemView"},
             {ViewIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView"},
             {ViewIDs.EnemyDetectionIcon, "UI/Gameplay/EnemyDetectionIconView"},
-            {ViewIDs.InteractionHint, "UI/Gameplay/InteractionHintView"}
+            {ViewIDs.InteractionHint, "UI/Gameplay/InteractionHintView"},
+            {ViewIDs.WeaponArsenal, "UI/Gameplay/WeaponArsenalView"}
         };
 
         public ViewsFactory(ResourcesAssetsLoader resourcesAssetsLoader)

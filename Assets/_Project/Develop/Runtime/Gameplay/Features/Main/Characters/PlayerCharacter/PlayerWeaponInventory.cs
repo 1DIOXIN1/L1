@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
-using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
 using _Project.Develop.Runtime.Meta.Features.Player;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using UnityEngine;
@@ -29,19 +29,28 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             Transform firePoint,
             GameObject owner)
         {
+            var inventory = new WeaponInventory();
             var inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
-            var slots = new Dictionary<SlotWeaponType, WeaponSlot>();
 
-            foreach (var slotData in inventoryConfig.Slots)
+            IReadOnlyList<WeaponType> owned = _playerStateService.OwnedWeapons;
+            if (owned == null || owned.Count == 0)
+                owned = inventoryConfig.StartingWeapons;
+
+            for (int i = 0; i < owned.Count; i++)
             {
-                int ammo = _playerStateService.GetAmmo(slotData.WeaponType);
-                int reserveAmmo = _playerStateService.GetReserveAmmo(slotData.WeaponType);
-                IWeapon weapon = _factory.CreateWeapon(slotData.WeaponType, firePoint, owner, ammo, reserveAmmo);
-                slots[slotData.SlotType] = new WeaponSlot(weapon, slotData.SlotType);
+                WeaponType type = owned[i];
+                int ammo = _playerStateService.GetAmmo(type);
+                int reserveAmmo = _playerStateService.GetReserveAmmo(type);
+                IWeapon weapon = _factory.CreateWeapon(type, firePoint, owner, ammo, reserveAmmo);
+                inventory.Add(weapon);
             }
 
-            var inventory = new WeaponInventory(slots);
-            inventory.EquipWeapon(_playerStateService.SelectedWeaponSlot);
+            WeaponType selected = _playerStateService.SelectedWeaponType;
+            if (inventory.Contains(selected))
+                inventory.Equip(selected);
+            else if (inventory.Weapons.Count > 0)
+                inventory.Equip(inventory.Weapons[0].Type);
+
             return inventory;
         }
     }

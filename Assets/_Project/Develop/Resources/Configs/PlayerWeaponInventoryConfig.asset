@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d538ffd80f743aaad83f59be9f3fe35, type: 3}
   m_Name: PlayerWeaponInventoryConfig
   m_EditorClassIdentifier: 
-  <DefaultSelectedSlot>k__BackingField: 1
+  <DefaultSelectedWeapon>k__BackingField: 0
   <DefaultSelectedGadgetSlot>k__BackingField: 1
-  slots:
-  - <SlotType>k__BackingField: 1
-    <WeaponType>k__BackingField: 0
-  - <SlotType>k__BackingField: 2
-    <WeaponType>k__BackingField: 1
+  startingWeapons:
+  - 0
+  - 1
+  - 3
   gadgetSlots:
   - <SlotType>k__BackingField: 1
     <GadgetType>k__BackingField: 0

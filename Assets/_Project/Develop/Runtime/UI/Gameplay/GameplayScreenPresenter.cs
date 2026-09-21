@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.UI.Core;
+using _Project.Develop.Runtime.UI.Gameplay.Arsenal;
 using _Project.Develop.Runtime.UI.Gameplay.Detection;
 using _Project.Develop.Runtime.UI.Gameplay.Interaction;
 using _Project.Develop.Runtime.UI.Gameplay.Phone;
-using _Project.Develop.Runtime.Utilities.InputManagement;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -20,6 +20,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         private EnemyDetectionIconsPresenter _detectionIconsPresenter;
         private InteractionHintPresenter _interactionHintPresenter;
         private PhonePresenter _phonePresenter;
+        private WeaponArsenalPresenter _weaponArsenalPresenter;
 
         public GameplayScreenPresenter(
             GameplayScreenView view,
@@ -35,11 +36,13 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _weaponHudPresenter = _presentersFactory.CreateWeaponHudPresenter(_view);
             _detectionIconsPresenter = _presentersFactory.CreateEnemyDetectionIconsPresenter();
             _phonePresenter = _presentersFactory.CreatePhonePresenter(_view.PhoneView);
+            _weaponArsenalPresenter = _presentersFactory.CreateWeaponArsenalPresenter(_view);
 
             _childPresenters.Add(_vitalsPresenter);
             _childPresenters.Add(_weaponHudPresenter);
             _childPresenters.Add(_detectionIconsPresenter);
             _childPresenters.Add(_phonePresenter);
+            _childPresenters.Add(_weaponArsenalPresenter);
 
             foreach (IPresenter childPresenter in _childPresenters)
                 childPresenter.Initialize();
@@ -50,6 +53,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _vitalsPresenter.AttachPlayer(player);
             _weaponHudPresenter.AttachPlayer(player);
             _detectionIconsPresenter.SetCamera(playerCamera.LookCamera);
+            _weaponArsenalPresenter.AttachInventory(player.Combat.Weapons);
 
             if (_interactionHintPresenter != null)
                 return;
@@ -63,6 +67,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         {
             _vitalsPresenter?.Tick();
             _detectionIconsPresenter?.Tick();
+            _weaponArsenalPresenter?.Tick();
         }
 
         public void TickInteraction()
@@ -86,6 +91,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _detectionIconsPresenter = null;
             _interactionHintPresenter = null;
             _phonePresenter = null;
+            _weaponArsenalPresenter = null;
         }
     }
 }

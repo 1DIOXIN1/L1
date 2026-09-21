@@ -1,4 +1,3 @@
-using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 
@@ -36,16 +35,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public void Reload()
         {
             _weaponInventory.CurrentWeapon?.Reload();
-        }
-
-        public void SelectPrimary()
-        {
-            _weaponInventory.EquipWeapon(SlotWeaponType.PrimarySlot);
-        }
-
-        public void SelectSecondary()
-        {
-            _weaponInventory.EquipWeapon(SlotWeaponType.SecondarySlot);
         }
 
         public void UseGadget()

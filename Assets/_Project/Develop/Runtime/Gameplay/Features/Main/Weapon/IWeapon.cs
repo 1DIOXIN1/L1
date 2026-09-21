@@ -17,7 +17,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         bool IsReloading { get; }
         bool IsAutomatic { get; }
         Sprite HudIconActive { get; }
-        Sprite HudIconReloading { get; }
         GameObject ViewPrefab { get; }
         Vector3 ViewLocalPosition { get; }
         Vector3 ViewLocalEulerAngles { get; }
