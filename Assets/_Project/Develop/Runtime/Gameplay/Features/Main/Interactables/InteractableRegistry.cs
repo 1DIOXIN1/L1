@@ -12,7 +12,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Interactables
 
         private void OnValidate()
         {
-            interactables = GetComponentsInChildren<Interactable>(true);
+            Interactable[] children = GetComponentsInChildren<Interactable>(true);
+            if (children.Length == 0)
+                return;
+
+            interactables = children;
         }
     }
 }
