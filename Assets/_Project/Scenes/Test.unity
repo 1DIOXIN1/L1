@@ -715,7 +715,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 0
+  enemyType: 1
   patrolPoints:
   - {fileID: 481885777}
   - {fileID: 1843330460}
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 2
+  enemyType: 0
   patrolPoints:
   - {fileID: 767363827}
   - {fileID: 2130505036}
@@ -1550,7 +1550,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 0
+  enemyType: 1
   patrolPoints:
   - {fileID: 110160506}
   - {fileID: 2058952030}

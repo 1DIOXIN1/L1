@@ -19,31 +19,30 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
         [field: SerializeField] public float LostDecayTime { get; private set; } = 2f;
         [field: SerializeField, Range(0f, 1f)] public float DamageSuspicionBurst { get; private set; } = 0.45f;
         [field: SerializeField] public GameObject CookerPrefab { get; private set; }
-        [field: SerializeField] public GameObject RangerPrefab { get; private set; }
+        [field: SerializeField] public GameObject TeacherPrefab { get; private set; }
         [field: SerializeField] public GameObject MeleePrefab { get; private set; }
+        [field: SerializeField] public GameObject GuardPrefab { get; private set; }
 
         [SerializeField] private List<EnemyPreset> presets = new List<EnemyPreset>();
 
         public int Health => DefaultPreset.Health;
         public float Speed => DefaultPreset.PatrolSpeed;
-        public EnemyPreset DefaultPreset => GetPreset(EnemyType.Ranger);
+        public EnemyPreset DefaultPreset => GetPreset(EnemyType.Teacher);
 
         public EnemyPreset GetPreset(EnemyType type)
         {
-            if (presets != null)
+            foreach (EnemyPreset preset in presets)
             {
-                foreach (EnemyPreset preset in presets)
-                {
-                    if (preset.Type == type)
-                        return preset;
-                }
+                if (preset.Type == type)
+                    return preset;
             }
 
             return type switch
             {
                 EnemyType.Cooker => EnemyPreset.CreateCooker(),
                 EnemyType.Melee => EnemyPreset.CreateMelee(),
-                _ => EnemyPreset.CreateRanger()
+                EnemyType.Guard => EnemyPreset.CreateGuard(),
+                _ => EnemyPreset.CreateTeacher()
             };
         }
 
@@ -53,8 +52,9 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
             {
                 EnemyType.Cooker => CookerPrefab,
                 EnemyType.Melee => MeleePrefab,
-                EnemyType.Ranger => RangerPrefab,
-                _ => RangerPrefab
+                EnemyType.Teacher => TeacherPrefab,
+                EnemyType.Guard => GuardPrefab,
+                _ => TeacherPrefab
             };
         }
     }
@@ -122,10 +122,16 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
                 EnemyType.Cooker, "enemy_cooker", 50, 2.5f, 4.5f, 18f, 110f, 10f, 360f, 12f);
         }
 
-        public static EnemyPreset CreateRanger()
+        public static EnemyPreset CreateTeacher()
         {
             return new EnemyPreset(
-                EnemyType.Ranger, "enemy_ranger", 35, 2f, 5f, 22f, 120f, 12f, 420f, 16f);
+                EnemyType.Teacher, "enemy_teacher", 35, 2f, 5f, 22f, 120f, 12f, 420f, 16f);
+        }
+
+        public static EnemyPreset CreateGuard()
+        {
+            return new EnemyPreset(
+                EnemyType.Guard, "enemy_guard", 35, 2f, 5f, 22f, 120f, 12f, 420f, 16f);
         }
 
         public static EnemyPreset CreateMelee()

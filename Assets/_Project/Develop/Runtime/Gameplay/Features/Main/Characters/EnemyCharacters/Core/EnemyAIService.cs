@@ -58,6 +58,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
             EnemyUnregistered?.Invoke(enemy);
 
+            if (Application.isPlaying == false)
+                return;
+
             if (_spawnCompleted && _registeredCount > 0 && AliveCount == 0)
                 AllEnemiesEliminated?.Invoke();
         }
@@ -65,6 +68,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public void MarkSpawnComplete()
         {
             _spawnCompleted = true;
+
+            if (Application.isPlaying == false)
+                return;
 
             if (_registeredCount > 0 && AliveCount == 0)
                 AllEnemiesEliminated?.Invoke();

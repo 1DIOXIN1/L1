@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Detection;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Presentation;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,20 +15,29 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
     [RequireComponent(typeof(NavMeshAgent))]
     public abstract class EnemyBase : Character
     {
+        private const float DefaultDeathAnimationFallbackSeconds = 2f;
+
         [SerializeField] private Animator animator;
+        [SerializeField] private GameObject wreckagePrefab;
+        [SerializeField] private float deathAnimationFallbackSeconds = DefaultDeathAnimationFallbackSeconds;
 
         private EnemyContext _context;
+        private EnemyAnimatorPresenter _animatorPresenter;
         private EnemyAttackBehaviorFactory _attackBehaviorFactory;
         private IEnemyAttackBehavior[] _attackBehaviors = Array.Empty<IEnemyAttackBehavior>();
         private IEnemyAttackBehavior _activeAttackBehavior;
         private bool _isInitialized;
         private bool _isGameplaySuspended;
+        private bool _playDeathAnimation = true;
+        private bool _suppressCombatReaction;
+        private bool _isDeathSequenceRunning;
 
         public EnemyStateMachine StateMachine { get; private set; }
         public bool IsAlive => IsDead == false;
         public EnemyContext Context => _context;
         public bool IsGameplaySuspended => _isGameplaySuspended;
         public Animator Animator => animator;
+        public EnemyAnimatorPresenter AnimatorPresenter => _animatorPresenter;
         protected abstract EnemyType Type { get; }
 
         public void Initialize(
@@ -37,9 +48,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             IReadOnlyList<Transform> patrolPoints,
             EnemyAttackBehaviorFactory attackBehaviorFactory)
         {
-            if (attackBehaviorFactory == null)
-                throw new ArgumentNullException(nameof(attackBehaviorFactory));
-
             _attackBehaviorFactory = attackBehaviorFactory;
 
             NavMeshAgent agent = GetComponent<NavMeshAgent>();
@@ -47,6 +55,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
             ConfigureAgent(agent, preset);
             EnsureDamageCollider(agent);
+
+            _animatorPresenter = new EnemyAnimatorPresenter(animator, agent);
 
             _context = new EnemyContext(
                 this,
@@ -70,7 +80,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         }
 
         protected virtual IEnemyAttackPresentation CreatePresentation()
-            => new DefaultEnemyAttackPresentation();
+            => new DefaultEnemyAttackPresentation(_animatorPresenter);
 
         protected virtual void RegisterStates(EnemyStateMachine stateMachine)
         {
@@ -95,7 +105,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void ApplyStimulus(NoiseStimulus stimulus)
         {
-            if (_isInitialized == false || IsDead || _context == null)
+            if (_isInitialized == false || IsDead)
                 return;
 
             _context.Awareness.NotifyStimulus(stimulus.SuspicionAmount);
@@ -169,17 +179,17 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             StateMachine.ChangeState(EnemyStateId.Infiltration);
         }
 
-        public void TickCombat(float deltaTime) => _activeAttackBehavior?.Tick(deltaTime);
+        public void TickCombat(float deltaTime) => _activeAttackBehavior.Tick(deltaTime);
 
         public void ResetCombat()
         {
             for (int i = 0; i < _attackBehaviors.Length; i++)
-                _attackBehaviors[i]?.Reset();
+                _attackBehaviors[i].Reset();
         }
 
         public bool CanSeePlayer()
         {
-            if (_context?.Player == null)
+            if (_context.Player == null)
                 return false;
 
             Vector3 direction = _context.Player.position - transform.position;
@@ -202,7 +212,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void LookAtPlayer(float deltaTime)
         {
-            if (_context?.Player == null)
+            if (_context.Player == null)
                 return;
 
             Vector3 direction = _context.Player.position - transform.position;
@@ -211,7 +221,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void ChasePlayer(float stoppingDistance)
         {
-            if (_context?.Player == null)
+            if (_context.Player == null)
                 return;
 
             NavMeshAgent agent = _context.Agent;
@@ -223,7 +233,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void MoveAwayFromPlayer(float desiredDistance)
         {
-            if (_context?.Player == null)
+            if (_context.Player == null)
                 return;
 
             NavMeshAgent agent = _context.Agent;
@@ -244,9 +254,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void StopAgent()
         {
-            if (_context?.Agent == null)
-                return;
-
             _context.Agent.isStopped = true;
 
             if (_context.Agent.hasPath)
@@ -262,7 +269,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 StopAgent();
                 ResetCombat();
             }
-            else if (_context?.Agent != null)
+            else
             {
                 _context.Agent.isStopped = false;
             }
@@ -270,9 +277,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void ExecuteStealthKill()
         {
-            if (IsDead)
+            if (IsDead || _isDeathSequenceRunning)
                 return;
 
+            _playDeathAnimation = false;
+            _suppressCombatReaction = true;
             TakeDamage(CurrentHealth);
         }
 
@@ -297,7 +306,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public Vector3 GetDirectionToPlayer()
         {
-            if (_context?.Player == null)
+            if (_context.Player == null)
                 return transform.forward;
 
             Vector3 target = _context.Player.position + Vector3.up * _context.Preset.AttackOriginHeight;
@@ -306,7 +315,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public float DistanceToPlayer()
         {
-            if (_context?.Player == null)
+            if (_context.Player == null)
                 return float.MaxValue;
 
             return Vector3.Distance(transform.position, _context.Player.position);
@@ -326,8 +335,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         protected override void OnDamaged(int damage)
         {
-            if (_isInitialized == false || IsDead || _context == null)
+            if (_isInitialized == false || IsDead || _suppressCombatReaction)
                 return;
+
+            _animatorPresenter.PlayHit();
 
             Vector3 sourcePosition = _context.Player != null
                 ? _context.Player.position
@@ -339,15 +350,75 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 NoiseStimulusType.Damage));
         }
 
-        protected override void Die()
+        protected override void HandleDeath()
         {
-            if (_context != null)
+            if (_isDeathSequenceRunning)
+                return;
+
+            _isDeathSequenceRunning = true;
+            StartCoroutine(DeathSequence());
+        }
+
+        private IEnumerator DeathSequence()
+        {
+            SetGameplaySuspended(true);
+            _context.Agent.enabled = false;
+            _context.AIService.Unregister(this);
+            DisableColliders();
+
+            if (_playDeathAnimation)
             {
-                _context.Agent.enabled = false;
-                _context.AIService.Unregister(this);
+                _animatorPresenter.PlayDie();
+                yield return WaitForDeathAnimation();
             }
 
-            base.Die();
+            try
+            {
+                SpawnWreckage();
+            }
+            finally
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private IEnumerator WaitForDeathAnimation()
+        {
+            float enterTimeout = 0.5f;
+            float elapsed = 0f;
+            while (elapsed < enterTimeout)
+            {
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("Die"))
+                    break;
+
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            float waitSeconds = stateInfo.IsName("Die") && stateInfo.length > 0.05f
+                ? stateInfo.length * Mathf.Clamp01(1f - stateInfo.normalizedTime)
+                : deathAnimationFallbackSeconds;
+
+            yield return new WaitForSeconds(waitSeconds);
+        }
+
+        private void SpawnWreckage()
+        {
+            if (wreckagePrefab == null)
+                return;
+
+            UnityEngine.Object.Instantiate(
+                (UnityEngine.Object)wreckagePrefab,
+                transform.position,
+                transform.rotation);
+        }
+
+        private void DisableColliders()
+        {
+            Collider[] colliders = GetComponentsInChildren<Collider>(true);
+            for (int i = 0; i < colliders.Length; i++)
+                colliders[i].enabled = false;
         }
 
         private void CreateAttackBehaviors(EnemyPreset preset)
@@ -359,10 +430,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                     $"Enemy preset '{preset.Id}' has no {nameof(EnemyPreset.AttackBehaviors)} configured.");
 
             IEnemyAttackPresentation presentation = CreatePresentation();
-            if (presentation == null)
-                throw new InvalidOperationException(
-                    $"{GetType().Name} returned null from {nameof(CreatePresentation)}.");
-
             _attackBehaviors = new IEnemyAttackBehavior[configs.Count];
 
             for (int i = 0; i < configs.Count; i++)
@@ -380,16 +447,21 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         private void Update()
         {
-            if (_isInitialized == false || IsDead || _isGameplaySuspended)
+            if (_isInitialized == false || IsDead)
                 return;
 
-            StateMachine.Tick(Time.deltaTime);
+            if (_isGameplaySuspended == false)
+                StateMachine.Tick(Time.deltaTime);
+
+            _animatorPresenter.Tick(_context);
         }
 
         private void OnDestroy()
         {
-            if (_context?.AIService != null)
-                _context.AIService.Unregister(this);
+            if (gameObject.scene.isLoaded == false || _isInitialized == false)
+                return;
+
+            _context.AIService.Unregister(this);
         }
 
         private void EnsureDamageCollider(NavMeshAgent agent)

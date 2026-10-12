@@ -19,6 +19,9 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
 
         public void Render(MissionQuestTracker tracker)
         {
+            if (this == null)
+                return;
+
             ClearItems();
 
             bool hasMission = tracker.HasActiveMission;
@@ -51,7 +54,13 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
         private void ClearItems()
         {
             for (int i = 0; i < _spawnedItems.Count; i++)
-                Destroy(_spawnedItems[i].gameObject);
+            {
+                QuestsObjectiveItemView item = _spawnedItems[i];
+                if (item == null)
+                    continue;
+
+                Destroy(item.gameObject);
+            }
 
             _spawnedItems.Clear();
         }

@@ -37,6 +37,9 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
 
         private void Refresh()
         {
+            if (_view == null)
+                return;
+
             _view.Render(_questTracker);
         }
     }

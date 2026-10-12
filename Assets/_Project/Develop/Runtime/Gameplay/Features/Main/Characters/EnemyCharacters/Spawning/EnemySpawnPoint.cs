@@ -6,7 +6,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 {
     public class EnemySpawnPoint : MonoBehaviour
     {
-        [SerializeField] private EnemyType enemyType = EnemyType.Ranger;
+        [SerializeField] private EnemyType enemyType = EnemyType.Teacher;
         [SerializeField] private Transform[] patrolPoints;
 
         public EnemyType EnemyType => enemyType;

@@ -55,8 +55,16 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
         protected virtual void Die()
         {
+            if (_isDead)
+                return;
+
             _isDead = true;
             _onDied?.Invoke();
+            HandleDeath();
+        }
+
+        protected virtual void HandleDeath()
+        {
             Destroy(gameObject);
         }
     }

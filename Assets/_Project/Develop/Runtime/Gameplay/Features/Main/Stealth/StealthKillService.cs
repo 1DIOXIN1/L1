@@ -25,6 +25,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Stealth
         private EnemyBase _activeEnemy;
         private PlayerControlMode _previousMode;
         private int _healthAtStart;
+        private float _playerGroundY;
+        private bool _characterControllerWasEnabled;
         private bool _isActive;
 
         public StealthKillService(
@@ -45,7 +47,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Stealth
 
         public bool HasPresentation(EnemyBase enemy)
         {
-            StealthKillPresentationConfig presentation = enemy?.Context?.Preset?.StealthKillPresentation;
+            StealthKillPresentationConfig presentation = enemy.Context.Preset.StealthKillPresentation;
             return presentation != null && presentation.HasTimeline;
         }
 
@@ -101,11 +103,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Stealth
             _activeEnemy = enemy;
             _previousMode = player.ControlMode;
             _healthAtStart = player.CurrentHealth;
+            _playerGroundY = player.transform.position.y;
 
             player.SetControlMode(PlayerControlMode.Locked);
             player.HealthChanged += OnPlayerHealthChanged;
             enemy.SetGameplaySuspended(true);
-            _gameplayScreen?.SetDetectionIconsVisible(false);
+            _gameplayScreen.SetDetectionIconsVisible(false);
+
+            SetCharacterControllerEnabled(player, false);
             AlignParticipants(player, enemy);
 
             _presentation = _presentationFactory.Create(
@@ -140,17 +145,32 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Stealth
         {
             Transform enemyTransform = enemy.transform;
             Vector3 standPosition = enemyTransform.position - enemyTransform.forward * _config.PlayerStandDistance;
-            standPosition.y = player.transform.position.y;
-
-            CharacterController characterController = player.CharacterController;
-            bool wasEnabled = characterController.enabled;
-            characterController.enabled = false;
+            standPosition.y = _playerGroundY;
 
             player.transform.SetPositionAndRotation(
                 standPosition,
                 Quaternion.LookRotation(enemyTransform.forward, Vector3.up));
+        }
 
-            characterController.enabled = wasEnabled;
+        private void RestorePlayerGrounding(Player player)
+        {
+            Vector3 position = player.transform.position;
+            position.y = _playerGroundY;
+            player.transform.position = position;
+        }
+
+        private void SetCharacterControllerEnabled(Player player, bool enabled)
+        {
+            CharacterController characterController = player.CharacterController;
+
+            if (enabled == false)
+            {
+                _characterControllerWasEnabled = characterController.enabled;
+                characterController.enabled = false;
+                return;
+            }
+
+            characterController.enabled = _characterControllerWasEnabled;
         }
 
         private void Finish(bool interrupted)
@@ -162,9 +182,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Stealth
             _routine = null;
             _presentation = null;
 
+            RestorePlayerGrounding(_activePlayer);
+            SetCharacterControllerEnabled(_activePlayer, true);
             _activePlayer.HealthChanged -= OnPlayerHealthChanged;
             _activePlayer.SetControlMode(_previousMode);
-            _gameplayScreen?.SetDetectionIconsVisible(true);
+            _gameplayScreen.SetDetectionIconsVisible(true);
 
             if (interrupted && _activeEnemy.IsAlive)
                 _activeEnemy.SetGameplaySuspended(false);

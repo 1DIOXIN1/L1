@@ -13,16 +13,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         protected override IEnemyAttackPresentation CreatePresentation() => this;
 
-        public void NotifyAttackStarted()
-        {
-        }
+        public void NotifyAttackStarted() => AnimatorPresenter.PlayAttackStarted();
 
-        public void NotifyAttackFired()
-        {
-        }
+        public void NotifyAttackFired() => AnimatorPresenter.PlayAttackFired();
 
-        public void NotifyAttackStopped()
-        {
-        }
+        public void NotifyAttackStopped() => AnimatorPresenter.PlayAttackStopped();
     }
 }
