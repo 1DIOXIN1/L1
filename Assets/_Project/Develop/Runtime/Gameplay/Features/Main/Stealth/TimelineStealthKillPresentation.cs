@@ -204,7 +204,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Stealth
 
             Vector3 startPosition = lookCamera.transform.position;
             Quaternion startRotation = lookCamera.transform.rotation;
-            Vector3 gameplayLocalPosition = new(0f, 0.15f, -2.5f);
+            Vector3 gameplayLocalPosition = new(0.08f, -0.02f, 0.12f);
             float elapsed = 0f;
 
             while (elapsed < _cameraReturnBlendDuration && _cancelled == false)

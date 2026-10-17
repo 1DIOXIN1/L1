@@ -29,8 +29,8 @@ MonoBehaviour:
   <LookSensitivity>k__BackingField: 2
   <MinPitch>k__BackingField: -70
   <MaxPitch>k__BackingField: 70
-  <CameraDefaultOffset>k__BackingField: {x: 0.35, y: -0.25, z: -2.5}
-  <CameraAimOffset>k__BackingField: {x: 0.85, y: -0.25, z: -1.4}
+  <CameraDefaultOffset>k__BackingField: {x: 0.08, y: -0.02, z: 0.12}
+  <CameraAimOffset>k__BackingField: {x: 0.05, y: -0.02, z: 0.2}
   <CameraDefaultFov>k__BackingField: 60
   <CameraAimFov>k__BackingField: 45
   <CameraOffsetSmoothTime>k__BackingField: 0.12

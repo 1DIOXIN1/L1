@@ -49,7 +49,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 _animator.SetFloat(EnemyAnimatorParameters.SpeedHash, speed);
 
             if (_hasIsMoving)
-                _animator.SetBool(EnemyAnimatorParameters.IsMovingHash, speed > MovingSpeedThreshold);
+            {
+                bool isMoving = speed > MovingSpeedThreshold && IsPlayingAttack() == false;
+                _animator.SetBool(EnemyAnimatorParameters.IsMovingHash, isMoving);
+            }
 
             if (_hasIsAlerted)
                 _animator.SetBool(EnemyAnimatorParameters.IsAlertedHash, context.Awareness.IsAlerted);
@@ -80,6 +83,21 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
             if (_hasAttackFire)
                 _animator.ResetTrigger(EnemyAnimatorParameters.AttackFireHash);
+        }
+
+        public bool IsPlayingAttack()
+        {
+            if (_animator.isActiveAndEnabled == false)
+                return false;
+
+            AnimatorStateInfo current = _animator.GetCurrentAnimatorStateInfo(0);
+            if (current.IsName("Attack"))
+                return true;
+
+            if (_animator.IsInTransition(0) == false)
+                return false;
+
+            return _animator.GetNextAnimatorStateInfo(0).IsName("Attack");
         }
 
         public void PlayHit()

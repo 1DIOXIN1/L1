@@ -4,6 +4,7 @@ using _Project.Develop.Runtime.Configs.Meta.Characters;
 using _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Project.Develop.Runtime.Configs.Meta.Enemy
 {
@@ -18,7 +19,8 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
         [field: SerializeField] public float LostHoldTime { get; private set; } = 1.5f;
         [field: SerializeField] public float LostDecayTime { get; private set; } = 2f;
         [field: SerializeField, Range(0f, 1f)] public float DamageSuspicionBurst { get; private set; } = 0.45f;
-        [field: SerializeField] public GameObject CookerPrefab { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("<CookerPrefab>k__BackingField")]
+        public GameObject ChefPrefab { get; private set; }
         [field: SerializeField] public GameObject TeacherPrefab { get; private set; }
         [field: SerializeField] public GameObject MeleePrefab { get; private set; }
         [field: SerializeField] public GameObject GuardPrefab { get; private set; }
@@ -39,7 +41,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
 
             return type switch
             {
-                EnemyType.Cooker => EnemyPreset.CreateCooker(),
+                EnemyType.Chef => EnemyPreset.CreateChef(),
                 EnemyType.Melee => EnemyPreset.CreateMelee(),
                 EnemyType.Guard => EnemyPreset.CreateGuard(),
                 _ => EnemyPreset.CreateTeacher()
@@ -50,7 +52,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
         {
             return type switch
             {
-                EnemyType.Cooker => CookerPrefab,
+                EnemyType.Chef => ChefPrefab,
                 EnemyType.Melee => MeleePrefab,
                 EnemyType.Teacher => TeacherPrefab,
                 EnemyType.Guard => GuardPrefab,
@@ -116,10 +118,10 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
             attackBehaviors = Array.Empty<EnemyAttackBehaviorConfig>();
         }
 
-        public static EnemyPreset CreateCooker()
+        public static EnemyPreset CreateChef()
         {
             return new EnemyPreset(
-                EnemyType.Cooker, "enemy_cooker", 50, 2.5f, 4.5f, 18f, 110f, 10f, 360f, 12f);
+                EnemyType.Chef, "enemy_chef", 50, 2.5f, 4.5f, 18f, 110f, 10f, 360f, 12f);
         }
 
         public static EnemyPreset CreateTeacher()

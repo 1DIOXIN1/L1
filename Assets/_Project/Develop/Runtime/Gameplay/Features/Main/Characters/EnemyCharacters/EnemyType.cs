@@ -2,7 +2,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 {
     public enum EnemyType
     {
-        Cooker = 0,
+        Chef = 0,
         Teacher = 1,
         Melee = 2,
         Guard = 3

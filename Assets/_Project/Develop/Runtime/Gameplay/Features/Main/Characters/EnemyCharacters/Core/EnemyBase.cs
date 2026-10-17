@@ -181,6 +181,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void TickCombat(float deltaTime) => _activeAttackBehavior.Tick(deltaTime);
 
+        public void NotifyAttackAnimFire()
+        {
+            if (_activeAttackBehavior is IAnimFireReceiver animFireReceiver)
+                animFireReceiver.OnAnimFire();
+        }
+
         public void ResetCombat()
         {
             for (int i = 0; i < _attackBehaviors.Length; i++)

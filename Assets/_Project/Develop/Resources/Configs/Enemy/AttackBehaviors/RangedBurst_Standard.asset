@@ -16,8 +16,9 @@ MonoBehaviour:
   <MaxAttackDistance>k__BackingField: 18
   <Damage>k__BackingField: 6
   <AttackCooldown>k__BackingField: 1.2
-  <BurstShots>k__BackingField: 3
+  <AnimFireTimeout>k__BackingField: 2
+  <BurstShots>k__BackingField: 1
   <BurstInterval>k__BackingField: 0.14
-  <Accuracy>k__BackingField: 0.8
+  <Accuracy>k__BackingField: 1
   <ProjectileSpeed>k__BackingField: 18
   <ProjectileLifeTime>k__BackingField: 4

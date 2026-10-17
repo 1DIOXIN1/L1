@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 {
-    public class CookerEnemy : EnemyBase, IEnemyAttackPresentation
+    public class ChefEnemy : EnemyBase, IEnemyAttackPresentation
     {
         [SerializeField] private ParticleSystem flameParticles;
 
-        protected override EnemyType Type => EnemyType.Cooker;
+        protected override EnemyType Type => EnemyType.Chef;
 
         public ParticleSystem FlameParticlesSource => flameParticles;
 

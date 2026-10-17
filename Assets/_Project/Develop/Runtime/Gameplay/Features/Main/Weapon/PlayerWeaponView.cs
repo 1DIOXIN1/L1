@@ -19,10 +19,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             if (weapon?.ViewPrefab == null || _socket == null)
                 return;
 
-            _currentView = Object.Instantiate(weapon.ViewPrefab, _socket);
+            _currentView = Object.Instantiate(weapon.ViewPrefab, _socket, false);
             Transform viewTransform = _currentView.transform;
             viewTransform.localPosition = weapon.ViewLocalPosition;
-            viewTransform.localRotation = Quaternion.Euler(weapon.ViewLocalEulerAngles);
+            viewTransform.localRotation *= Quaternion.Euler(weapon.ViewLocalEulerAngles);
             viewTransform.localScale = weapon.ViewLocalScale;
         }
 

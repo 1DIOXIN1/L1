@@ -20,13 +20,13 @@ MonoBehaviour:
   <LostHoldTime>k__BackingField: 1.5
   <LostDecayTime>k__BackingField: 2
   <DamageSuspicionBurst>k__BackingField: 1
-  <CookerPrefab>k__BackingField: {fileID: 8076757054092318504, guid: 756686be6a06bd7498cda7e9c41f8488, type: 3}
+  <ChefPrefab>k__BackingField: {fileID: 8076757054092318504, guid: 756686be6a06bd7498cda7e9c41f8488, type: 3}
   <TeacherPrefab>k__BackingField: {fileID: 4496244555982910951, guid: 285859b3809a80542a606db6a89882ab, type: 3}
   <MeleePrefab>k__BackingField: {fileID: 4496244555982910951, guid: 582234536ee74094bb1dc7081eca81c7, type: 3}
   <GuardPrefab>k__BackingField: {fileID: 4496244555982910951, guid: d4e5f6a7b8c9001122334455667788aa, type: 3}
   presets:
   - <Type>k__BackingField: 0
-    <Id>k__BackingField: enemy_cooker
+    <Id>k__BackingField: enemy_chef
     <Health>k__BackingField: 50
     <PatrolSpeed>k__BackingField: 2.5
     <ChaseSpeed>k__BackingField: 4.5

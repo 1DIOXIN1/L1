@@ -22,8 +22,8 @@ namespace _Project.Develop.Runtime.Configs.Meta.Characters.Player
         [field: SerializeField] public float LookSensitivity { get; private set; } = 2f;
         [field: SerializeField] public float MinPitch { get; private set; } = -70f;
         [field: SerializeField] public float MaxPitch { get; private set; } = 70f;
-        [field: SerializeField] public Vector3 CameraDefaultOffset { get; private set; } = new(0.35f, 0.2f, -2.5f);
-        [field: SerializeField] public Vector3 CameraAimOffset { get; private set; } = new(0.85f, 0.35f, -1.4f);
+        [field: SerializeField] public Vector3 CameraDefaultOffset { get; private set; } = new(0.08f, -0.02f, 0.12f);
+        [field: SerializeField] public Vector3 CameraAimOffset { get; private set; } = new(0.05f, -0.02f, 0.2f);
         [field: SerializeField] public float CameraDefaultFov { get; private set; } = 60f;
         [field: SerializeField] public float CameraAimFov { get; private set; } = 45f;
         [field: SerializeField] public float CameraOffsetSmoothTime { get; private set; } = 0.12f;

@@ -57,7 +57,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 lookCamera.transform.SetParent(lookPivot, false);
                 lookCamera.transform.localPosition = _config != null
                     ? _config.CameraDefaultOffset
-                    : new Vector3(0.35f, 0.2f, -2.5f);
+                    : new Vector3(0.08f, -0.02f, 0.12f);
                 lookCamera.transform.localRotation = Quaternion.identity;
                 lookCamera.fieldOfView = _currentFov > 0f ? _currentFov : 60f;
             }
