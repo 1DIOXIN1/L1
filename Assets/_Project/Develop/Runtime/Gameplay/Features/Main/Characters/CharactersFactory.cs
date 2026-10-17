@@ -87,12 +87,27 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
             IReadOnlyList<IWeapon> weapons = inventory.Weapons;
             for (int i = 0; i < weapons.Count; i++)
+            {
                 weapons[i].SetAimCamera(_playerCamera.LookCamera);
+                weapons[i].SetAimingProvider(() => _playerCamera != null && _playerCamera.IsAiming);
+            }
 
             player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health, noiseEmitter);
 
-            Transform weaponSocket = PlayerWeaponView.CreateSocket(player.FirePoint);
-            PlayerWeaponView weaponView = new PlayerWeaponView(weaponSocket);
+            Transform weaponSocket = PlayerWeaponView.CreateSocket(player.FirePoint, out Transform weaponPivot);
+            PlayerWeaponVisualFollow weaponVisualFollow = new PlayerWeaponVisualFollow(
+                weaponPivot,
+                player.FirePoint,
+                playerConfig,
+                player,
+                _playerCamera);
+            _playerCamera.SetWeaponVisualFollow(weaponVisualFollow);
+            PlayerWeaponView weaponView = new PlayerWeaponView(
+                weaponSocket,
+                weaponVisualFollow,
+                playerConfig,
+                _assetsLoader,
+                () => _playerCamera.AddFireShake());
             player.SetWeaponView(weaponView, inventory);
 
             gameMode.RegisterPlayer(player, inventory);

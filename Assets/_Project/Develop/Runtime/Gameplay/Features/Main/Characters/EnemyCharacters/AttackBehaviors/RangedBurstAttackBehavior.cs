@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -10,6 +11,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         private readonly EnemyBase _enemy;
         private readonly RangedBurstBehaviorConfig _config;
         private readonly IEnemyAttackPresentation _presentation;
+        private readonly HitImpactService _hitImpacts;
         private float _attackCooldown;
         private float _burstTimer;
         private float _animFireTimeout;
@@ -20,11 +22,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public RangedBurstAttackBehavior(
             EnemyBase enemy,
             RangedBurstBehaviorConfig config,
-            IEnemyAttackPresentation presentation)
+            IEnemyAttackPresentation presentation,
+            HitImpactService hitImpacts)
         {
             _enemy = enemy;
             _config = config;
             _presentation = presentation;
+            _hitImpacts = hitImpacts;
         }
 
         private bool IsAttackInProgress =>
@@ -182,7 +186,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                     _config.ProjectileSpeed,
                     _config.Damage,
                     _config.ProjectileLifeTime,
-                    _enemy.gameObject);
+                    _enemy.gameObject,
+                    _hitImpacts);
             }
 
             _presentation.NotifyAttackFired();

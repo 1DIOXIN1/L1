@@ -6,7 +6,9 @@ using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Core;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.Spawning;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Configs.Meta.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Noise;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Stealth;
@@ -43,6 +45,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             container.RegisterAsSingle(CreateCharactersFactory);
             container.RegisterAsSingle(CreateEnemyAIService);
             container.RegisterAsSingle(CreateNoiseService);
+            container.RegisterAsSingle(CreateHitImpactService).NonLazy();
+            container.RegisterAsSingle(CreateBulletTracerService).NonLazy();
             container.RegisterAsSingle(CreateEnemyAttackBehaviorFactory);
             container.RegisterAsSingle(CreateEnemySpawnService);
             container.RegisterAsSingle(CreateFireModeRegistry);
@@ -134,7 +138,17 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             => new NoiseService(container.Resolve<EnemyAIService>());
 
         private static EnemyAttackBehaviorFactory CreateEnemyAttackBehaviorFactory(DIContainer container)
-            => new EnemyAttackBehaviorFactory();
+            => new EnemyAttackBehaviorFactory(container.Resolve<HitImpactService>());
+
+        private static HitImpactService CreateHitImpactService(DIContainer container)
+            => new HitImpactService(
+                container.Resolve<ConfigsProviderService>().GetConfig<HitImpactConfig>(),
+                container.Resolve<ResourcesAssetsLoader>());
+
+        private static BulletTracerService CreateBulletTracerService(DIContainer container)
+            => new BulletTracerService(
+                container.Resolve<ConfigsProviderService>().GetConfig<BulletTracerConfig>(),
+                container.Resolve<ResourcesAssetsLoader>());
 
         private static EnemySpawnService CreateEnemySpawnService(DIContainer container)
             => new EnemySpawnService(

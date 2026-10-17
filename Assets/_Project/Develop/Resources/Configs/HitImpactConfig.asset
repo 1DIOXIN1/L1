@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2b3c4d5e6f748a9b0c1d2e3f4a5b6c7, type: 3}
+  m_Name: HitImpactConfig
+  m_EditorClassIdentifier: 
+  poolSize: 48
+  particleDuration: 0.35
+  decalDuration: 8
+  surfaceOffset: 0.025
+  decalSize: 0.1
+  minDecalScale: 0.12
+  surfaces:
+  - surface: 0
+    particleColor: {r: 0.65, g: 0.6, b: 0.5, a: 0.85}
+    decalColor: {r: 0.06, g: 0.05, b: 0.04, a: 1}
+    particleSize: 0.04
+    spawnDecal: 1
+  - surface: 1
+    particleColor: {r: 0.7, g: 0.08, b: 0.08, a: 0.95}
+    decalColor: {r: 0.35, g: 0.02, b: 0.02, a: 0.7}
+    particleSize: 0.09
+    spawnDecal: 0
+  - surface: 2
+    particleColor: {r: 1, g: 0.9, b: 0.55, a: 0.95}
+    decalColor: {r: 0.08, g: 0.08, b: 0.1, a: 1}
+    particleSize: 0.035
+    spawnDecal: 1
+  - surface: 3
+    particleColor: {r: 0.7, g: 0.68, b: 0.62, a: 0.85}
+    decalColor: {r: 0.07, g: 0.06, b: 0.05, a: 1}
+    particleSize: 0.045
+    spawnDecal: 1
+  - surface: 4
+    particleColor: {r: 0.55, g: 0.4, b: 0.22, a: 0.85}
+    decalColor: {r: 0.1, g: 0.06, b: 0.03, a: 1}
+    particleSize: 0.04
+    spawnDecal: 1

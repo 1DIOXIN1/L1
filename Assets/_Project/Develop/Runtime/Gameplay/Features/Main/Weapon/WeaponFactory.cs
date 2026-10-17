@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
 using _Project.Develop.Runtime.Infrastructure.DI;
@@ -14,6 +14,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         private readonly ConfigsProviderService _configsProvider;
         private readonly FireModeRegistry _fireModeRegistry;
         private readonly ResourcesAssetsLoader _resourcesAssetsLoader;
+        private readonly HitImpactService _hitImpacts;
+        private readonly BulletTracerService _tracers;
         private readonly GameObject _bulletPrefab;
 
         public WeaponFactory(DIContainer container)
@@ -21,6 +23,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             _configsProvider = container.Resolve<ConfigsProviderService>();
             _fireModeRegistry = container.Resolve<FireModeRegistry>();
             _resourcesAssetsLoader = container.Resolve<ResourcesAssetsLoader>();
+            _hitImpacts = container.Resolve<HitImpactService>();
+            _tracers = container.Resolve<BulletTracerService>();
             _bulletPrefab = _resourcesAssetsLoader.Load<GameObject>("Prefabs/Weapons/Bullets/Bullet");
         }
 
@@ -36,7 +40,16 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             IFireMode fireMode = _fireModeRegistry.Resolve(config.FireMode);
             GameObject bulletPrefab = config.FireMode == WeaponFireMode.Projectile ? _bulletPrefab : null;
 
-            return new Weapon(config, fireMode, firePoint, owner, bulletPrefab, initialAmmo, initialReserveAmmo);
+            return new Weapon(
+                config,
+                fireMode,
+                firePoint,
+                owner,
+                bulletPrefab,
+                initialAmmo,
+                initialReserveAmmo,
+                hitImpacts: _hitImpacts,
+                tracers: _tracers);
         }
     }
 }

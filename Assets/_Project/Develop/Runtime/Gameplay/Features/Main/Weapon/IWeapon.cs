@@ -7,6 +7,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
     public interface IWeapon
     {
         event Action AmmoChanged;
+        event Action Fired;
 
         WeaponType Type { get; }
         int Ammo { get; }
@@ -28,5 +29,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         void SetAmmo(int ammo);
         void SetReserveAmmo(int reserveAmmo);
         void SetAimCamera(Camera aimCamera);
+        void SetAimingProvider(Func<bool> isAimingProvider);
     }
 }
+

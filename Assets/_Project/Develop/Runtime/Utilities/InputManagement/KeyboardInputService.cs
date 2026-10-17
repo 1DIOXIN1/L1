@@ -16,8 +16,6 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action Shoot;
         public event Action Reload;
         public event Action UseGadget;
-        public event Action SelectPrimarySlot;
-        public event Action SelectSecondarySlot;
         public event Action Jump;
         public event Action Crouch;
         public event Action PhonePressed;

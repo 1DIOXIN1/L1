@@ -5,6 +5,7 @@ using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Cutscenes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.Infrastructure;
 using _Project.Develop.Runtime.Infrastructure.DI;
@@ -25,6 +26,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private DIContainer _container;
         private IInputService _input;
         private InteractionService _interactionService;
+        private HitImpactService _hitImpactService;
+        private BulletTracerService _bulletTracerService;
         private GameplayScreenPresenter _gameplayScreenPresenter;
         private bool _isRunning;
 
@@ -54,7 +57,10 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             if (_isRunning == false)
                 return;
 
-            _input.Update(Time.deltaTime);
+            float deltaTime = Time.deltaTime;
+            _input.Update(deltaTime);
+            _hitImpactService.Tick(deltaTime);
+            _bulletTracerService.Tick(deltaTime);
             _gameplayScreenPresenter.Tick();
         }
 
@@ -72,6 +78,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             _isRunning = false;
             _interactionService?.Dispose();
             _interactionService = null;
+            _hitImpactService = null;
+            _bulletTracerService = null;
             _gameplayScreenPresenter = null;
         }
 
@@ -81,6 +89,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             Cursor.lockState = CursorLockMode.Locked;
 
             _gameplayScreenPresenter = _container.Resolve<GameplayScreenPresenter>();
+            _hitImpactService = _container.Resolve<HitImpactService>();
+            _bulletTracerService = _container.Resolve<BulletTracerService>();
 
             CharactersFactory charactersFactory = _container.Resolve<CharactersFactory>();
             Player player = charactersFactory.CreatePlayer(playerSpawnPoint);

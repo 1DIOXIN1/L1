@@ -5,6 +5,7 @@ using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
+using _Project.Develop.Runtime.Configs.Meta.Impact;
 using _Project.Develop.Runtime.Configs.Meta.Missions;
 using _Project.Develop.Runtime.Configs.Meta.Noise;
 using _Project.Develop.Runtime.Configs.Meta.Progress;
@@ -33,7 +34,9 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(EnemyConfig), "Configs/EnemyConfig"},
             {typeof(NoiseConfig), "Configs/NoiseConfig"},
             {typeof(InteractionConfig), "Configs/InteractionConfig"},
-            {typeof(StealthKillConfig), "Configs/StealthKillConfig"}
+            {typeof(StealthKillConfig), "Configs/StealthKillConfig"},
+            {typeof(HitImpactConfig), "Configs/HitImpactConfig"},
+            {typeof(BulletTracerConfig), "Configs/BulletTracerConfig"}
         };
 
         public ResourcesConfigsLoader(ResourcesAssetsLoader resources)

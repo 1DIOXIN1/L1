@@ -38,6 +38,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public bool IsCrouching => _isCrouching;
         public bool IsSprinting { get; private set; }
         public bool IsMovingHorizontally { get; private set; }
+        public bool IsGrounded => _characterController != null && _characterController.isGrounded;
+        public bool JustLanded { get; private set; }
+        public float LandingStrength { get; private set; }
+        public float StrafeInput => _moveInput.x;
         public Vector3 PlanarMoveDirection { get; private set; }
 
         public void SetMoveInput(Vector3 move)
@@ -80,18 +84,26 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             PlanarMoveDirection = planarMove;
             Vector3 motion = planarMove * speed;
 
-            if (_characterController.isGrounded && _verticalVelocity < 0f)
+            bool wasGrounded = _characterController.isGrounded;
+            if (wasGrounded && _verticalVelocity < 0f)
                 _verticalVelocity = -2f;
 
             _verticalVelocity += _config.Gravity * deltaTime;
+            float verticalBeforeMove = _verticalVelocity;
             motion.y = _verticalVelocity;
 
             _characterController.Move(motion * deltaTime);
 
+            bool grounded = _characterController.isGrounded;
+            JustLanded = grounded && wasGrounded == false && verticalBeforeMove < -1.5f;
+            LandingStrength = JustLanded
+                ? Mathf.InverseLerp(-1.5f, -12f, verticalBeforeMove)
+                : 0f;
+
             Vector3 planarVelocity = _characterController.velocity;
             planarVelocity.y = 0f;
             IsMovingHorizontally = planarVelocity.sqrMagnitude > 0.05f ||
-                                   (_moveInput.sqrMagnitude > 0.01f && _characterController.isGrounded);
+                                   (_moveInput.sqrMagnitude > 0.01f && grounded);
         }
 
         private bool CanSprint()

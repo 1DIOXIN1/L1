@@ -7,35 +7,67 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
     {
         public void Fire(WeaponFireContext context)
         {
-            if (context.FirePoint == null || context.Config == null)
-                return;
+            Vector3 origin;
+            Vector3 direction;
 
-            Vector3 origin = context.FirePoint.position;
-            Vector3 direction = ResolveAimDirection(context, origin);
+            if (context.AimCamera != null)
+            {
+                Ray aimRay = context.AimCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+                origin = aimRay.origin;
+                direction = ApplySpread(aimRay.direction, context);
+            }
+            else if (context.FirePoint != null)
+            {
+                origin = context.FirePoint.position;
+                direction = ApplySpread(context.FirePoint.forward, context);
+            }
+            else
+            {
+                return;
+            }
 
             RaycastShoot.Shoot(
                 origin,
                 direction,
                 context.Config.Range,
                 context.Config.Damage,
-                context.Owner);
+                context.Owner,
+                context.HitImpacts,
+                out Vector3 endPoint);
+
+            Vector3 tracerStart = context.FirePoint != null
+                ? context.FirePoint.position
+                : origin;
+            context.Tracers.Play(tracerStart, endPoint, context.AimCamera);
         }
 
-        private static Vector3 ResolveAimDirection(WeaponFireContext context, Vector3 origin)
+        private static Vector3 ApplySpread(Vector3 direction, WeaponFireContext context)
         {
-            if (context.AimCamera == null)
-                return context.FirePoint.forward;
+            float spreadDegrees = context.CurrentSpreadDegrees;
+            if (spreadDegrees <= 0.001f)
+                return direction.normalized;
 
-            Ray aimRay = context.AimCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-            Vector3 aimPoint = aimRay.GetPoint(context.Config.Range);
-            if (Physics.Raycast(aimRay, out RaycastHit hit, context.Config.Range, ~0, QueryTriggerInteraction.Ignore))
-                aimPoint = hit.point;
+            float climbBias = context.Config.SpreadClimbBias;
+            float sideRatio = context.Config.SpreadSideRatio;
 
-            Vector3 direction = aimPoint - origin;
-            if (direction.sqrMagnitude < 0.0001f)
-                return context.AimCamera.transform.forward;
+            float climb = spreadDegrees * Mathf.Max(0f, climbBias);
+            float side = spreadDegrees * Mathf.Clamp01(sideRatio);
+            float pitchJitter = side * 0.45f;
 
-            return direction.normalized;
+            float yawDegrees = Random.Range(-side, side);
+            float pitchDegrees = climb + Random.Range(-pitchJitter, pitchJitter);
+
+            Vector3 forward = direction.normalized;
+            Vector3 right = Vector3.Cross(Vector3.up, forward);
+            if (right.sqrMagnitude < 0.0001f)
+                right = Vector3.right;
+            else
+                right.Normalize();
+            Vector3 up = Vector3.Cross(forward, right);
+
+            Quaternion yaw = Quaternion.AngleAxis(yawDegrees, up);
+            Quaternion pitch = Quaternion.AngleAxis(-pitchDegrees, right);
+            return (yaw * pitch * forward).normalized;
         }
     }
 }

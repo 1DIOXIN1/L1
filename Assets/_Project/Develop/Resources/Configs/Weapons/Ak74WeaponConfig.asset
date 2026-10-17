@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Ak74WeaponConfig
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 0
-  <FireMode>k__BackingField: 0
+  <FireMode>k__BackingField: 1
   <MagazineSize>k__BackingField: 30
   <ReserveAmmo>k__BackingField: 270
   <ReloadDuration>k__BackingField: 3
@@ -22,6 +22,15 @@ MonoBehaviour:
   <ProjectileSpeed>k__BackingField: 100
   <BulletLifeTime>k__BackingField: 0.8
   <Range>k__BackingField: 50
+  <HipSpreadDegrees>k__BackingField: 0.45
+  <MaxHipSpreadDegrees>k__BackingField: 4.8
+  <AimSpreadDegrees>k__BackingField: 0.15
+  <MaxAimSpreadDegrees>k__BackingField: 1.8
+  <SpreadPerShotDegrees>k__BackingField: 0.38
+  <SpreadRecoveryPerSecond>k__BackingField: 7
+  <SpreadRecoveryDelay>k__BackingField: 0.1
+  <SpreadClimbBias>k__BackingField: 1
+  <SpreadSideRatio>k__BackingField: 0.35
   <IsAutomatic>k__BackingField: 1
   <HudIconActive>k__BackingField: {fileID: 21300000, guid: be2ad34e4253cbe409e3e7d607c90e68, type: 3}
   <ViewPrefab>k__BackingField: {fileID: 1487774384131766, guid: ee329c3cd08e58645834d20702d7f6c6, type: 3}

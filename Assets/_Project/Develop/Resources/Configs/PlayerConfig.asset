@@ -38,3 +38,37 @@ MonoBehaviour:
   <HipBodyTurnSpeed>k__BackingField: 270
   <AimBodyTurnSpeed>k__BackingField: 720
   <MaxFreeLookYaw>k__BackingField: 80
+  <WeaponPositionFollowSpeed>k__BackingField: 20
+  <WeaponRotationFollowSpeed>k__BackingField: 10
+  <WeaponAimPositionFollowSpeed>k__BackingField: 30
+  <WeaponAimRotationFollowSpeed>k__BackingField: 12
+  <WeaponSprintDip>k__BackingField: 0.045
+  <WeaponSprintDipPitch>k__BackingField: 4
+  <WeaponSprintDipSpeed>k__BackingField: 8
+  <WeaponBobAmplitude>k__BackingField: 0.012
+  <WeaponBobFrequency>k__BackingField: 9
+  <WeaponBobRollDegrees>k__BackingField: 0.85
+  <WeaponSprintBobMultiplier>k__BackingField: 1.45
+  <WeaponSprintBobFrequencyMultiplier>k__BackingField: 1.35
+  <WeaponAimBobMultiplier>k__BackingField: 0.2
+  <WeaponRecoilKickBack>k__BackingField: 0.022
+  <WeaponRecoilKickUp>k__BackingField: 0.008
+  <WeaponRecoilPitch>k__BackingField: 2.4
+  <WeaponRecoilYaw>k__BackingField: 0.55
+  <WeaponRecoilReturnSpeed>k__BackingField: 14
+  <WeaponAimRecoilMultiplier>k__BackingField: 0.4
+  <WeaponStrafeRollDegrees>k__BackingField: 2.2
+  <WeaponStrafeYawDegrees>k__BackingField: 1.2
+  <WeaponStrafeSmoothSpeed>k__BackingField: 8
+  <WeaponLandingDip>k__BackingField: 0.04
+  <WeaponLandingPitch>k__BackingField: 3.5
+  <WeaponLandingReturnSpeed>k__BackingField: 7
+  <WeaponBreathAmplitude>k__BackingField: 0.0035
+  <WeaponBreathFrequency>k__BackingField: 1.15
+  <WeaponAimBreathMultiplier>k__BackingField: 0.55
+  <CameraFireShakePosition>k__BackingField: 0.012
+  <CameraFireShakeRotation>k__BackingField: 0.55
+  <CameraFireShakeReturnSpeed>k__BackingField: 16
+  <CameraAimFireShakeMultiplier>k__BackingField: 0.45
+  <MuzzleFlashLightIntensity>k__BackingField: 3.5
+  <MuzzleFlashLightDuration>k__BackingField: 0.07

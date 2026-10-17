@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using Cinemachine;
 using UnityEngine;
@@ -17,8 +18,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         private IInputService _input;
         private PlayerConfig _config;
         private PlayerCameraController _controller;
+        private PlayerWeaponVisualFollow _weaponVisualFollow;
         private Vector3 _offsetVelocity;
         private float _currentFov;
+        private Vector3 _shakePosition;
+        private Vector3 _shakeEuler;
 
         public Transform LookPivot => lookPivot;
         public Transform GameplayVirtualCamera => gameplayVirtualCamera;
@@ -35,6 +39,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _config = config;
             _controller = new PlayerCameraController(player.transform, lookPivot, config);
             _currentFov = config.CameraDefaultFov;
+            _shakePosition = Vector3.zero;
+            _shakeEuler = Vector3.zero;
             ConfigureForGameplay();
         }
 
@@ -43,11 +49,27 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _controller?.SyncFromBody();
         }
 
+        public void SetWeaponVisualFollow(PlayerWeaponVisualFollow weaponVisualFollow)
+        {
+            _weaponVisualFollow = weaponVisualFollow;
+        }
+
+        public void AddFireShake()
+        {
+            float strength = IsAiming ? _config.CameraAimFireShakeMultiplier : 1f;
+            _shakePosition += new Vector3(
+                Random.Range(-1f, 1f),
+                Random.Range(0.2f, 1f),
+                Random.Range(-0.35f, 0.15f)) * (_config.CameraFireShakePosition * strength);
+
+            _shakeEuler += new Vector3(
+                -_config.CameraFireShakeRotation,
+                Random.Range(-_config.CameraFireShakeRotation, _config.CameraFireShakeRotation) * 0.65f,
+                Random.Range(-_config.CameraFireShakeRotation, _config.CameraFireShakeRotation) * 0.35f) * strength;
+        }
+
         public void ConfigureForGameplay()
         {
-            if (lookPivot == null)
-                return;
-
             if (lookBrain != null)
                 lookBrain.enabled = false;
 
@@ -55,9 +77,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             {
                 lookCamera.enabled = true;
                 lookCamera.transform.SetParent(lookPivot, false);
-                lookCamera.transform.localPosition = _config != null
-                    ? _config.CameraDefaultOffset
-                    : new Vector3(0.08f, -0.02f, 0.12f);
+                lookCamera.transform.localPosition = _config.CameraDefaultOffset;
                 lookCamera.transform.localRotation = Quaternion.identity;
                 lookCamera.fieldOfView = _currentFov > 0f ? _currentFov : 60f;
             }
@@ -71,7 +91,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         private void Update()
         {
-            if (_controller == null || _input == null || _player == null || _player.IsControlLocked)
+            if (_controller == null || _player == null || _player.IsControlLocked)
                 return;
 
             IsAiming = _input.IsAimHeld;
@@ -88,21 +108,28 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             if (_controller == null || _player == null || _player.IsControlLocked)
                 return;
 
+            float deltaTime = Time.deltaTime;
             _controller.Apply();
-            UpdateCameraRig(Time.deltaTime);
+            UpdateCameraRig(deltaTime);
+            _weaponVisualFollow.Tick(deltaTime);
         }
 
         private void UpdateCameraRig(float deltaTime)
         {
-            if (lookCamera == null || _config == null)
+            if (lookCamera == null)
                 return;
+
+            float shakeT = 1f - Mathf.Exp(-Mathf.Max(0.01f, _config.CameraFireShakeReturnSpeed) * deltaTime);
+            _shakePosition = Vector3.Lerp(_shakePosition, Vector3.zero, shakeT);
+            _shakeEuler = Vector3.Lerp(_shakeEuler, Vector3.zero, shakeT);
 
             Vector3 targetOffset = IsAiming ? _config.CameraAimOffset : _config.CameraDefaultOffset;
             lookCamera.transform.localPosition = Vector3.SmoothDamp(
                 lookCamera.transform.localPosition,
-                targetOffset,
+                targetOffset + _shakePosition,
                 ref _offsetVelocity,
                 _config.CameraOffsetSmoothTime);
+            lookCamera.transform.localRotation = Quaternion.Euler(_shakeEuler);
 
             float targetFov = IsAiming ? _config.CameraAimFov : _config.CameraDefaultFov;
             _currentFov = Mathf.Lerp(_currentFov, targetFov, 1f - Mathf.Exp(-_config.CameraFovLerpSpeed * deltaTime));

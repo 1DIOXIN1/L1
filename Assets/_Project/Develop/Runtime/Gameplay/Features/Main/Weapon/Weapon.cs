@@ -1,5 +1,6 @@
 using System;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
 using UnityEngine;
@@ -13,14 +14,20 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         private readonly Transform _firePoint;
         private readonly GameObject _owner;
         private readonly GameObject _bulletPrefab;
+        private readonly HitImpactService _hitImpacts;
+        private readonly BulletTracerService _tracers;
 
         private Camera _aimCamera;
+        private Func<bool> _isAimingProvider;
         private int _ammo;
         private int _reserveAmmo;
         private float _nextShotTime;
         private float _reloadEndTime;
+        private float _currentSpreadDegrees;
+        private float _lastShotTime = -999f;
 
         public event Action AmmoChanged;
+        public event Action Fired;
 
         public Weapon(
             WeaponConfig config,
@@ -30,7 +37,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             GameObject bulletPrefab = null,
             int? initialAmmo = null,
             int? initialReserveAmmo = null,
-            Camera aimCamera = null)
+            Camera aimCamera = null,
+            HitImpactService hitImpacts = null,
+            BulletTracerService tracers = null)
         {
             _config = config;
             _fireMode = fireMode;
@@ -38,8 +47,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             _owner = owner;
             _bulletPrefab = bulletPrefab;
             _aimCamera = aimCamera;
+            _hitImpacts = hitImpacts;
+            _tracers = tracers;
             _ammo = Mathf.Clamp(initialAmmo ?? config.MagazineSize, 0, config.MagazineSize);
             _reserveAmmo = Mathf.Max(0, initialReserveAmmo ?? config.ReserveAmmo);
+            _currentSpreadDegrees = GetMinSpread(false);
         }
 
         public WeaponType Type => _config.Type;
@@ -63,8 +75,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             _aimCamera = aimCamera;
         }
 
+        public void SetAimingProvider(Func<bool> isAimingProvider)
+        {
+            _isAimingProvider = isAimingProvider;
+        }
+
         public void Tick(float deltaTime)
         {
+            UpdateSpreadRecovery(deltaTime);
+
             if (_reloadEndTime <= 0f || IsReloading)
                 return;
 
@@ -81,10 +100,26 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             if (CanShoot == false)
                 return;
 
-            _fireMode.Fire(new WeaponFireContext(_firePoint, _owner, _config, _bulletPrefab, _aimCamera));
+            bool isAiming = _isAimingProvider != null && _isAimingProvider();
+            float spread = GetSpreadForShot(isAiming);
+
+            _fireMode.Fire(new WeaponFireContext(
+                _firePoint,
+                _owner,
+                _config,
+                _bulletPrefab,
+                _aimCamera,
+                _hitImpacts,
+                isAiming,
+                _tracers,
+                spread));
+
+            ApplySpreadKick(isAiming);
+            _lastShotTime = Time.time;
             _ammo--;
             _nextShotTime = Time.time + _config.FireInterval;
             AmmoChanged?.Invoke();
+            Fired?.Invoke();
         }
 
         public void Reload()
@@ -106,6 +141,45 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         {
             _reserveAmmo = Mathf.Max(0, reserveAmmo);
             AmmoChanged?.Invoke();
+        }
+
+        private float GetSpreadForShot(bool isAiming)
+        {
+            float min = GetMinSpread(isAiming);
+            float max = GetMaxSpread(isAiming);
+            _currentSpreadDegrees = Mathf.Clamp(_currentSpreadDegrees, min, max);
+            return _currentSpreadDegrees;
+        }
+
+        private void ApplySpreadKick(bool isAiming)
+        {
+            float max = GetMaxSpread(isAiming);
+            _currentSpreadDegrees = Mathf.Min(
+                max,
+                _currentSpreadDegrees + Mathf.Max(0f, _config.SpreadPerShotDegrees));
+        }
+
+        private void UpdateSpreadRecovery(float deltaTime)
+        {
+            if (Time.time - _lastShotTime < _config.SpreadRecoveryDelay)
+                return;
+
+            bool isAiming = _isAimingProvider != null && _isAimingProvider();
+            float min = GetMinSpread(isAiming);
+            float recovery = Mathf.Max(0f, _config.SpreadRecoveryPerSecond) * deltaTime;
+            _currentSpreadDegrees = Mathf.MoveTowards(_currentSpreadDegrees, min, recovery);
+        }
+
+        private float GetMinSpread(bool isAiming)
+        {
+            return Mathf.Max(0f, isAiming ? _config.AimSpreadDegrees : _config.HipSpreadDegrees);
+        }
+
+        private float GetMaxSpread(bool isAiming)
+        {
+            float min = GetMinSpread(isAiming);
+            float max = isAiming ? _config.MaxAimSpreadDegrees : _config.MaxHipSpreadDegrees;
+            return Mathf.Max(min, max);
         }
     }
 }

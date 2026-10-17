@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
@@ -10,12 +11,27 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
             Vector3 direction,
             float distance,
             int damage,
-            GameObject owner)
+            GameObject owner,
+            HitImpactService hitImpacts,
+            out Vector3 endPoint)
         {
-            if (Physics.Raycast(origin, direction.normalized, out RaycastHit hit, distance) == false)
-                return false;
+            Vector3 normalized = direction.normalized;
+            if (Physics.Raycast(
+                    origin,
+                    normalized,
+                    out RaycastHit hit,
+                    distance,
+                    ~0,
+                    QueryTriggerInteraction.Ignore))
+            {
+                endPoint = hit.point;
+                hitImpacts.Play(hit);
+                DamageUtility.TryApplyDamage(hit.collider, damage, owner);
+                return true;
+            }
 
-            return DamageUtility.TryApplyDamage(hit.collider, damage, owner);
+            endPoint = origin + normalized * distance;
+            return false;
         }
     }
 }

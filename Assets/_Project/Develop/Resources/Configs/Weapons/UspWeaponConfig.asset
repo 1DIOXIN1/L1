@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UspWeaponConfig
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 1
-  <FireMode>k__BackingField: 0
+  <FireMode>k__BackingField: 1
   <MagazineSize>k__BackingField: 12
   <ReserveAmmo>k__BackingField: 96
   <ReloadDuration>k__BackingField: 5
@@ -22,6 +22,15 @@ MonoBehaviour:
   <ProjectileSpeed>k__BackingField: 100
   <BulletLifeTime>k__BackingField: 0.8
   <Range>k__BackingField: 50
+  <HipSpreadDegrees>k__BackingField: 0.3
+  <MaxHipSpreadDegrees>k__BackingField: 2.8
+  <AimSpreadDegrees>k__BackingField: 0.1
+  <MaxAimSpreadDegrees>k__BackingField: 1.1
+  <SpreadPerShotDegrees>k__BackingField: 0.45
+  <SpreadRecoveryPerSecond>k__BackingField: 5
+  <SpreadRecoveryDelay>k__BackingField: 0.15
+  <SpreadClimbBias>k__BackingField: 1
+  <SpreadSideRatio>k__BackingField: 0.3
   <IsAutomatic>k__BackingField: 0
   <HudIconActive>k__BackingField: {fileID: 21300000, guid: be2ad34e4253cbe409e3e7d607c90e68, type: 3}
   <ViewPrefab>k__BackingField: {fileID: 7779035596426449466, guid: 436d84b39ebbb99449cf0c0ed23b24a5, type: 3}
