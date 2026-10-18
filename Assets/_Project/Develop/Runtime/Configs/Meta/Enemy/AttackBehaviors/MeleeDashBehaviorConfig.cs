@@ -10,6 +10,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors
         [field: SerializeField] public float AttackRange { get; private set; } = 2.5f;
         [field: SerializeField] public int Damage { get; private set; } = 10;
         [field: SerializeField] public float AttackCooldown { get; private set; } = 1f;
+        [field: SerializeField] public float AnimFireTimeout { get; private set; } = 0.8f;
         [field: SerializeField] public float DashTriggerDistance { get; private set; } = 6f;
         [field: SerializeField] public float DashSpeed { get; private set; } = 9f;
         [field: SerializeField] public float DashCooldown { get; private set; } = 3f;

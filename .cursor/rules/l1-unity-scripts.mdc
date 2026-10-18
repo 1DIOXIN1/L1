@@ -1,0 +1,33 @@
+---
+description: L1 Unity scripting — minimize MonoBehaviour and GetComponent
+globs: Assets/_Project/Develop/**/*.cs
+alwaysApply: false
+---
+
+# Unity Scripts
+
+## MonoBehaviour budget
+- Thin: hold `[SerializeField]` refs and forward to plain logic/services
+- Do not put timers, pooling, or feature FSMs in `Update`/`LateUpdate` on views
+- Prefab views expose refs once; consumers call `Show`/`Hide`/`Play`, not discover children at runtime
+
+## GetComponent
+- Avoid runtime `GetComponent` / `GetComponentInChildren` in hot paths and feature Tick
+- Prefer SerializeField wired in prefab/editor builder
+- One-time factory resolve on Instantiate is OK (`GetComponent` after spawn); do not re-query every frame
+- World queries (`GetComponentInParent` on hit collider) OK only for collision/damage/surface resolution
+
+## Prefabs & VFX
+- Author VFX as Resources prefabs (particles, materials, refs) — no runtime particle bootstrap/utilities
+- Services own pools, active lists, timing, and `Tick`; views are dumb
+- Tick VFX services from both `GameplayBootstrap` and `HubBootstrap` when registered in gameplay context
+- Config knobs live in ScriptableObjects under `Configs/`, not magic numbers scattered in views
+
+## Example
+```csharp
+// ❌ BAD — MB owns timers + pool return
+void Update() { _life -= dt; if (_life <= 0) _onDone(this); }
+
+// ✅ GOOD — service Ticks; view only Show/Hide
+_hitImpacts.Tick(deltaTime);
+```

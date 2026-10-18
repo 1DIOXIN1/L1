@@ -96,7 +96,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 501001001001001002, guid: b6cb931712bb4414ab1394a8b74cf251, type: 3}
+  m_Motion: {fileID: 6032831866526939216, guid: aaece987aa659514bad23791710a413a, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -133,7 +133,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Die
+    m_ConditionEvent: PowerOff
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 5249981776686144593}
@@ -206,7 +206,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: Die
+  - m_Name: PowerOff
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -279,7 +279,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 501001001001001001, guid: b6cb931712bb4414ab1394a8b74cf251, type: 3}
+  m_Motion: {fileID: -6347959465761703487, guid: aaece987aa659514bad23791710a413a, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -292,7 +292,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Die
+  m_Name: PowerOff
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -305,7 +305,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 501001001001001004, guid: b6cb931712bb4414ab1394a8b74cf251, type: 3}
+  m_Motion: {fileID: -7824460871197839576, guid: aaece987aa659514bad23791710a413a, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -332,7 +332,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 501001001001001003, guid: b6cb931712bb4414ab1394a8b74cf251, type: 3}
+  m_Motion: {fileID: 3565954973221249579, guid: aaece987aa659514bad23791710a413a, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

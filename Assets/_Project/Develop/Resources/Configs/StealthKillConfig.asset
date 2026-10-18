@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StealthKillConfig
   m_EditorClassIdentifier: 
   behindAngle: 50
-  maxDistance: 2.2
+  maxDistance: 4
   killDuration: 1.5
   playerStandDistance: 0.85
   cameraReturnBlendDuration: 0.75

@@ -12,7 +12,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors
         [field: SerializeField] public float MaxAttackDistance { get; private set; } = 18f;
         [field: SerializeField] public int Damage { get; private set; } = 6;
         [field: SerializeField] public float AttackCooldown { get; private set; } = 1.2f;
-        [field: SerializeField] public float AnimFireTimeout { get; private set; } = 2f;
+        [field: SerializeField] public float AnimFireTimeout { get; private set; } = 0.8f;
         [field: SerializeField] public int BurstShots { get; private set; } = 1;
         [field: SerializeField] public float BurstInterval { get; private set; } = 0.14f;
         [field: SerializeField] public float Accuracy { get; private set; } = 1f;

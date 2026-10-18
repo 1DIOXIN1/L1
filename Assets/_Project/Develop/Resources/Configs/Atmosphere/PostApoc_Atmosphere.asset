@@ -33,7 +33,7 @@ MonoBehaviour:
   bloomIntensity: 0.35
   bloomThreshold: 1.1
   dustEnabled: 1
-  dustEmissionRate: 32
+  dustEmissionRate: 50
   dustSize: 0.025
-  dustColor: {r: 0.6509434, g: 0.63090444, b: 0.5557583, a: 0.28}
-  dustBoxSize: 20
+  dustColor: {r: 0.6698113, g: 0.63624173, b: 0.5086774, a: 0.28}
+  dustBoxSize: 13

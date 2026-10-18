@@ -20,9 +20,11 @@ MonoBehaviour:
   <LostHoldTime>k__BackingField: 1.5
   <LostDecayTime>k__BackingField: 2
   <DamageSuspicionBurst>k__BackingField: 1
+  <DeathAnimationFallbackSeconds>k__BackingField: 2
+  <DeathFadeSeconds>k__BackingField: 2.5
   <ChefPrefab>k__BackingField: {fileID: 8076757054092318504, guid: 756686be6a06bd7498cda7e9c41f8488, type: 3}
   <TeacherPrefab>k__BackingField: {fileID: 4496244555982910951, guid: 285859b3809a80542a606db6a89882ab, type: 3}
-  <MeleePrefab>k__BackingField: {fileID: 4496244555982910951, guid: 582234536ee74094bb1dc7081eca81c7, type: 3}
+  <SawDronePrefab>k__BackingField: {fileID: 6841671934992714355, guid: 582234536ee74094bb1dc7081eca81c7, type: 3}
   <GuardPrefab>k__BackingField: {fileID: 4496244555982910951, guid: d4e5f6a7b8c9001122334455667788aa, type: 3}
   presets:
   - <Type>k__BackingField: 0
@@ -54,7 +56,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9a607cd59f0f480c8f0e00d65bee2ac0, type: 2}
     stealthKillPresentation: {fileID: 11400000, guid: 040eb78c58fa5eb47836d61791adf109, type: 2}
   - <Type>k__BackingField: 2
-    <Id>k__BackingField: enemy_melee
+    <Id>k__BackingField: enemy_sawdrone
     <Health>k__BackingField: 60
     <PatrolSpeed>k__BackingField: 2.5
     <ChaseSpeed>k__BackingField: 6
@@ -66,7 +68,7 @@ MonoBehaviour:
     <AttackOriginHeight>k__BackingField: 1
     attackBehaviors:
     - {fileID: 11400000, guid: 0eb267343b1242608a46957479b5f60d, type: 2}
-    stealthKillPresentation: {fileID: 0}
+    stealthKillPresentation: {fileID: 11400000, guid: 040eb78c58fa5eb47836d61791adf109, type: 2}
   - <Type>k__BackingField: 3
     <Id>k__BackingField: enemy_guard
     <Health>k__BackingField: 35

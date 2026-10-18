@@ -19,10 +19,13 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
         [field: SerializeField] public float LostHoldTime { get; private set; } = 1.5f;
         [field: SerializeField] public float LostDecayTime { get; private set; } = 2f;
         [field: SerializeField, Range(0f, 1f)] public float DamageSuspicionBurst { get; private set; } = 0.45f;
+        [field: SerializeField] public float DeathAnimationFallbackSeconds { get; private set; } = 2f;
+        [field: SerializeField] public float DeathFadeSeconds { get; private set; } = 2.5f;
         [field: SerializeField, FormerlySerializedAs("<CookerPrefab>k__BackingField")]
         public GameObject ChefPrefab { get; private set; }
         [field: SerializeField] public GameObject TeacherPrefab { get; private set; }
-        [field: SerializeField] public GameObject MeleePrefab { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("<MeleePrefab>k__BackingField")]
+        public GameObject SawDronePrefab { get; private set; }
         [field: SerializeField] public GameObject GuardPrefab { get; private set; }
 
         [SerializeField] private List<EnemyPreset> presets = new List<EnemyPreset>();
@@ -42,7 +45,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
             return type switch
             {
                 EnemyType.Chef => EnemyPreset.CreateChef(),
-                EnemyType.Melee => EnemyPreset.CreateMelee(),
+                EnemyType.SawDrone => EnemyPreset.CreateSawDrone(),
                 EnemyType.Guard => EnemyPreset.CreateGuard(),
                 _ => EnemyPreset.CreateTeacher()
             };
@@ -53,7 +56,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
             return type switch
             {
                 EnemyType.Chef => ChefPrefab,
-                EnemyType.Melee => MeleePrefab,
+                EnemyType.SawDrone => SawDronePrefab,
                 EnemyType.Teacher => TeacherPrefab,
                 EnemyType.Guard => GuardPrefab,
                 _ => TeacherPrefab
@@ -136,10 +139,10 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
                 EnemyType.Guard, "enemy_guard", 35, 2f, 5f, 22f, 120f, 12f, 420f, 16f);
         }
 
-        public static EnemyPreset CreateMelee()
+        public static EnemyPreset CreateSawDrone()
         {
             return new EnemyPreset(
-                EnemyType.Melee, "enemy_melee", 60, 2.5f, 6f, 16f, 140f, 14f, 480f, 18f);
+                EnemyType.SawDrone, "enemy_sawdrone", 60, 2.5f, 6f, 16f, 140f, 14f, 480f, 18f);
         }
     }
 }

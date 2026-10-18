@@ -15,6 +15,7 @@ MonoBehaviour:
   <AttackRange>k__BackingField: 2.5
   <Damage>k__BackingField: 10
   <AttackCooldown>k__BackingField: 1
+  <AnimFireTimeout>k__BackingField: 0.8
   <DashTriggerDistance>k__BackingField: 6
   <DashSpeed>k__BackingField: 9
   <DashCooldown>k__BackingField: 3

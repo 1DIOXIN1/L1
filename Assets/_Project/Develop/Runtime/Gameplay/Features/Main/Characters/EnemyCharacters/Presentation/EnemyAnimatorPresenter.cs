@@ -18,7 +18,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         private readonly bool _hasAttack;
         private readonly bool _hasAttackFire;
         private readonly bool _hasHit;
-        private readonly bool _hasDie;
+        private readonly bool _hasPowerOff;
 
         public EnemyAnimatorPresenter(Animator animator, NavMeshAgent agent)
         {
@@ -33,12 +33,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             _hasAttack = HasParameter(EnemyAnimatorParameters.AttackHash);
             _hasAttackFire = HasParameter(EnemyAnimatorParameters.AttackFireHash);
             _hasHit = HasParameter(EnemyAnimatorParameters.HitHash);
-            _hasDie = HasParameter(EnemyAnimatorParameters.DieHash);
+            _hasPowerOff = HasParameter(EnemyAnimatorParameters.PowerOffHash);
         }
 
         public void Tick(EnemyContext context)
         {
-            if (_animator.isActiveAndEnabled == false)
+            if (_animator == null || _animator.isActiveAndEnabled == false)
                 return;
 
             float speed = 0f;
@@ -87,7 +87,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public bool IsPlayingAttack()
         {
-            if (_animator.isActiveAndEnabled == false)
+            if (_animator == null || _animator.isActiveAndEnabled == false)
                 return false;
 
             AnimatorStateInfo current = _animator.GetCurrentAnimatorStateInfo(0);
@@ -106,15 +106,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 _animator.SetTrigger(EnemyAnimatorParameters.HitHash);
         }
 
-        public void PlayDie()
+        public void PlayPowerOff()
         {
-            if (_hasDie)
-                _animator.SetTrigger(EnemyAnimatorParameters.DieHash);
+            if (_hasPowerOff)
+                _animator.SetTrigger(EnemyAnimatorParameters.PowerOffHash);
         }
 
         private bool HasParameter(int hash)
         {
-            if (_animator.runtimeAnimatorController == null)
+            if (_animator == null || _animator.runtimeAnimatorController == null)
                 return false;
 
             AnimatorControllerParameter[] parameters = _animator.parameters;

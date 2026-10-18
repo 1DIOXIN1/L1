@@ -608,6 +608,8 @@ MonoBehaviour:
   spawnPoints:
   - {fileID: 1958080327}
   - {fileID: 1256010852}
+  - {fileID: 1451519281}
+  - {fileID: 1983076563}
 --- !u!1 &1130617145
 GameObject:
   m_ObjectHideFlags: 0
@@ -715,7 +717,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 0
+  enemyType: 2
   patrolPoints:
   - {fileID: 481885777}
   - {fileID: 1843330460}
@@ -1550,7 +1552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 0
+  enemyType: 2
   patrolPoints:
   - {fileID: 110160506}
   - {fileID: 2058952030}
@@ -1614,7 +1616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d626fc869277542bb388b5f708485e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 2
+  enemyType: 3
   patrolPoints:
   - {fileID: 1718496844}
   - {fileID: 816398503}
@@ -1860,11 +1862,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a11e0001aabb00223344556677880076, type: 3}
---- !u!4 &8800112233445566002 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1000000002, guid: a11e0001aabb00223344556677880076, type: 3}
-  m_PrefabInstance: {fileID: 8800112233445566001}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1879,4 +1876,4 @@ SceneRoots:
   - {fileID: 690107665}
   - {fileID: 28772336}
   - {fileID: 2141000002}
-  - {fileID: 8800112233445566002}
+  - {fileID: 8800112233445566001}

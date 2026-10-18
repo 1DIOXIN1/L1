@@ -15,11 +15,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
     [RequireComponent(typeof(NavMeshAgent))]
     public abstract class EnemyBase : Character
     {
-        private const float DefaultDeathAnimationFallbackSeconds = 2f;
-
         [SerializeField] private Animator animator;
-        [SerializeField] private GameObject wreckagePrefab;
-        [SerializeField] private float deathAnimationFallbackSeconds = DefaultDeathAnimationFallbackSeconds;
+        [SerializeField] private Renderer[] deathFadeRenderers;
 
         private EnemyContext _context;
         private EnemyAnimatorPresenter _animatorPresenter;
@@ -372,29 +369,23 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             _context.AIService.Unregister(this);
             DisableColliders();
 
-            if (_playDeathAnimation)
+            if (_playDeathAnimation && animator != null)
             {
-                _animatorPresenter.PlayDie();
-                yield return WaitForDeathAnimation();
+                _animatorPresenter.PlayPowerOff();
+                yield return WaitForPowerOffAnimation();
+                animator.enabled = false;
             }
 
-            try
-            {
-                SpawnWreckage();
-            }
-            finally
-            {
-                Destroy(gameObject);
-            }
+            yield return FadeOutAndDestroy();
         }
 
-        private IEnumerator WaitForDeathAnimation()
+        private IEnumerator WaitForPowerOffAnimation()
         {
             float enterTimeout = 0.5f;
             float elapsed = 0f;
             while (elapsed < enterTimeout)
             {
-                if (animator.GetCurrentAnimatorStateInfo(0).IsName("Die"))
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName(EnemyAnimatorParameters.PowerOff))
                     break;
 
                 elapsed += Time.deltaTime;
@@ -402,22 +393,30 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             }
 
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            float waitSeconds = stateInfo.IsName("Die") && stateInfo.length > 0.05f
+            float waitSeconds = stateInfo.IsName(EnemyAnimatorParameters.PowerOff) && stateInfo.length > 0.05f
                 ? stateInfo.length * Mathf.Clamp01(1f - stateInfo.normalizedTime)
-                : deathAnimationFallbackSeconds;
+                : _context.Config.DeathAnimationFallbackSeconds;
 
             yield return new WaitForSeconds(waitSeconds);
         }
 
-        private void SpawnWreckage()
+        private IEnumerator FadeOutAndDestroy()
         {
-            if (wreckagePrefab == null)
-                return;
+            Renderer[] renderers = deathFadeRenderers != null && deathFadeRenderers.Length > 0
+                ? deathFadeRenderers
+                : GetComponentsInChildren<Renderer>(true);
 
-            UnityEngine.Object.Instantiate(
-                (UnityEngine.Object)wreckagePrefab,
-                transform.position,
-                transform.rotation);
+            if (renderers.Length == 0)
+            {
+                Destroy(gameObject);
+                yield break;
+            }
+
+            EnemyDeathFade fade = new EnemyDeathFade(renderers, _context.Config.DeathFadeSeconds);
+            while (fade.Tick(Time.deltaTime) == false)
+                yield return null;
+
+            Destroy(gameObject);
         }
 
         private void DisableColliders()

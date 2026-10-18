@@ -1,10 +1,9 @@
-using System;
 using _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharacters.AttackBehaviors
 {
-    public sealed class MeleeDashAttackBehavior : IEnemyAttackBehavior
+    public sealed class MeleeDashAttackBehavior : IEnemyAttackBehavior, IAnimFireReceiver
     {
         private readonly EnemyBase _enemy;
         private readonly MeleeDashBehaviorConfig _config;
@@ -12,7 +11,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         private float _attackCooldown;
         private float _dashCooldown;
         private float _recoveryTimer;
+        private float _animFireTimeout;
         private bool _isDashing;
+        private bool _awaitingAnimFire;
 
         public MeleeDashAttackBehavior(
             EnemyBase enemy,
@@ -21,7 +22,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         {
             _enemy = enemy;
             _config = config;
-            _presentation = presentation ?? throw new ArgumentNullException(nameof(presentation));
+            _presentation = presentation;
         }
 
         public void Tick(float deltaTime)
@@ -29,6 +30,16 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             _attackCooldown -= deltaTime;
             _dashCooldown -= deltaTime;
             _recoveryTimer -= deltaTime;
+
+            if (_awaitingAnimFire)
+            {
+                _enemy.StopAgent();
+                _enemy.LookAtPlayer(deltaTime);
+                _animFireTimeout -= deltaTime;
+                if (_animFireTimeout <= 0f)
+                    OnAnimFire();
+                return;
+            }
 
             if (_recoveryTimer > 0f)
             {
@@ -72,16 +83,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (_attackCooldown > 0f)
                 return;
 
-            _presentation.NotifyAttackStarted();
-            OverlapShoot.Shoot(
-                _enemy.GetAttackOrigin(),
-                _config.AttackRange,
-                _config.Damage,
-                _enemy.gameObject);
-            _presentation.NotifyAttackFired();
-
-            _attackCooldown = _config.AttackCooldown;
-            _recoveryTimer = _config.PostAttackPause;
+            BeginMeleeAttack();
         }
 
         public void Reset()
@@ -89,10 +91,35 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             _attackCooldown = 0f;
             _dashCooldown = 0f;
             _recoveryTimer = 0f;
+            _animFireTimeout = 0f;
             _isDashing = false;
+            _awaitingAnimFire = false;
             _presentation.NotifyAttackStopped();
             _enemy.Context.Agent.speed = _enemy.Context.Preset.ChaseSpeed;
             _enemy.StopAgent();
+        }
+
+        public void OnAnimFire()
+        {
+            if (_awaitingAnimFire == false)
+                return;
+
+            _awaitingAnimFire = false;
+            OverlapShoot.Shoot(
+                _enemy.GetAttackOrigin(),
+                _config.AttackRange,
+                _config.Damage,
+                _enemy.gameObject);
+            _presentation.NotifyAttackFired();
+            _attackCooldown = _config.AttackCooldown;
+            _recoveryTimer = _config.PostAttackPause;
+        }
+
+        private void BeginMeleeAttack()
+        {
+            _presentation.NotifyAttackStarted();
+            _awaitingAnimFire = true;
+            _animFireTimeout = _config.AnimFireTimeout;
         }
 
         private void StartDash()

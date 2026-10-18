@@ -1,0 +1,29 @@
+---
+description: L1 core architecture — DI, layers, Tick, factories
+alwaysApply: true
+---
+
+# L1 Architecture
+
+## Layers
+- `Infrastructure` — DI, entry point, scene bootstrap
+- `Gameplay` / `Meta` — feature logic and scene contexts
+- `UI` — Views (MonoBehaviour) + Presenters (plain C#)
+- `Configs` — ScriptableObjects; load via `ConfigsProviderService` / `ResourcesConfigsLoader`
+- `Utilities` — shared services (assets, input, scenes, data)
+
+## DI
+- Custom `DIContainer`: project scope + scene scope
+- Register in `*ContextRegistrations`; resolve via factories/services
+- Scene container disposed on switch (`SceneSwitcherService`) — implement `IDisposable` for pooled/DDOL services
+- Do not service-locate via `FindObjectOfType` in feature code (bootstrap exception only)
+
+## Composition root
+- Scene `*Bootstrap` : `SceneBootstrap` — registrations, `Initialize`, `Run`, and frame `Update`/`LateUpdate` Tick
+- Create gameplay objects through factories (`CharactersFactory`, `WeaponFactory`, …), not ad-hoc `Instantiate` + wiring in random scripts
+
+## Logic vs Unity
+- Prefer plain C# classes with `Tick(float dt)` (`PlayerMotor`, `PlayerWeaponVisualFollow`, services)
+- MonoBehaviour only when Unity requires it: scene hooks, SerializeField refs, physics messages, animation events
+- Owner MB (e.g. `Player`, `PlayerCamera`, bootstrap) calls Tick — do not put gameplay state machines inside `Update` on many components
+- Never use `DefaultExecutionOrder`

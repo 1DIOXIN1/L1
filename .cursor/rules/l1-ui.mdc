@@ -1,0 +1,12 @@
+---
+description: L1 UI — Presenter/View separation
+globs: Assets/_Project/Develop/Runtime/UI/**/*.cs
+alwaysApply: false
+---
+
+# UI
+
+- `View` — MonoBehaviour, SerializeField widgets, no game rules
+- `Presenter` — plain C#, implements `IPresenter` (`IInitializable` + `IDisposable`), owns screen logic
+- Create views via `ViewsFactory` / presenters via `*PresentersFactory`; register in context
+- Screen presenters Tick from bootstrap when they need per-frame updates — not from random MB Updates
