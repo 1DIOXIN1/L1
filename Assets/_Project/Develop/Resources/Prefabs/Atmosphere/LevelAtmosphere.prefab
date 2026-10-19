@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: a11e0001aabb00223344556677880074, type: 2}
-  dustParticles: {fileID: 5627694172928376121}
+  dustParticles: {fileID: 559326102142796544}
   volume: {fileID: 1000000004}
 --- !u!114 &1000000004
 MonoBehaviour:
@@ -76,7 +76,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5504333837622106903}
   - component: {fileID: 7663544291786520273}
-  - component: {fileID: 5627694172928376121}
+  - component: {fileID: 559326102142796544}
   m_Layer: 0
   m_Name: VFX_DustAmbient
   m_TagString: Untagged
@@ -173,7 +173,7 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!198 &5627694172928376121
+--- !u!198 &559326102142796544
 ParticleSystem:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
