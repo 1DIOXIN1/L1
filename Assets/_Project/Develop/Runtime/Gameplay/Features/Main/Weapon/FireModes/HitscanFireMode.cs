@@ -31,7 +31,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
                 direction,
                 context.Config.Range,
                 context.Config.Damage,
-                context.Owner,
+                context.Attacker,
                 context.HitImpacts,
                 out Vector3 endPoint);
 

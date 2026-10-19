@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
     {
         public WeaponFireContext(
             Transform firePoint,
-            GameObject owner,
+            IDamageble attacker,
             WeaponConfig config,
             GameObject bulletPrefab,
             Camera aimCamera,
@@ -18,7 +19,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
             float currentSpreadDegrees)
         {
             FirePoint = firePoint;
-            Owner = owner;
+            Attacker = attacker;
             Config = config;
             BulletPrefab = bulletPrefab;
             AimCamera = aimCamera;
@@ -29,7 +30,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
         }
 
         public Transform FirePoint { get; }
-        public GameObject Owner { get; }
+        public IDamageble Attacker { get; }
         public WeaponConfig Config { get; }
         public GameObject BulletPrefab { get; }
         public Camera AimCamera { get; }

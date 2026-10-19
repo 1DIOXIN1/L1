@@ -22,6 +22,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         private WeaponInventory _weaponInventory;
         private PlayerControlMode _controlMode = PlayerControlMode.Free;
 
+        public override DamageAffiliation Affiliation => DamageAffiliation.Player;
+
         public Transform FirePoint => firePoint;
         public Transform LookPivot => lookPivot;
         public Transform ViewTransform => viewTransform != null ? viewTransform : lookPivot;

@@ -1,5 +1,6 @@
 using System;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
@@ -12,7 +13,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         private readonly WeaponConfig _config;
         private readonly IFireMode _fireMode;
         private readonly Transform _firePoint;
-        private readonly GameObject _owner;
+        private readonly IDamageble _attacker;
         private readonly GameObject _bulletPrefab;
         private readonly HitImpactService _hitImpacts;
         private readonly BulletTracerService _tracers;
@@ -33,7 +34,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             WeaponConfig config,
             IFireMode fireMode,
             Transform firePoint,
-            GameObject owner,
+            IDamageble attacker,
             GameObject bulletPrefab = null,
             int? initialAmmo = null,
             int? initialReserveAmmo = null,
@@ -44,7 +45,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             _config = config;
             _fireMode = fireMode;
             _firePoint = firePoint;
-            _owner = owner;
+            _attacker = attacker;
             _bulletPrefab = bulletPrefab;
             _aimCamera = aimCamera;
             _hitImpacts = hitImpacts;
@@ -105,7 +106,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 
             _fireMode.Fire(new WeaponFireContext(
                 _firePoint,
-                _owner,
+                _attacker,
                 _config,
                 _bulletPrefab,
                 _aimCamera,

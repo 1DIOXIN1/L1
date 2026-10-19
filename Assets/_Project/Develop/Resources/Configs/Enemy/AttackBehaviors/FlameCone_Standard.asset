@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <MinAttackDistance>k__BackingField: 1
   <MaxAttackDistance>k__BackingField: 8
-  <FlameRange>k__BackingField: 7
+  <FlameRange>k__BackingField: 8
   <FlameConeAngle>k__BackingField: 70
   <FlameDamagePerSecond>k__BackingField: 5
   <FlameWarmupTime>k__BackingField: 0.35

@@ -16,6 +16,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
     public abstract class EnemyBase : Character
     {
         [SerializeField] private Animator animator;
+        [SerializeField] private Transform attackOrigin;
         [SerializeField] private Renderer[] deathFadeRenderers;
 
         private EnemyContext _context;
@@ -35,7 +36,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public bool IsGameplaySuspended => _isGameplaySuspended;
         public Animator Animator => animator;
         public EnemyAnimatorPresenter AnimatorPresenter => _animatorPresenter;
+        public override DamageAffiliation Affiliation => DamageAffiliation.Enemy;
         protected abstract EnemyType Type { get; }
+
+        private DamageableRegistry _damageableRegistry;
+        private Collider _damageCollider;
 
         public void Initialize(
             EnemyAIService aiService,
@@ -43,15 +48,18 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             Transform player,
             GameObject projectilePrefab,
             IReadOnlyList<Transform> patrolPoints,
-            EnemyAttackBehaviorFactory attackBehaviorFactory)
+            EnemyAttackBehaviorFactory attackBehaviorFactory,
+            DamageableRegistry damageableRegistry)
         {
             _attackBehaviorFactory = attackBehaviorFactory;
+            _damageableRegistry = damageableRegistry;
 
             NavMeshAgent agent = GetComponent<NavMeshAgent>();
             EnemyPreset preset = config.GetPreset(Type);
 
             ConfigureAgent(agent, preset);
             EnsureDamageCollider(agent);
+            _damageableRegistry.Register(this, _damageCollider);
 
             _animatorPresenter = new EnemyAnimatorPresenter(animator, agent);
 
@@ -63,7 +71,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 agent,
                 aiService,
                 projectilePrefab,
-                patrolPoints);
+                patrolPoints,
+                damageableRegistry);
 
             CreateAttackBehaviors(preset);
 
@@ -304,7 +313,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public Vector3 GetAttackOrigin()
         {
-            return transform.position + Vector3.up * _context.Preset.AttackOriginHeight;
+            return attackOrigin.position;
         }
 
         public Vector3 GetDirectionToPlayer()
@@ -327,14 +336,45 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public bool HasLineOfSightToPlayer()
         {
             Vector3 origin = GetAttackOrigin();
-            Vector3 direction = GetDirectionToPlayer();
-            float distance = Vector3.Distance(origin, _context.Player.position + Vector3.up * _context.Preset.AttackOriginHeight);
+            Vector3 target = _context.Player.position + Vector3.up * _context.Preset.AttackOriginHeight;
+            Vector3 toTarget = target - origin;
+            float distance = toTarget.magnitude;
 
-            if (Physics.Raycast(origin, direction, out RaycastHit hit, distance, ~0, QueryTriggerInteraction.Ignore) == false)
+            if (distance <= 0.001f)
                 return true;
 
-            return hit.collider.transform.root == _context.Player.root;
+            Vector3 direction = toTarget / distance;
+            RaycastHit[] hits = Physics.RaycastAll(
+                origin,
+                direction,
+                distance,
+                ~0,
+                QueryTriggerInteraction.Ignore);
+
+            if (hits.Length == 0)
+                return true;
+
+            System.Array.Sort(hits, CompareHitsByDistance);
+
+            for (int i = 0; i < hits.Length; i++)
+            {
+                Collider hitCollider = hits[i].collider;
+                if (_context.Damageables.TryGet(hitCollider, out IDamageble damageble))
+                {
+                    if (damageble.Affiliation == DamageAffiliation.Enemy)
+                        continue;
+
+                    return damageble.Affiliation == DamageAffiliation.Player;
+                }
+
+                return false;
+            }
+
+            return true;
         }
+
+        private static int CompareHitsByDistance(RaycastHit left, RaycastHit right)
+            => left.distance.CompareTo(right.distance);
 
         protected override void OnDamaged(int damage)
         {
@@ -467,11 +507,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 return;
 
             _context.AIService.Unregister(this);
+            _damageableRegistry.Unregister(this);
         }
 
         private void EnsureDamageCollider(NavMeshAgent agent)
         {
-            if (TryGetComponent<Collider>(out _))
+            if (TryGetComponent(out _damageCollider))
                 return;
 
             CapsuleCollider collider = gameObject.AddComponent<CapsuleCollider>();
@@ -479,6 +520,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             collider.height = Mathf.Max(agent.height, 1f);
             collider.radius = Mathf.Max(agent.radius, 0.3f);
             collider.center = new Vector3(0f, agent.baseOffset, 0f);
+            _damageCollider = collider;
         }
 
         private static void ConfigureAgent(NavMeshAgent agent, EnemyPreset preset)

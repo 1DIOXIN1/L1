@@ -11,7 +11,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
             Vector3 direction,
             float distance,
             int damage,
-            GameObject owner,
+            IDamageble attacker,
             HitImpactService hitImpacts,
             out Vector3 endPoint)
         {
@@ -26,7 +26,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
             {
                 endPoint = hit.point;
                 hitImpacts.Play(hit);
-                DamageUtility.TryApplyDamage(hit.collider, damage, owner);
+                DamageUtility.TryApplyDamage(hit.collider, damage, attacker);
                 return true;
             }
 

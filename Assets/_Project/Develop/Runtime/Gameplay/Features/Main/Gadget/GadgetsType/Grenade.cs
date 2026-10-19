@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget.GadgetEffect;
 using UnityEngine;
 
@@ -8,18 +9,18 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Gadget.GadgetsType
     {
         private readonly GrenadeConfig _config;
         private readonly Transform _usePoint;
-        private readonly GameObject _owner;
+        private readonly IDamageble _attacker;
 
         private float _lastUseTime = -Mathf.Infinity;
 
         public Grenade(
             GrenadeConfig config,
             Transform usePoint,
-            GameObject owner)
+            IDamageble attacker)
         {
             _config = config;
             _usePoint = usePoint;
-            _owner = owner;
+            _attacker = attacker;
 
             Amount = config.StartAmount;
             Cooldown = config.Cooldown;
@@ -47,7 +48,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Gadget.GadgetsType
 
             GrenadeProjectile projectile = grenadeObject.AddComponent<GrenadeProjectile>();
             projectile.Initialize(
-                _owner,
+                _attacker,
                 _config.Damage,
                 _config.ExplosionRadius,
                 _config.ExplosionForce,

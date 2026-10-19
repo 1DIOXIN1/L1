@@ -34,12 +34,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             float distance = _enemy.DistanceToPlayer();
             float minDistance = _config.MinAttackDistance;
             float maxDistance = _config.MaxAttackDistance;
-            float idealDistance = (minDistance + maxDistance) * 0.5f;
+            float engageDistance = Mathf.Min(_config.FlameRange * 0.65f, maxDistance * 0.85f);
+            engageDistance = Mathf.Max(engageDistance, minDistance + 0.35f);
 
             if (distance > maxDistance)
             {
                 ResetFlame();
-                _enemy.ChasePlayer(idealDistance);
+                _enemy.ChasePlayer(engageDistance);
                 _enemy.LookAtPlayer(deltaTime);
                 return;
             }
@@ -55,7 +56,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (_enemy.HasLineOfSightToPlayer() == false)
             {
                 ResetFlame();
-                _enemy.ChasePlayer(idealDistance);
+                _enemy.ChasePlayer(engageDistance);
                 _enemy.LookAtPlayer(deltaTime);
                 return;
             }
@@ -76,11 +77,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             {
                 FlameConeShoot.Shoot(
                     _enemy.GetAttackOrigin(),
-                    _enemy.transform.forward,
+                    _enemy.GetDirectionToPlayer(),
                     _config.FlameRange,
                     _config.FlameConeAngle,
                     _config.FlameDamagePerSecond,
-                    _enemy.gameObject);
+                    _enemy);
 
                 _presentation.NotifyAttackFired();
                 _flameDamageTimer = 0f;
@@ -126,11 +127,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (_flameMuzzle == null)
                 return;
 
-            Vector3 direction = _enemy.transform.forward;
+            Vector3 direction = _enemy.GetDirectionToPlayer();
             direction.y = 0f;
 
             if (direction.sqrMagnitude < 0.001f)
-                direction = Vector3.forward;
+                direction = _enemy.transform.forward;
 
             _flameMuzzle.position = _enemy.GetAttackOrigin();
             _flameMuzzle.rotation = Quaternion.LookRotation(direction.normalized);
@@ -156,7 +157,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             {
                 _flameMuzzle = CreateMuzzle();
                 _flameParticlesInstance = Object.Instantiate(source, _flameMuzzle);
-                ApplyPrefabLocalTransform(sourceTransform, _flameParticlesInstance.transform);
+                Transform instanceTransform = _flameParticlesInstance.transform;
+                instanceTransform.localPosition = Vector3.zero;
+                instanceTransform.localRotation = Quaternion.identity;
+                instanceTransform.localScale = sourceTransform.localScale;
             }
 
             ConfigureParticleInstance(_flameParticlesInstance);
@@ -182,20 +186,29 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             return muzzle;
         }
 
-        private static void ApplyPrefabLocalTransform(Transform source, Transform target)
-        {
-            target.localPosition = source.localPosition;
-            target.localRotation = source.localRotation;
-            target.localScale = source.localScale;
-        }
-
         private static void ConfigureParticleInstance(ParticleSystem particleSystem)
         {
-            ParticleSystem.MainModule main = particleSystem.main;
-            main.playOnAwake = false;
-            main.simulationSpace = ParticleSystemSimulationSpace.Local;
-            main.emitterVelocityMode = ParticleSystemEmitterVelocityMode.Transform;
-            particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ParticleSystem[] systems = particleSystem.GetComponentsInChildren<ParticleSystem>(true);
+
+            for (int i = 0; i < systems.Length; i++)
+            {
+                ParticleSystem system = systems[i];
+                ParticleSystem.MainModule main = system.main;
+                main.playOnAwake = false;
+                main.simulationSpace = ParticleSystemSimulationSpace.Local;
+                main.emitterVelocityMode = ParticleSystemEmitterVelocityMode.Transform;
+
+                ParticleSystem.VelocityOverLifetimeModule velocity = system.velocityOverLifetime;
+                velocity.enabled = false;
+
+                ParticleSystem.InheritVelocityModule inheritVelocity = system.inheritVelocity;
+                inheritVelocity.enabled = false;
+
+                ParticleSystem.CollisionModule collision = system.collision;
+                collision.enabled = false;
+
+                system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using _Project.Develop.Runtime.UI.Core;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace _Project.Develop.Runtime.UI.Gameplay.Phone
@@ -70,6 +71,24 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Phone
             SetPanelActive(mapPanel, tab == PhoneTab.Map);
             SetPanelActive(questsPanel, tab == PhoneTab.Quests);
             SetPanelActive(messagePanel, tab == PhoneTab.Message);
+            SelectTabButton(tab);
+        }
+
+        private void SelectTabButton(PhoneTab tab)
+        {
+            Button button = tab switch
+            {
+                PhoneTab.Settings => settingsButton,
+                PhoneTab.Map => mapButton,
+                PhoneTab.Quests => questsButton,
+                PhoneTab.Message => messageButton,
+                _ => null
+            };
+
+            if (EventSystem.current == null)
+                return;
+
+            EventSystem.current.SetSelectedGameObject(button != null ? button.gameObject : null);
         }
 
         private static void SetPanelActive(GameObject panel, bool active)

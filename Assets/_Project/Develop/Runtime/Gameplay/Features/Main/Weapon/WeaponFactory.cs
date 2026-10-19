@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Impact;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
@@ -31,7 +32,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         public IWeapon CreateWeapon(
             WeaponType type,
             Transform firePoint,
-            GameObject owner,
+            IDamageble attacker,
             int? initialAmmo = null,
             int? initialReserveAmmo = null)
         {
@@ -44,7 +45,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
                 config,
                 fireMode,
                 firePoint,
-                owner,
+                attacker,
                 bulletPrefab,
                 initialAmmo,
                 initialReserveAmmo,
@@ -53,3 +54,4 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         }
     }
 }
+

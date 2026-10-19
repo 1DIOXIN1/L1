@@ -8,7 +8,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
     {
         [SerializeField] private new Rigidbody rigidbody;
         private int _damage;
-        private GameObject _owner;
+        private IDamageble _attacker;
         private HitImpactService _hitImpacts;
         private bool _consumed;
 
@@ -17,11 +17,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
             float speed,
             int damage,
             float lifeTime,
-            GameObject owner,
+            IDamageble attacker,
             HitImpactService hitImpacts = null)
         {
             _damage = damage;
-            _owner = owner;
+            _attacker = attacker;
             _hitImpacts = hitImpacts;
             _consumed = false;
 
@@ -36,9 +36,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
             if (_consumed || other == null)
                 return;
 
-            if (_owner != null && other.transform.root == _owner.transform.root)
-                return;
-
             _consumed = true;
 
             Vector3 point = other.ClosestPoint(transform.position);
@@ -48,7 +45,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
                 : -transform.forward;
 
             _hitImpacts.Play(point, normal, other);
-            DamageUtility.TryApplyDamage(other, _damage, _owner);
+            DamageUtility.TryApplyDamage(other, _damage, _attacker);
             Destroy(gameObject);
         }
     }

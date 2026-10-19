@@ -109,7 +109,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 _enemy.GetAttackOrigin(),
                 _config.AttackRange,
                 _config.Damage,
-                _enemy.gameObject);
+                _enemy);
             _presentation.NotifyAttackFired();
             _attackCooldown = _config.AttackCooldown;
             _recoveryTimer = _config.PostAttackPause;

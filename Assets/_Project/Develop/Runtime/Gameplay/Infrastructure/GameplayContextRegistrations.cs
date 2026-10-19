@@ -35,6 +35,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         public static void Process(DIContainer container)
         {
             container.RegisterAsSingle(CreateGameplayUIRoot).NonLazy();
+            container.RegisterAsSingle(CreateDamageableRegistry).NonLazy();
             container.RegisterAsSingle(CreateStealItemService);
             container.RegisterAsSingle(CreateMissionQuestTracker);
             container.RegisterAsSingle(CreateMissionObjectiveFactory);
@@ -70,6 +71,13 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
         private static StealthKillPresentationFactory CreateStealthKillPresentationFactory(DIContainer container)
             => new StealthKillPresentationFactory(container.Resolve<ResourcesAssetsLoader>());
+
+        private static DamageableRegistry CreateDamageableRegistry(DIContainer container)
+        {
+            DamageableRegistry registry = new DamageableRegistry();
+            DamageUtility.Configure(registry);
+            return registry;
+        }
 
         private static StealItemService CreateStealItemService(DIContainer container)
             => new StealItemService();
@@ -143,7 +151,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private static HitImpactService CreateHitImpactService(DIContainer container)
             => new HitImpactService(
                 container.Resolve<ConfigsProviderService>().GetConfig<HitImpactConfig>(),
-                container.Resolve<ResourcesAssetsLoader>());
+                container.Resolve<ResourcesAssetsLoader>(),
+                container.Resolve<DamageableRegistry>());
 
         private static BulletTracerService CreateBulletTracerService(DIContainer container)
             => new BulletTracerService(

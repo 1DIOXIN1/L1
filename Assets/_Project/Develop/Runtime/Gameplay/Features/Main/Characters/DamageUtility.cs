@@ -4,21 +4,30 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 {
     public static class DamageUtility
     {
-        public static bool TryApplyDamage(Collider collider, int damage, GameObject owner)
+        private static DamageableRegistry _registry;
+
+        public static void Configure(DamageableRegistry registry)
+        {
+            _registry = registry;
+        }
+
+        public static bool TryApplyDamage(Collider collider, int damage, IDamageble attacker)
         {
             if (collider == null || damage <= 0)
                 return false;
 
-            if (owner != null && collider.transform.root == owner.transform.root)
+            if (_registry.TryGet(collider, out IDamageble target) == false)
                 return false;
 
-            if (collider.TryGetComponent(out IDamageble damageble) == false)
-                damageble = collider.GetComponentInParent<IDamageble>();
-
-            if (damageble == null)
+            if (ReferenceEquals(attacker, target))
                 return false;
 
-            damageble.TakeDamage(damage);
+            if (attacker != null
+                && attacker.Affiliation != DamageAffiliation.Neutral
+                && attacker.Affiliation == target.Affiliation)
+                return false;
+
+            target.TakeDamage(damage);
             return true;
         }
     }

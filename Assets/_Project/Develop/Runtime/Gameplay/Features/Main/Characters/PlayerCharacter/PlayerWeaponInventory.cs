@@ -27,7 +27,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public WeaponInventory CreatePlayerWeaponInventory(
             Transform playerTransform,
             Transform firePoint,
-            GameObject owner)
+            IDamageble attacker)
         {
             var inventory = new WeaponInventory();
             var inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
@@ -41,7 +41,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 WeaponType type = owned[i];
                 int ammo = _playerStateService.GetAmmo(type);
                 int reserveAmmo = _playerStateService.GetReserveAmmo(type);
-                IWeapon weapon = _factory.CreateWeapon(type, firePoint, owner, ammo, reserveAmmo);
+                IWeapon weapon = _factory.CreateWeapon(type, firePoint, attacker, ammo, reserveAmmo);
                 inventory.Add(weapon);
             }
 

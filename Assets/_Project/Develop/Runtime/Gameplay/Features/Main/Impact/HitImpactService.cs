@@ -14,14 +14,19 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Impact
 
         private readonly HitImpactConfig _config;
         private readonly GameObject _prefab;
+        private readonly DamageableRegistry _damageables;
         private readonly Queue<HitImpactEffect> _pool = new();
         private readonly List<ActiveImpact> _active = new();
         private readonly Transform _root;
         private bool _disposed;
 
-        public HitImpactService(HitImpactConfig config, ResourcesAssetsLoader assetsLoader)
+        public HitImpactService(
+            HitImpactConfig config,
+            ResourcesAssetsLoader assetsLoader,
+            DamageableRegistry damageables)
         {
             _config = config;
+            _damageables = damageables;
             _prefab = assetsLoader.Load<GameObject>(PrefabPath);
 
             GameObject rootObject = new GameObject("HitImpactPool");
@@ -134,7 +139,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Impact
             if (tag != null)
                 return tag.Surface;
 
-            if (collider.GetComponentInParent<IDamageble>() != null)
+            if (_damageables.TryGet(collider, out _))
                 return SurfaceType.Flesh;
 
             return SurfaceType.Default;

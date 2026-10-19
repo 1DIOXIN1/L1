@@ -13,6 +13,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
 
         public event Action<int, int> HealthChanged;
 
+        public abstract DamageAffiliation Affiliation { get; }
+
         public int CurrentHealth => _health;
         public int MaxHealth => _maxHealth;
         protected int Health => _health;

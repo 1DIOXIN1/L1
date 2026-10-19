@@ -11,7 +11,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
             float range,
             float coneAngle,
             int damage,
-            GameObject owner)
+            IDamageble attacker)
         {
             Vector3 forward = direction.normalized;
             float halfAngle = coneAngle * 0.5f;
@@ -20,9 +20,6 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
 
             foreach (Collider hit in hits)
             {
-                if (owner != null && hit.transform.root == owner.transform.root)
-                    continue;
-
                 Vector3 toTarget = hit.transform.position - origin;
                 toTarget.y = 0f;
 
@@ -35,7 +32,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
                 if (Vector3.Angle(forward, toTarget) > halfAngle)
                     continue;
 
-                if (DamageUtility.TryApplyDamage(hit, damage, owner))
+                if (DamageUtility.TryApplyDamage(hit, damage, attacker))
                     damagedCount++;
             }
 

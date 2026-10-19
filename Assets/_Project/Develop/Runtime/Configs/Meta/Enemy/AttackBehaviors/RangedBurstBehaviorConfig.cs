@@ -8,7 +8,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy.AttackBehaviors
         fileName = "RangedBurstBehaviorConfig")]
     public class RangedBurstBehaviorConfig : EnemyAttackBehaviorConfig
     {
-        [field: SerializeField] public float MinAttackDistance { get; private set; } = 5f;
+        [field: SerializeField] public float MinAttackDistance { get; private set; } = 2f;
         [field: SerializeField] public float MaxAttackDistance { get; private set; } = 18f;
         [field: SerializeField] public int Damage { get; private set; } = 6;
         [field: SerializeField] public float AttackCooldown { get; private set; } = 1.2f;

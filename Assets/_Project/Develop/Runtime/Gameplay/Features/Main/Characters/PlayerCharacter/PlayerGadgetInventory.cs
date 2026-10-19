@@ -22,14 +22,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         public GadgetInventory CreatePlayerGadgetInventory(
             Transform usePoint,
-            GameObject owner)
+            IDamageble attacker)
         {
             var inventoryConfig = ConfigsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
             var slots = new Dictionary<SlotGadgetType, GadgetSlot>();
 
             foreach (var slotData in inventoryConfig.GadgetSlots)
             {
-                IGadget gadget = Factory.CreateGadget(slotData.GadgetType, usePoint, owner);
+                IGadget gadget = Factory.CreateGadget(slotData.GadgetType, usePoint, attacker);
                 slots[slotData.SlotType] = new GadgetSlot(gadget, slotData.SlotType);
             }
 

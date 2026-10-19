@@ -30,7 +30,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
                 context.Config.ProjectileSpeed,
                 context.Config.Damage,
                 context.Config.BulletLifeTime,
-                context.Owner,
+                context.Attacker,
                 context.HitImpacts);
         }
 

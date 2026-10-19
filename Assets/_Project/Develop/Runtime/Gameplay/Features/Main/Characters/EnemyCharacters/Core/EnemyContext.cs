@@ -16,6 +16,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public EnemyAIService AIService { get; }
         public GameObject ProjectilePrefab { get; }
         public IReadOnlyList<Transform> PatrolPoints { get; }
+        public DamageableRegistry Damageables { get; }
         public EnemyAwareness Awareness { get; }
 
         public int PatrolPointIndex { get; set; }
@@ -40,7 +41,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             NavMeshAgent agent,
             EnemyAIService aiService,
             GameObject projectilePrefab,
-            IReadOnlyList<Transform> patrolPoints)
+            IReadOnlyList<Transform> patrolPoints,
+            DamageableRegistry damageables)
         {
             Enemy = enemy;
             Player = player;
@@ -50,6 +52,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             AIService = aiService;
             ProjectilePrefab = projectilePrefab;
             PatrolPoints = patrolPoints;
+            Damageables = damageables;
             Awareness = new EnemyAwareness(
                 config.SuspiciousFillTime,
                 config.LostHoldTime,

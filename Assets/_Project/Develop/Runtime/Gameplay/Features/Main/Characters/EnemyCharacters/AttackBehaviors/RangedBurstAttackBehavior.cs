@@ -173,7 +173,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (_enemy.Context.ProjectilePrefab == null)
                 return;
 
-            Vector3 origin = _enemy.GetAttackOrigin() + _enemy.transform.forward * 0.75f;
+            Vector3 origin = _enemy.GetAttackOrigin();
             GameObject projectileObject = Object.Instantiate(
                 _enemy.Context.ProjectilePrefab,
                 origin,
@@ -186,7 +186,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                     _config.ProjectileSpeed,
                     _config.Damage,
                     _config.ProjectileLifeTime,
-                    _enemy.gameObject,
+                    _enemy,
                     _hitImpacts);
             }
 

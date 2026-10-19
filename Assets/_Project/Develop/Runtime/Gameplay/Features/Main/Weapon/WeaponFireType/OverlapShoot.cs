@@ -9,13 +9,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponFireType
             Vector3 origin,
             float radius,
             int damage,
-            GameObject owner)
+            IDamageble attacker)
         {
             Collider[] hits = Physics.OverlapSphere(origin, radius);
 
             foreach (Collider hit in hits)
             {
-                if (DamageUtility.TryApplyDamage(hit, damage, owner))
+                if (DamageUtility.TryApplyDamage(hit, damage, attacker))
                     return true;
             }
 

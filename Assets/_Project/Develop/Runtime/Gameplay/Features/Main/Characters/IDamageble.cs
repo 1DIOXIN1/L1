@@ -2,6 +2,8 @@
 {
     public interface IDamageble
     {
-        public void TakeDamage(int damage);
+        DamageAffiliation Affiliation { get; }
+
+        void TakeDamage(int damage);
     }
 }

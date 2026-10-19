@@ -31,6 +31,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
         private readonly EnemyAttackBehaviorFactory _attackBehaviorFactory;
         private readonly PlayerStateService _playerStateService;
         private readonly NoiseService _noiseService;
+        private readonly DamageableRegistry _damageableRegistry;
 
         private Transform _playerTransform;
         private PlayerCamera _playerCamera;
@@ -46,6 +47,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             _attackBehaviorFactory = _container.Resolve<EnemyAttackBehaviorFactory>();
             _playerStateService = _container.Resolve<PlayerStateService>();
             _noiseService = _container.Resolve<NoiseService>();
+            _damageableRegistry = _container.Resolve<DamageableRegistry>();
         }
 
         public PlayerCamera PlayerCamera => _playerCamera;
@@ -69,9 +71,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 throw new InvalidOperationException("Player prefab is missing PlayerCamera.");
 
             var inventoryBuilder = _container.Resolve<PlayerWeaponInventory>();
-            var inventory = inventoryBuilder.CreatePlayerWeaponInventory(_playerTransform, player.FirePoint, instance);
+            var inventory = inventoryBuilder.CreatePlayerWeaponInventory(_playerTransform, player.FirePoint, player);
             var gadgetInventoryBuilder = _container.Resolve<PlayerGadgetInventory>();
-            var gadgetInventory = gadgetInventoryBuilder.CreatePlayerGadgetInventory(player.FirePoint, instance);
+            var gadgetInventory = gadgetInventoryBuilder.CreatePlayerGadgetInventory(player.FirePoint, player);
 
             var motor = new PlayerMotor(characterController, _playerTransform, player.ViewTransform, playerConfig);
             var combat = new PlayerCombatController(inventory, gadgetInventory);
@@ -93,6 +95,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
             }
 
             player.Initialize(_input, motor, combat, playerConfig, _playerStateService.Health, noiseEmitter);
+            _damageableRegistry.Register(player, instance.GetComponentsInChildren<Collider>(true));
+            DamageUtility.Configure(_damageableRegistry);
 
             Transform weaponSocket = PlayerWeaponView.CreateSocket(player.FirePoint, out Transform weaponPivot);
             PlayerWeaponVisualFollow weaponVisualFollow = new PlayerWeaponVisualFollow(
@@ -160,7 +164,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 _playerTransform,
                 bulletPrefab,
                 patrolPoints,
-                _attackBehaviorFactory);
+                _attackBehaviorFactory,
+                _damageableRegistry);
 
             return enemy;
         }

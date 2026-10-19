@@ -1,5 +1,6 @@
 using System;
 using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget.GadgetsType;
 using _Project.Develop.Runtime.Infrastructure.DI;
 using _Project.Develop.Runtime.Utilities.ConfigsManagement;
@@ -19,12 +20,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Gadget
         public IGadget CreateGadget(
             GadgetType type,
             Transform usePoint,
-            GameObject owner)
+            IDamageble attacker)
         {
             switch (type)
             {
                 case GadgetType.Grenade:
-                    return CreateGrenade(usePoint, owner);
+                    return CreateGrenade(usePoint, attacker);
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -33,10 +34,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Gadget
 
         private IGadget CreateGrenade(
             Transform usePoint,
-            GameObject owner)
+            IDamageble attacker)
         {
             var config = _configsProvider.GetConfig<GrenadeConfig>();
-            return new Grenade(config, usePoint, owner);
+            return new Grenade(config, usePoint, attacker);
         }
     }
 }
