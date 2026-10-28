@@ -22,6 +22,7 @@ MonoBehaviour:
   <DamageSuspicionBurst>k__BackingField: 1
   <DeathAnimationFallbackSeconds>k__BackingField: 2
   <DeathFadeSeconds>k__BackingField: 2.5
+  <DeathSmokePrefab>k__BackingField: {fileID: 4981083797536432459, guid: 7866b3ff30709f34699188ba7b9ef4b7, type: 3}
   <ChefPrefab>k__BackingField: {fileID: 8076757054092318504, guid: 756686be6a06bd7498cda7e9c41f8488, type: 3}
   <TeacherPrefab>k__BackingField: {fileID: 4496244555982910951, guid: 285859b3809a80542a606db6a89882ab, type: 3}
   <SawDronePrefab>k__BackingField: {fileID: 6841671934992714355, guid: 582234536ee74094bb1dc7081eca81c7, type: 3}

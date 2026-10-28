@@ -17,6 +17,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
     {
         [SerializeField] private Animator animator;
         [SerializeField] private Transform attackOrigin;
+        [SerializeField] private Transform deathSmokeOrigin;
         [SerializeField] private Renderer[] deathFadeRenderers;
 
         private EnemyContext _context;
@@ -408,6 +409,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             _context.Agent.enabled = false;
             _context.AIService.Unregister(this);
             DisableColliders();
+            EnemyDeathSmoke.Spawn(_context.Config.DeathSmokePrefab, deathSmokeOrigin.position);
 
             if (_playDeathAnimation && animator != null)
             {

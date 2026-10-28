@@ -21,6 +21,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Enemy
         [field: SerializeField, Range(0f, 1f)] public float DamageSuspicionBurst { get; private set; } = 0.45f;
         [field: SerializeField] public float DeathAnimationFallbackSeconds { get; private set; } = 2f;
         [field: SerializeField] public float DeathFadeSeconds { get; private set; } = 2.5f;
+        [field: SerializeField] public GameObject DeathSmokePrefab { get; private set; }
         [field: SerializeField, FormerlySerializedAs("<CookerPrefab>k__BackingField")]
         public GameObject ChefPrefab { get; private set; }
         [field: SerializeField] public GameObject TeacherPrefab { get; private set; }
