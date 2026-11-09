@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 951225f7b56a0154f9337ef5e99f8ee7
+guid: 095a96cbeb7758d4d9c948d0cc0f696e
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Teacher_Shirt
+    second: {fileID: 2100000, guid: be229bd46e6524b4687824cd3c569f98, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -15,7 +20,7 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
-    motionNodeName: 
+    motionNodeName: Root
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
@@ -24,7 +29,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 0
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -33,40 +38,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: BOT_Teacher_Idle
-      takeName: BOT_Teacher_Idle
-      internalID: 2611451043881058065
-      firstFrame: 0
-      lastFrame: 119
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
       name: BOT_Teacher_Attack
-      takeName: BOT_Teacher_Attack
-      internalID: 663628601980096395
+      takeName: Teacher_Armature|BOT_Teacher_Attack
+      internalID: 9117195309096332316
       firstFrame: 0
-      lastFrame: 35
+      lastFrame: 120
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -98,11 +74,40 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: BOT_Teacher_Move
-      takeName: BOT_Teacher_Move
-      internalID: -1725215089632766645
+      name: BOT_Teacher_Idle
+      takeName: Teacher_Armature|BOT_Teacher_Idle
+      internalID: 4206821138585551629
       firstFrame: 0
-      lastFrame: 59
+      lastFrame: 120
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: BOT_Teacher_Move
+      takeName: Teacher_Armature|BOT_Teacher_Move
+      internalID: 4179408610804963197
+      firstFrame: 0
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -128,10 +133,10 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: BOT_Teacher_PowerOff
-      takeName: BOT_Teacher_PowerOff
-      internalID: 7916498058031391275
+      takeName: Teacher_Armature|BOT_Teacher_PowerOff
+      internalID: -6278983988825972233
       firstFrame: 0
-      lastFrame: 24
+      lastFrame: 45
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -166,8 +171,8 @@ ModelImporter:
     importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importCameras: 0
+    importLights: 0
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0

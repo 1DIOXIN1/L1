@@ -61,7 +61,7 @@ namespace _Project.Develop.Editor
             AssemblyReloadEvents.beforeAssemblyReload += Cleanup;
             lastTick = EditorApplication.timeSinceStartup;
             if (prefab == null)
-                prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + "Guard_new.prefab");
+                prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + "Guard.prefab");
         }
 
         private void OnDisable()
@@ -246,7 +246,7 @@ namespace _Project.Develop.Editor
                 foreach (string bot in Bots)
                     if (GUILayout.Button(bot, EditorStyles.miniButton))
                     {
-                        prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + bot + "_new.prefab");
+                        prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + bot + ".prefab");
                         Rebuild();
                     }
             int selectedState = GUILayout.Toolbar(stateIndex, Labels);

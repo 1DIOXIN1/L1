@@ -23,10 +23,10 @@ MonoBehaviour:
   <DeathAnimationFallbackSeconds>k__BackingField: 2
   <DeathFadeSeconds>k__BackingField: 2.5
   <DeathSmokePrefab>k__BackingField: {fileID: 4981083797536432459, guid: 7866b3ff30709f34699188ba7b9ef4b7, type: 3}
-  <ChefPrefab>k__BackingField: {fileID: 8076757054092318504, guid: 756686be6a06bd7498cda7e9c41f8488, type: 3}
-  <TeacherPrefab>k__BackingField: {fileID: 4496244555982910951, guid: 285859b3809a80542a606db6a89882ab, type: 3}
-  <SawDronePrefab>k__BackingField: {fileID: 6841671934992714355, guid: 582234536ee74094bb1dc7081eca81c7, type: 3}
-  <GuardPrefab>k__BackingField: {fileID: 4496244555982910951, guid: d4e5f6a7b8c9001122334455667788aa, type: 3}
+  <ChefPrefab>k__BackingField: {fileID: 5541357552163122959, guid: 91392accd7eedb14689960c65bbed45c, type: 3}
+  <TeacherPrefab>k__BackingField: {fileID: 6915536696573794487, guid: 8d96fe5342486c240b1a271982a7aa30, type: 3}
+  <SawDronePrefab>k__BackingField: {fileID: 431181759177898834, guid: 3a721a8687b7c274c880399f880a2c62, type: 3}
+  <GuardPrefab>k__BackingField: {fileID: 726776213298147792, guid: 7dff4ae3cbc82d240be36dea804d5811, type: 3}
   presets:
   - <Type>k__BackingField: 0
     <Id>k__BackingField: enemy_chef
