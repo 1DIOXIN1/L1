@@ -1,27 +1,22 @@
 ---
-description: L1 coding style — no defensive noise, no comment clutter
+description: L1 coding style — short code, concrete state checks, no comments
 alwaysApply: true
 ---
 
 # Coding Style
 
-## Trust the composition root
-- No `== null` / `ArgumentNullException` / `?.` “just in case” for DI-injected deps or Resources assets the factory always loads
-- Missing assets/wiring should fail loudly (NRE), not soft-return
-- Keep real control-flow checks: disposed flags, optional gameplay state (`weapon == null`), optional params (`viewCamera`)
-
-## Comments
-- Do not add narrating comments, summaries, or “backward compatible” notes
-- Code and names should explain intent; delete agent/TODO noise when touching a file
-
-## APIs
-- Prefer explicit constructors and readonly fields over late `Initialize` + nullable Func providers when deps are known at create time
-- Pass concrete `Player` / `PlayerCamera` / services instead of stacks of `Func<>` wrappers
+- Keep it short. Add a file or method only when it has its own job
+- Names are in English. Namespace `_Project.Develop.Runtime.<Area>`. No comments or summaries. Delete agent/TODO noise when touching a file
+- Do not null-check anything that always comes from DI or a factory. Missing wiring fails loudly
+- Real state uses a concrete check in the script (unequipped, destroyed, disposed), not `== null`
+- No `?.` or `ArgumentNullException` “just in case”
 
 ## Commits
+
 - Match repo style: `feat:` / `fix:` / short why-focused subject
 - Only commit when the user asks
 
 ## Answers to the user
+
 - Direct and concise; Russian if the user writes in Russian
 - No long recaps of what you “will do”; show outcomes

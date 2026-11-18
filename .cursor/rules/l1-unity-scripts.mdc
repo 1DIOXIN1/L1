@@ -1,33 +1,37 @@
 ---
-description: L1 Unity scripting — minimize MonoBehaviour and GetComponent
+description: L1 Unity scripting — prefab refs, rare GetComponent, effect ownership
 globs: Assets/_Project/Develop/**/*.cs
 alwaysApply: false
 ---
 
 # Unity Scripts
 
-## MonoBehaviour budget
-- Thin: hold `[SerializeField]` refs and forward to plain logic/services
-- Do not put timers, pooling, or feature FSMs in `Update`/`LateUpdate` on views
-- Prefab views expose refs once; consumers call `Show`/`Hide`/`Play`, not discover children at runtime
+## MonoBehaviour
 
-## GetComponent
-- Avoid runtime `GetComponent` / `GetComponentInChildren` in hot paths and feature Tick
-- Prefer SerializeField wired in prefab/editor builder
-- One-time factory resolve on Instantiate is OK (`GetComponent` after spawn); do not re-query every frame
-- World queries (`GetComponentInParent` on hit collider) OK only for collision/damage/surface resolution
+- Only where Unity requires it: `[SerializeField]` refs, physics, animation events, the entry point, a View
+- Do not put timers, pools, or state in `Update` / `LateUpdate`. The owner calls `Tick`
+- A prefab exposes its refs once. Call `Show` / `Hide` / `Play`. Do not discover children at runtime
 
-## Prefabs & VFX
-- Author VFX as Resources prefabs (particles, materials, refs) — no runtime particle bootstrap/utilities
-- Services own pools, active lists, timing, and `Tick`; views are dumb
-- Tick VFX services from both `GameplayBootstrap` and `HubBootstrap` when registered in gameplay context
-- Config knobs live in ScriptableObjects under `Configs/`, not magic numbers scattered in views
+## References
+
+- Pass a reference explicitly: a prefab field, a constructor argument, or DI
+- Do not use `GetComponent`, `GetComponentInChildren`, `GetComponentInParent`, or scene searches
+- A one-off `GetComponent` is allowed only in a very rare case, and only when it does not burden the project
+- Assemble the object on the prefab. The factory spawns that prefab
+
+## Prefabs, config, effects
+
+- Numbers and timings live in ScriptableObjects under `Configs/`
+- Materials, particles, and clips live on the prefab. Do not build visuals in code
+- Whoever spawned an effect ticks it and removes it on scene change, or a dedicated handler does
+- When an effect handler is registered in the gameplay context, tick it from both `GameplayBootstrap` and `HubBootstrap`
 
 ## Example
+
 ```csharp
-// ❌ BAD — MB owns timers + pool return
 void Update() { _life -= dt; if (_life <= 0) _onDone(this); }
 
-// ✅ GOOD — service Ticks; view only Show/Hide
 _hitImpacts.Tick(deltaTime);
 ```
+
+The first owns lifetime on the view. The second lets the handler tick; the view only shows and hides.

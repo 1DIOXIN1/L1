@@ -26,6 +26,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         void Tick(float deltaTime);
         void Shoot();
         void Reload();
+        void SetModifiers(int magazineBonus, float spreadScale);
         void SetAmmo(int ammo);
         void SetReserveAmmo(int reserveAmmo);
         void SetAimCamera(Camera aimCamera);

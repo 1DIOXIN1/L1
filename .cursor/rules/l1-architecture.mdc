@@ -1,29 +1,39 @@
 ---
-description: L1 core architecture — DI, layers, Tick, factories
+description: L1 architecture — existing layers, Tick, factories, prefabs
 alwaysApply: true
 ---
 
 # L1 Architecture
 
+Prefer an existing layer. Do not add a framework or code for later.
+
 ## Layers
+
 - `Infrastructure` — DI, entry point, scene bootstrap
 - `Gameplay` / `Meta` — feature logic and scene contexts
-- `UI` — Views (MonoBehaviour) + Presenters (plain C#)
-- `Configs` — ScriptableObjects; load via `ConfigsProviderService` / `ResourcesConfigsLoader`
+- `UI` — MVP: a View displays and sends clicks, a Presenter decides
+- `Configs` — ScriptableObjects via `ConfigsProviderService` / `ResourcesConfigsLoader`
 - `Utilities` — shared services (assets, input, scenes, data)
 
-## DI
-- Custom `DIContainer`: project scope + scene scope
-- Register in `*ContextRegistrations`; resolve via factories/services
-- Scene container disposed on switch (`SceneSwitcherService`) — implement `IDisposable` for pooled/DDOL services
-- Do not service-locate via `FindObjectOfType` in feature code (bootstrap exception only)
+## DI and factories
 
-## Composition root
-- Scene `*Bootstrap` : `SceneBootstrap` — registrations, `Initialize`, `Run`, and frame `Update`/`LateUpdate` Tick
-- Create gameplay objects through factories (`CharactersFactory`, `WeaponFactory`, …), not ad-hoc `Instantiate` + wiring in random scripts
+- `DIContainer`: project scope + scene scope. Register in `*ContextRegistrations`
+- A factory creates the object. Do not assemble it inside a feature. Assemble objects on prefabs
+- Scene container is disposed on switch — `IDisposable` for pooled / DDOL services
+- No `FindObjectOfType` and no singletons. Pass a prefab field, a constructor argument, or DI
+- A dependency known at creation is a `readonly` field of a concrete type. No late `Initialize` and no `Func<>` wrappers
+- A service that may move to another project does not know this scene and does not search by hierarchy
 
-## Logic vs Unity
-- Prefer plain C# classes with `Tick(float dt)` (`PlayerMotor`, `PlayerWeaponVisualFollow`, services)
-- MonoBehaviour only when Unity requires it: scene hooks, SerializeField refs, physics messages, animation events
-- Owner MB (e.g. `Player`, `PlayerCamera`, bootstrap) calls Tick — do not put gameplay state machines inside `Update` on many components
-- Never use `DefaultExecutionOrder`
+## Logic
+
+- Logic is a plain class with `Tick(float dt)`. One owner calls it: `*Bootstrap`, the owning object, or the handler that owns that logic
+- `MonoBehaviour` only where Unity requires it: references, physics, animation events, the entry point, Views
+- Frame order comes from the entry point. Do not use `DefaultExecutionOrder`
+- A new behavior variant is its own type, registered in DI. Do not branch inside one class
+- Shared behavior stays one implementation. A type differs by config, prefab, and presentation. Reuse the script
+- Behavior does not know the clips or effects of a specific type
+
+## Data and effects
+
+- Numbers and timings live in config. Materials, particles, and clips live on the prefab. Do not build visuals in code
+- Whoever spawned an effect ticks it and removes it on scene change, or a dedicated handler does

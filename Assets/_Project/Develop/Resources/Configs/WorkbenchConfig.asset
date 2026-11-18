@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c11dac4e67034095a0a8b9c8e2f1bac6, type: 3}
+  m_Name: WorkbenchConfig
+  m_EditorClassIdentifier: 
+  weapons:
+  - weapon: {fileID: 11400000, guid: 76519bb5fd1e4f9cbfba4a9e68761ff0, type: 2}
+    title: USP
+    category: ПИСТОЛЕТ
+    icon: {fileID: 21300000, guid: f032a54dd8424214d87426fc6e258a08, type: 3}
+    weaponPrice: 60
+    magazinePrice: 24
+    extraRounds: 6
+    suppressorPrice: 32
+    spreadMultiplier: 0.7
+    ammoPack: 12
+    ammoPrice: 6
+  - weapon: {fileID: 11400000, guid: 16fa1792d4423744794d1a6481f46c0e, type: 2}
+    title: MP5
+    category: ПИСТОЛЕТ-ПУЛЕМЁТ
+    icon: {fileID: 21300000, guid: 1c1a539926ddc6f489791855dfc144fa, type: 3}
+    weaponPrice: 90
+    magazinePrice: 36
+    extraRounds: 10
+    suppressorPrice: 42
+    spreadMultiplier: 0.75
+    ammoPack: 30
+    ammoPrice: 12
+  - weapon: {fileID: 11400000, guid: 1c055b955cd7480dbad885832c5c1059, type: 2}
+    title: АК-74
+    category: ШТУРМОВАЯ ВИНТОВКА
+    icon: {fileID: 21300000, guid: 6f8a4f6db3283af4aa2ee04ae3a560d0, type: 3}
+    weaponPrice: 120
+    magazinePrice: 42
+    extraRounds: 15
+    suppressorPrice: 48
+    spreadMultiplier: 0.7
+    ammoPack: 30
+    ammoPrice: 15
+  supplies:
+  - type: 0
+    title: Аптечка
+    icon: {fileID: 21300000, guid: 92762b93e2295c14caba4478be1711a2, type: 3}
+    price: 18
+  - type: 1
+    title: ЭМИ-граната
+    icon: {fileID: 21300000, guid: 17b13dbbe0d81fc488e6fe92aeec74f4, type: 3}
+    price: 30
+  - type: 2
+    title: Энергетик
+    icon: {fileID: 21300000, guid: d05988f6cb44f514a82e36848423b9bc, type: 3}
+    price: 12
+  <MissionReward>k__BackingField: 60

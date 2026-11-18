@@ -20,6 +20,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 
         private Camera _aimCamera;
         private Func<bool> _isAimingProvider;
+        private int _magazineBonus;
+        private float _spreadScale = 1f;
         private int _ammo;
         private int _reserveAmmo;
         private float _nextShotTime;
@@ -58,7 +60,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         public WeaponType Type => _config.Type;
         public int Ammo => _ammo;
         public int ReserveAmmo => _reserveAmmo;
-        public int MagazineSize => _config.MagazineSize;
+        public int MagazineSize => _config.MagazineSize + _magazineBonus;
         public int ReserveCapacity => _config.ReserveAmmo;
         public bool CanShoot => IsReloading == false && _ammo > 0 && Time.time >= _nextShotTime;
         public bool IsReloading => _reloadEndTime > 0f && Time.time < _reloadEndTime;
@@ -113,7 +115,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
                 _hitImpacts,
                 isAiming,
                 _tracers,
-                spread));
+                spread * _spreadScale));
 
             ApplySpreadKick(isAiming);
             _lastShotTime = Time.time;
@@ -130,6 +132,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 
             _reloadEndTime = Time.time + _config.ReloadDuration;
             AmmoChanged?.Invoke();
+        }
+
+        public void SetModifiers(int magazineBonus, float spreadScale)
+        {
+            _magazineBonus = magazineBonus;
+            _spreadScale = spreadScale;
+            SetAmmo(_ammo);
         }
 
         public void SetAmmo(int ammo)

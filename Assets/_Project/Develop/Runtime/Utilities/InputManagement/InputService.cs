@@ -18,6 +18,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action Jump;
         event Action Crouch;
         event Action PhonePressed;
+        event Action WorkbenchClosePressed;
 
         bool IsShootHeld { get; }
         bool IsAimHeld { get; }

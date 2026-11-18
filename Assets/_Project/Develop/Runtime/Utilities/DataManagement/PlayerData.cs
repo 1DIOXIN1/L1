@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
 
@@ -7,6 +8,8 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement
     public class PlayerData : ISaveData
     {
         public Dictionary<CurrencyTypes, int> WalletData;
+        public Dictionary<WeaponType, WeaponAttachments> Attachments = new();
+        public Dictionary<SupplyType, int> Supplies = new();
         public int Health;
         public WeaponType SelectedWeaponType;
         public List<WeaponType> OwnedWeapons;

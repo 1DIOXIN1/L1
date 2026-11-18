@@ -15,6 +15,8 @@ using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
 using UnityEngine;
+using _Project.Develop.Runtime.Meta.Features.Player;
+using _Project.Develop.Runtime.UI.Gameplay.Workbench;
 
 namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
@@ -22,7 +24,12 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
     {
         [SerializeField] private PlayerSpawnPoint playerSpawnPoint;
         [SerializeField] private InteractableRegistry interactableRegistry;
+        [SerializeField] private WorkbenchInteractable workbench;
 
+        private WorkbenchPresenter _workbenchPresenter;
+        private PlayerDataProvider _playerData;
+        private PlayerStateService _playerState;
+        private Player _player;
         private DIContainer _container;
         private IInputService _input;
         private InteractionService _interactionService;
@@ -76,6 +83,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private void OnDestroy()
         {
             _isRunning = false;
+            if (_playerData != null)
+                _playerData.BeforeSave -= CapturePlayer;
+            _workbenchPresenter?.Dispose();
             _interactionService?.Dispose();
             _interactionService = null;
             _hitImpactService = null;
@@ -96,11 +106,20 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             Player player = charactersFactory.CreatePlayer(playerSpawnPoint);
             PlayerCamera playerCamera = charactersFactory.PlayerCamera;
 
+            _player = player;
+            _playerState = _container.Resolve<PlayerStateService>();
+            _playerData = _container.Resolve<PlayerDataProvider>();
+            _playerData.BeforeSave += CapturePlayer;
+            _workbenchPresenter = _container.Resolve<GameplayPresentersFactory>().CreateWorkbenchPresenter(workbench, player, playerCamera);
+            _workbenchPresenter.Initialize();
+
             WireInteractions(player, playerCamera);
             _gameplayScreenPresenter.AttachPlayer(player, playerCamera, _interactionService);
 
             _isRunning = true;
         }
+
+        private void CapturePlayer() => _playerState.CaptureFrom(_player, _player.Combat.Weapons);
 
         private void WireInteractions(Player player, PlayerCamera playerCamera)
         {

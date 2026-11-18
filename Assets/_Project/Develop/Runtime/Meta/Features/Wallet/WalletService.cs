@@ -1,3 +1,5 @@
+using _Project.Develop.Runtime.Configs.Meta.Wallet;
+using _Project.Develop.Runtime.Utilities.ConfigsManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,11 @@ namespace _Project.Develop.Runtime.Meta.Features.Wallet
     {
         private readonly Dictionary<CurrencyTypes, ReactiveVariable<int>> _currencies;
 
-        public WalletService(Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies, PlayerDataProvider playerDataProvider)
+        private readonly ConfigsProviderService _configs;
+
+        public WalletService(Dictionary<CurrencyTypes, ReactiveVariable<int>> currencies, PlayerDataProvider playerDataProvider, ConfigsProviderService configs)
         {
+            _configs = configs;
             _currencies = new Dictionary<CurrencyTypes, ReactiveVariable<int>>(currencies);
             
             playerDataProvider.RegisterReader(this);
@@ -63,6 +68,9 @@ namespace _Project.Develop.Runtime.Meta.Features.Wallet
 
         public void ReadFrom(PlayerData data)
         {
+            if (!data.WalletData.ContainsKey(CurrencyTypes.Metal))
+                data.WalletData[CurrencyTypes.Metal] = _configs.GetConfig<StartWalletConfig>().GetValueFor(CurrencyTypes.Metal);
+
             foreach (KeyValuePair<CurrencyTypes, int> currency in data.WalletData)
             {
                 if(_currencies.ContainsKey(currency.Key))

@@ -1,12 +1,14 @@
 ---
-description: L1 UI — Presenter/View separation
+description: L1 UI — MVP, View displays, Presenter decides
 globs: Assets/_Project/Develop/Runtime/UI/**/*.cs
 alwaysApply: false
 ---
 
 # UI
 
-- `View` — MonoBehaviour, SerializeField widgets, no game rules
-- `Presenter` — plain C#, implements `IPresenter` (`IInitializable` + `IDisposable`), owns screen logic
-- Create views via `ViewsFactory` / presenters via `*PresentersFactory`; register in context
-- Screen presenters Tick from bootstrap when they need per-frame updates — not from random MB Updates
+Use MVP.
+
+- `View` — MonoBehaviour. Displays and sends clicks. No game rules and no configs
+- `Presenter` — plain C#, `IPresenter` (`IInitializable` + `IDisposable`). Decides
+- Create views via `ViewsFactory`, presenters via `*PresentersFactory`
+- A presenter that needs a frame is ticked by bootstrap, not by a View `Update`

@@ -1,4 +1,6 @@
 using System;
+using _Project.Develop.Runtime.Meta.Features.Wallet;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Infrastructure.Mission;
 using _Project.Develop.Runtime.Meta.Features.Missions;
 using _Project.Develop.Runtime.Meta.Features.Player;
@@ -11,6 +13,8 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 {
     public class GameplayCycle : IDisposable
     {
+        private readonly WalletService _wallet;
+        private readonly WorkbenchConfig _workbench;
         private readonly GameMode _gameMode;
         private readonly CoroutinesPerformer _coroutinesPerformer;
         private readonly GameplayDataProvider _gameplayDataProvider;
@@ -35,8 +39,12 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             PlayerStateService playerStateService,
             ProgressService progressService,
             MissionService missionService,
-            LocationTravelService locationTravel)
+            LocationTravelService locationTravel,
+            WalletService wallet,
+            WorkbenchConfig workbench)
         {
+            _wallet = wallet;
+            _workbench = workbench;
             _gameMode = gameMode;
             _inputService = inputService;
             _coroutinesPerformer = coroutinesPerformer;
@@ -75,6 +83,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             if (result.IsSuccess)
             {
                 _progressService.Win();
+                _wallet.Add(CurrencyTypes.Metal, _workbench.MissionReward);
 
                 if (_gameplayInputArgs != null && string.IsNullOrEmpty(_gameplayInputArgs.MissionId) == false)
                     _missionService.Complete(_gameplayInputArgs.MissionId);
@@ -86,7 +95,6 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             CaptureAndSavePlayerState();
             _playerStateService.RestoreHealth();
-            _playerStateService.RefillAmmo();
             _coroutinesPerformer.StartPerform(_playerDataProvider.Save());
             _coroutinesPerformer.StartPerform(_gameplayDataProvider.Save());
 

@@ -4,5 +4,6 @@ namespace _Project.Develop.Runtime.Meta.Features.Wallet
     {
         Gold,
         Diamond,
+        Metal,
     }
 }

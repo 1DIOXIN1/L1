@@ -1,4 +1,6 @@
 using _Project.Develop.Runtime.Utilities.CoroutinesManagement;
+using _Project.Develop.Runtime.Meta.Features.Wallet;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
 using _Project.Develop.Runtime.Configs.Meta.Enemy;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
@@ -110,7 +112,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
                 container.Resolve<PlayerStateService>(),
                 container.Resolve<ProgressService>(),
                 container.Resolve<MissionService>(),
-                container.Resolve<LocationTravelService>());
+                container.Resolve<LocationTravelService>(),
+                container.Resolve<WalletService>(),
+                container.Resolve<ConfigsProviderService>().GetConfig<WorkbenchConfig>());
         }
 
         private static GameplayUIRoot CreateGameplayUIRoot(DIContainer container)

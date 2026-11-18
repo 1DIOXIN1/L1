@@ -163,7 +163,7 @@ namespace _Project.Develop.Runtime.Infrastructure.EntryPoint
             foreach (CurrencyTypes currencyType in Enum.GetValues(typeof(CurrencyTypes)))
                 currencies[currencyType] = new ReactiveVariable<int>();
 
-            return new WalletService(currencies, container.Resolve<PlayerDataProvider>());
+            return new WalletService(currencies, container.Resolve<PlayerDataProvider>(), container.Resolve<ConfigsProviderService>());
         }
 
         private static ResourcesAssetsLoader CreateResourcesAssetsLoader(DIContainer container)

@@ -19,6 +19,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action Jump;
         public event Action Crouch;
         public event Action PhonePressed;
+        public event Action WorkbenchClosePressed;
 
         public bool IsShootHeld { get; private set; }
         public bool IsAimHeld { get; private set; }
@@ -52,6 +53,11 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
                     break;
                 case InputContext.Phone:
                     ProcessPhoneInput();
+                    break;
+                case InputContext.Workbench:
+                    ClearGameplayAxes();
+                    if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.F))
+                        WorkbenchClosePressed?.Invoke();
                     break;
                 case InputContext.Arsenal:
                     ProcessArsenalInput();
@@ -142,7 +148,11 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
                 UseGadget?.Invoke();
 
             if (Input.GetKeyDown(KeyCode.F))
+            {
                 InteractPressed?.Invoke();
+                if (_context != InputContext.Gameplay)
+                    return;
+            }
 
             if (Input.GetKeyDown(KeyCode.N))
                 PhonePressed?.Invoke();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.WeaponsType;
@@ -42,6 +43,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 int ammo = _playerStateService.GetAmmo(type);
                 int reserveAmmo = _playerStateService.GetReserveAmmo(type);
                 IWeapon weapon = _factory.CreateWeapon(type, firePoint, attacker, ammo, reserveAmmo);
+                WorkbenchWeapon entry = _configsProviderService.GetConfig<WorkbenchConfig>().Find(type);
+                if (entry != null)
+                {
+                    WeaponAttachments attachments = _playerStateService.GetAttachments(type);
+                    weapon.SetModifiers(entry.MagazineSize(attachments) - entry.weapon.MagazineSize, entry.SpreadScale(attachments));
+                    weapon.SetAmmo(ammo);
+                }
                 inventory.Add(weapon);
             }
 

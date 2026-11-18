@@ -39,8 +39,11 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
             SendDataToReaders();
         }
         
+        public event Action BeforeSave;
+
         public IEnumerator Save()
         {
+            BeforeSave?.Invoke();
             UpdateDataFromWriters();
             
             yield return _saveLoadService.Save(_data);

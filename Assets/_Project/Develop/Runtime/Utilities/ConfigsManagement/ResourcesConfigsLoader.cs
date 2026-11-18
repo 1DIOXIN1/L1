@@ -27,6 +27,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(ProgressConfig), "Configs/ProgressConfig"},
             {typeof(MissionsCatalogConfig), "Configs/MissionsCatalogConfig"},
             {typeof(CurrencyIconsConfig), "Configs/CurrencyIconsConfig"},
+            {typeof(WorkbenchConfig), "Configs/WorkbenchConfig"},
             {typeof(WeaponsCatalogConfig), "Configs/WeaponsCatalogConfig"},
             {typeof(GrenadeConfig), "Configs/GrenadeConfig"},
             {typeof(PlayerConfig), "Configs/PlayerConfig"},

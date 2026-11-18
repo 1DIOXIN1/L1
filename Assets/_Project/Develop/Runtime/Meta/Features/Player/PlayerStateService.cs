@@ -19,6 +19,9 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
         private readonly Dictionary<WeaponType, int> _reserveAmmoByWeapon = new();
         private readonly List<WeaponType> _ownedWeapons = new();
 
+        private Dictionary<WeaponType, WeaponAttachments> _attachments = new();
+        private Dictionary<SupplyType, int> _supplies = new();
+
         private int _health;
         private WeaponType _selectedWeaponType;
 
@@ -87,13 +90,20 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
             _selectedWeaponType = type;
         }
 
-        public void RefillAmmo()
-        {
-            ApplyOriginCombatStats();
-        }
+        public WeaponAttachments GetAttachments(WeaponType type) =>
+            _attachments.TryGetValue(type, out var value) ? value : WeaponAttachments.None;
+
+        public void Install(WeaponType type, WeaponAttachments attachment) =>
+            _attachments[type] = GetAttachments(type) | attachment;
+
+        public int SupplyCount(SupplyType type) => _supplies.TryGetValue(type, out int count) ? count : 0;
+
+        public void AddSupply(SupplyType type) => _supplies[type] = checked(SupplyCount(type) + 1);
 
         public void WriteTo(PlayerData data)
         {
+            data.Attachments = new Dictionary<WeaponType, WeaponAttachments>(_attachments);
+            data.Supplies = new Dictionary<SupplyType, int>(_supplies);
             data.Health = _health;
             data.SelectedWeaponType = _selectedWeaponType;
             data.OwnedWeapons = new List<WeaponType>(_ownedWeapons);
@@ -103,6 +113,8 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
 
         public void ReadFrom(PlayerData data)
         {
+            _attachments = new Dictionary<WeaponType, WeaponAttachments>(data.Attachments ?? new());
+            _supplies = new Dictionary<SupplyType, int>(data.Supplies ?? new());
             if (data.AmmoByWeapon == null)
             {
                 ApplyOriginCombatStats();
@@ -137,7 +149,8 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
 
             foreach (KeyValuePair<WeaponType, int> pair in data.AmmoByWeapon)
             {
-                int magazineSize = GetWeaponConfig(pair.Key).MagazineSize;
+                WorkbenchWeapon entry = _configsProviderService.GetConfig<WorkbenchConfig>().Find(pair.Key);
+                int magazineSize = entry?.MagazineSize(GetAttachments(pair.Key)) ?? GetWeaponConfig(pair.Key).MagazineSize;
                 _ammoByWeapon[pair.Key] = Mathf.Clamp(pair.Value, 0, magazineSize);
             }
 

@@ -18,6 +18,10 @@ using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
 using UnityEngine;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
+using _Project.Develop.Runtime.Meta.Features.Wallet;
+using _Project.Develop.Runtime.UI.Gameplay.Workbench;
 
 namespace _Project.Develop.Runtime.UI.Gameplay
 {
@@ -33,6 +37,18 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         public GameplayScreenPresenter CreateGameplayScreenPresenter(GameplayScreenView gameplayScreenView)
         {
             return new GameplayScreenPresenter(gameplayScreenView, this);
+        }
+
+        public WorkbenchPresenter CreateWorkbenchPresenter(WorkbenchInteractable bench, Player player, PlayerCamera camera)
+        {
+            GameplayUIRoot root = _container.Resolve<GameplayUIRoot>();
+            var view = _container.Resolve<ViewsFactory>().Create<WorkbenchView>(
+                ViewIDs.Workbench, root.PopupsLayer);
+            var shop = new WorkbenchService(_container.Resolve<WalletService>(), _container.Resolve<PlayerStateService>(),
+                _container.Resolve<WeaponFactory>(), player, camera);
+            return new WorkbenchPresenter(bench, view, root.HUDLayer.gameObject, _container.Resolve<ConfigsProviderService>().GetConfig<WorkbenchConfig>(),
+                shop, player, _container.Resolve<IInputService>(), _container.Resolve<PlayerDataProvider>(),
+                _container.Resolve<CoroutinesPerformer>());
         }
 
         public PhonePresenter CreatePhonePresenter(PhoneView phoneView)
