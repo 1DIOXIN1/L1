@@ -64,6 +64,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Crouch += OnCrouch;
         }
 
+        public bool TryPreventStaminaDrain(float duration) =>
+            !IsDead && CurrentHealth > 0 && _motor.TryPreventStaminaDrain(duration);
+
         public void SetWeaponView(PlayerWeaponView weaponView, WeaponInventory weaponInventory)
         {
             ClearWeaponView();

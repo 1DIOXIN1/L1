@@ -96,9 +96,11 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
         public void Install(WeaponType type, WeaponAttachments attachment) =>
             _attachments[type] = GetAttachments(type) | attachment;
 
-        public int SupplyCount(SupplyType type) => _supplies.TryGetValue(type, out int count) ? count : 0;
+        public int SupplyCount(SupplyType type) => _supplies.TryGetValue(type, out int count) ? Mathf.Max(0, count) : 0;
 
         public void AddSupply(SupplyType type) => _supplies[type] = checked(SupplyCount(type) + 1);
+
+        public void ConsumeSupply(SupplyType type) => _supplies[type] = Mathf.Max(0, SupplyCount(type) - 1);
 
         public void WriteTo(PlayerData data)
         {

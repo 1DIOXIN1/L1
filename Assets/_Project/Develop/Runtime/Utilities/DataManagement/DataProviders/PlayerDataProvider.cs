@@ -1,4 +1,6 @@
 using System;
+using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
+using UnityEngine;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Meta.Characters.Player;
 using _Project.Develop.Runtime.Configs.Meta.Wallet;
@@ -25,12 +27,25 @@ namespace _Project.Develop.Runtime.Utilities.DataManagement.DataProviders
             return new PlayerData
             {
                 WalletData = InitWalletData(),
+                Supplies = InitSupplies(),
                 Health = _configsProviderService.GetConfig<PlayerConfig>().Health,
                 SelectedWeaponType = inventoryConfig.DefaultSelectedWeapon,
                 OwnedWeapons = new List<WeaponType>(inventoryConfig.StartingWeapons),
                 AmmoByWeapon = InitAmmoData(),
                 ReserveAmmoByWeapon = InitReserveAmmoData()
             };
+        }
+
+        private Dictionary<SupplyType, int> InitSupplies()
+        {
+            MissionSuppliesConfig config = _configsProviderService.GetConfig<MissionSuppliesConfig>();
+            int amount = Mathf.Min(config.StartingAmount, config.CapacityPerType);
+            Dictionary<SupplyType, int> supplies = new();
+
+            foreach (WorkbenchSupply supply in _configsProviderService.GetConfig<WorkbenchConfig>().Supplies)
+                supplies[supply.type] = amount;
+
+            return supplies;
         }
 
         private Dictionary<CurrencyTypes, int> InitWalletData()

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using _Project.Develop.Runtime.Configs.Meta.Weapon;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Interactables;
 using _Project.Develop.Runtime.UI.Core;
@@ -11,6 +13,8 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 {
     public class GameplayScreenPresenter : IPresenter
     {
+        private const string SupplyCountsFormat = "1  Аптечка ×{0}     2  Энергетик ×{1}     3  ЭМИ ×{2}";
+
         private readonly GameplayScreenView _view;
         private readonly GameplayPresentersFactory _presentersFactory;
         private readonly List<IPresenter> _childPresenters = new();
@@ -69,6 +73,12 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             _detectionIconsPresenter?.Tick();
             _weaponArsenalPresenter?.Tick();
         }
+
+        public void ShowSupplyCounts(MissionSupplies supplies) =>
+            _view.SetSupplyCounts(string.Format(SupplyCountsFormat,
+                supplies.Count(SupplyType.Medkit),
+                supplies.Count(SupplyType.EnergyDrink),
+                supplies.Count(SupplyType.EmpGrenade)));
 
         public void TickInteraction()
         {

@@ -51,6 +51,16 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 Die();
         }
 
+        public bool TryHeal(int amount)
+        {
+            if (_isDead || _health <= 0 || _health >= _maxHealth || amount <= 0)
+                return false;
+
+            _health += Mathf.Min(amount, _maxHealth - _health);
+            HealthChanged?.Invoke(_health, _maxHealth);
+            return true;
+        }
+
         protected virtual void OnDamaged(int damage)
         {
         }

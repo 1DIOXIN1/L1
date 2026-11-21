@@ -27,6 +27,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         private IEnemyAttackBehavior _activeAttackBehavior;
         private bool _isInitialized;
         private bool _isGameplaySuspended;
+        private float _stunUntil;
+        private bool _wasStoppedBeforeStun;
         private bool _playDeathAnimation = true;
         private bool _suppressCombatReaction;
         private bool _isDeathSequenceRunning;
@@ -34,7 +36,8 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
         public EnemyStateMachine StateMachine { get; private set; }
         public bool IsAlive => IsDead == false;
         public EnemyContext Context => _context;
-        public bool IsGameplaySuspended => _isGameplaySuspended;
+        public bool IsStunned => _stunUntil > 0f;
+        public bool IsGameplaySuspended => _isGameplaySuspended || IsStunned;
         public Animator Animator => animator;
         public EnemyAnimatorPresenter AnimatorPresenter => _animatorPresenter;
         public override DamageAffiliation Affiliation => DamageAffiliation.Enemy;
@@ -190,6 +193,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void NotifyAttackAnimFire()
         {
+            if (IsGameplaySuspended || IsDead)
+                return;
+
             if (_activeAttackBehavior is IAnimFireReceiver animFireReceiver)
                 animFireReceiver.OnAnimFire();
         }
@@ -267,10 +273,13 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
 
         public void StopAgent()
         {
-            _context.Agent.isStopped = true;
+            NavMeshAgent agent = _context.Agent;
+            if (!agent.isOnNavMesh)
+                return;
 
-            if (_context.Agent.hasPath)
-                _context.Agent.ResetPath();
+            agent.isStopped = true;
+            if (agent.hasPath && !IsStunned)
+                agent.ResetPath();
         }
 
         public void SetGameplaySuspended(bool suspended)
@@ -282,10 +291,51 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
                 StopAgent();
                 ResetCombat();
             }
-            else
+            else if (!IsStunned)
             {
                 _context.Agent.isStopped = false;
             }
+        }
+
+        public void ApplyStun(float duration)
+        {
+            if (!_isInitialized || IsDead || duration <= 0f)
+                return;
+
+            bool alreadyStunned = IsStunned;
+            _stunUntil = Mathf.Max(_stunUntil, Time.time + duration);
+
+            if (!alreadyStunned)
+            {
+                NavMeshAgent agent = _context.Agent;
+                if (agent.isOnNavMesh)
+                {
+                    _wasStoppedBeforeStun = !_isGameplaySuspended && agent.isStopped;
+                    agent.isStopped = true;
+                }
+
+                ResetCombat();
+                _animatorPresenter.PlayHit();
+            }
+        }
+
+        private void UpdateStun()
+        {
+            if (!IsStunned)
+                return;
+
+            NavMeshAgent agent = _context.Agent;
+            if (Time.time < _stunUntil)
+            {
+                if (agent.isOnNavMesh)
+                    agent.isStopped = true;
+
+                return;
+            }
+
+            _stunUntil = 0f;
+            if (agent.isOnNavMesh && !_isGameplaySuspended)
+                agent.isStopped = _wasStoppedBeforeStun;
         }
 
         public void ExecuteStealthKill()
@@ -497,7 +547,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.EnemyCharac
             if (_isInitialized == false || IsDead)
                 return;
 
-            if (_isGameplaySuspended == false)
+            UpdateStun();
+
+            if (!IsGameplaySuspended)
                 StateMachine.Tick(Time.deltaTime);
 
             _animatorPresenter.Tick(_context);

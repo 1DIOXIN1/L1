@@ -14,6 +14,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         private float _verticalVelocity;
         private float _stamina;
         private float _staminaRecoveryTimer;
+        private float _freeSprintUntil;
         private bool _isCrouching;
         private bool _sprintHeld;
 
@@ -52,6 +53,15 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         public void SetSprintHeld(bool held)
         {
             _sprintHeld = held;
+        }
+
+        public bool TryPreventStaminaDrain(float duration)
+        {
+            if (Time.time < _freeSprintUntil || duration <= 0f)
+                return false;
+
+            _freeSprintUntil = Time.time + duration;
+            return true;
         }
 
         public void Jump()
@@ -108,14 +118,17 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
 
         private bool CanSprint()
         {
-            return _sprintHeld && _isCrouching == false && _moveInput != Vector3.zero && _stamina > 0f;
+            return _sprintHeld && _isCrouching == false && _moveInput != Vector3.zero
+                   && (_stamina > 0f || Time.time < _freeSprintUntil);
         }
 
         private void UpdateStamina(float deltaTime)
         {
             if (IsSprinting)
             {
-                _stamina = Mathf.Max(0f, _stamina - _config.SprintStaminaSpendPerSecond * deltaTime);
+                if (Time.time >= _freeSprintUntil)
+                    _stamina = Mathf.Max(0f, _stamina - _config.SprintStaminaSpendPerSecond * deltaTime);
+
                 _staminaRecoveryTimer = _config.StaminaRecoveryDelay;
                 return;
             }

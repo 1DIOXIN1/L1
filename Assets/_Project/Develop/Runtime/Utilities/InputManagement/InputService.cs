@@ -20,6 +20,12 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action PhonePressed;
         event Action WorkbenchClosePressed;
 
+        bool MedkitPressed { get; }
+        bool EnergyDrinkPressed { get; }
+        bool EmpPressed { get; }
+        bool EmpReleased { get; }
+        bool EmpHeld { get; }
+
         bool IsShootHeld { get; }
         bool IsAimHeld { get; }
         bool IsArsenalHeld { get; }

@@ -21,6 +21,12 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action PhonePressed;
         public event Action WorkbenchClosePressed;
 
+        public bool MedkitPressed { get; private set; }
+        public bool EnergyDrinkPressed { get; private set; }
+        public bool EmpPressed { get; private set; }
+        public bool EmpReleased { get; private set; }
+        public bool EmpHeld { get; private set; }
+
         public bool IsShootHeld { get; private set; }
         public bool IsAimHeld { get; private set; }
         public bool IsArsenalHeld { get; private set; }
@@ -36,7 +42,17 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             _settings = settings;
         }
 
-        public void SetContext(InputContext context) => _context = context;
+        public void SetContext(InputContext context)
+        {
+            _context = context;
+            ClearSupplyInput();
+        }
+
+        public override void Disable()
+        {
+            base.Disable();
+            ClearSupplyInput();
+        }
 
         protected override void UpdateLogic(float deltaTime)
         {
@@ -159,6 +175,29 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 ConfirmPressed?.Invoke();
+
+            if (_context == InputContext.Gameplay && Application.isFocused)
+                ReadSupplyInput();
+            else
+                ClearSupplyInput();
+        }
+
+        private void ReadSupplyInput()
+        {
+            MedkitPressed = Input.GetKeyDown(KeyCode.Alpha1);
+            EnergyDrinkPressed = Input.GetKeyDown(KeyCode.Alpha2);
+            EmpPressed = Input.GetKeyDown(KeyCode.Alpha3);
+            EmpReleased = Input.GetKeyUp(KeyCode.Alpha3);
+            EmpHeld = Input.GetKey(KeyCode.Alpha3);
+        }
+
+        private void ClearSupplyInput()
+        {
+            MedkitPressed = false;
+            EnergyDrinkPressed = false;
+            EmpPressed = false;
+            EmpReleased = false;
+            EmpHeld = false;
         }
 
         private void ClearGameplayAxes()

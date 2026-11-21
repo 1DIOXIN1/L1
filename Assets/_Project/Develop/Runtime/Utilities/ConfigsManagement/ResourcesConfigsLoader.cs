@@ -29,6 +29,7 @@ namespace _Project.Develop.Runtime.Utilities.ConfigsManagement
             {typeof(CurrencyIconsConfig), "Configs/CurrencyIconsConfig"},
             {typeof(WorkbenchConfig), "Configs/WorkbenchConfig"},
             {typeof(WeaponsCatalogConfig), "Configs/WeaponsCatalogConfig"},
+            {typeof(MissionSuppliesConfig), "Configs/MissionSuppliesConfig"},
             {typeof(GrenadeConfig), "Configs/GrenadeConfig"},
             {typeof(PlayerConfig), "Configs/PlayerConfig"},
             {typeof(PlayerWeaponInventoryConfig), "Configs/PlayerWeaponInventoryConfig"},

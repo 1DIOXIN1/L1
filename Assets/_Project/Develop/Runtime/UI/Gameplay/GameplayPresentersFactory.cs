@@ -18,6 +18,7 @@ using _Project.Develop.Runtime.Utilities.DataManagement.DataProviders;
 using _Project.Develop.Runtime.Utilities.InputManagement;
 using _Project.Develop.Runtime.Utilities.SceneManagement;
 using UnityEngine;
+using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Weapon;
 using _Project.Develop.Runtime.Meta.Features.Wallet;
@@ -45,7 +46,8 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             var view = _container.Resolve<ViewsFactory>().Create<WorkbenchView>(
                 ViewIDs.Workbench, root.PopupsLayer);
             var shop = new WorkbenchService(_container.Resolve<WalletService>(), _container.Resolve<PlayerStateService>(),
-                _container.Resolve<WeaponFactory>(), player, camera);
+                _container.Resolve<WeaponFactory>(), player, camera,
+                _container.Resolve<ConfigsProviderService>().GetConfig<MissionSuppliesConfig>());
             return new WorkbenchPresenter(bench, view, root.HUDLayer.gameObject, _container.Resolve<ConfigsProviderService>().GetConfig<WorkbenchConfig>(),
                 shop, player, _container.Resolve<IInputService>(), _container.Resolve<PlayerDataProvider>(),
                 _container.Resolve<CoroutinesPerformer>());

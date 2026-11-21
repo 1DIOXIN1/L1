@@ -1,4 +1,5 @@
 using System;
+using _Project.Develop.Runtime.Configs.Meta.Gadget.GadgetsConfigs;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
 using _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerCharacter;
 using _Project.Develop.Runtime.Meta.Features.Player;
@@ -29,15 +30,17 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         private readonly WeaponFactory _factory;
         private readonly Player _player;
         private readonly PlayerCamera _camera;
+        private readonly MissionSuppliesConfig _supplies;
 
         public WorkbenchService(WalletService wallet, PlayerStateService state, WeaponFactory factory,
-            Player player, PlayerCamera camera)
+            Player player, PlayerCamera camera, MissionSuppliesConfig supplies)
         {
             _wallet = wallet;
             _state = state;
             _factory = factory;
             _player = player;
             _camera = camera;
+            _supplies = supplies;
         }
 
         private WeaponInventory Inventory => _player.Combat.Weapons;
@@ -122,7 +125,10 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             return true;
         }
 
-        public WorkbenchOffer Quote(WorkbenchSupply supply) => QuotePrice(supply.price);
+        public WorkbenchOffer Quote(WorkbenchSupply supply) =>
+            SupplyCount(supply) >= _supplies.CapacityPerType
+                ? new WorkbenchOffer(0, WorkbenchText.SupplyLimitReached)
+                : QuotePrice(supply.price);
 
         public bool TryBuy(WorkbenchSupply supply)
         {

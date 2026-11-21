@@ -1,4 +1,5 @@
 using System;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Gadget;
 using System.Collections;
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Configs.Core.Gameplay;
@@ -32,6 +33,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private BulletTracerService _bulletTracerService;
         private GameplayInputArgs _gameplayInputArgs;
         private GameplayScreenPresenter _gameplayScreenPresenter;
+        private MissionSupplies _supplies;
         private bool _isRunning;
 
         public override void ProcessRegistrations(DIContainer container, IInputSceneArgs sceneArgs)
@@ -73,6 +75,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
             if (_isRunning == false)
                 return;
 
+            if (_supplies.Tick(Time.deltaTime))
+                _gameplayScreenPresenter.ShowSupplyCounts(_supplies);
+
             _interactionService.Tick();
             _gameplayScreenPresenter.TickInteraction();
         }
@@ -80,6 +85,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
         private void OnDestroy()
         {
             _isRunning = false;
+            _supplies?.Dispose();
             _interactionService?.Dispose();
             _interactionService = null;
             _hitImpactService = null;
@@ -104,6 +110,9 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             WireInteractions(player, playerCamera);
             _gameplayScreenPresenter.AttachPlayer(player, playerCamera, _interactionService);
+
+            _supplies = _container.Resolve<GadgetFactory>().CreateMissionSupplies(player, playerCamera);
+            _gameplayScreenPresenter.ShowSupplyCounts(_supplies);
 
             if (enemySpawnRegistry != null)
             {

@@ -8,6 +8,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 {
     public class GameplayScreenView : MonoBehaviour, IView
     {
+        [SerializeField] private Text supplyCounts;
         [SerializeField] private Slider healthSlider;
         [SerializeField] private Slider staminaSlider;
         [SerializeField] private TMP_Text currentAmmoText;
@@ -26,6 +27,12 @@ namespace _Project.Develop.Runtime.UI.Gameplay
 
             if (phoneView != null)
                 phoneView.SetVisible(false);
+        }
+
+        public void SetSupplyCounts(string counts)
+        {
+            supplyCounts.text = counts;
+            supplyCounts.gameObject.SetActive(true);
         }
 
         public void SetHealth(float normalized)

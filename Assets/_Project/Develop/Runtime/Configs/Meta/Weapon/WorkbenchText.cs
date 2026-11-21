@@ -5,6 +5,7 @@ namespace _Project.Develop.Runtime.Configs.Meta.Weapon
         public const string Owned = "В арсенале";
         public const string WeaponRequired = "Требуется оружие";
         public const string Installed = "Установлен";
+        public const string SupplyLimitReached = "Лимит снаряжения";
         public const string ReserveFull = "Запас полон";
         public const string InsufficientMetal = "Мало металла";
         public const string Stock = "В запасе   {0}";
