@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace _Project.Develop.Editor
 {
-    public sealed class BotVfxPreviewWindow : EditorWindow
+    public class BotVfxPreviewWindow : EditorWindow
     {
         private const string PrefabFolder = "Assets/_Project/Develop/Resources/Prefabs/Entities/";
         private static readonly string[] States = { "Idle", "Move", "Attack", "PowerOff" };
@@ -19,6 +19,7 @@ namespace _Project.Develop.Editor
         private GameObject instance;
         private Animator animator;
         private ParticleSystem[] particles = Array.Empty<ParticleSystem>();
+        private bool[] particleWasActive = Array.Empty<bool>();
         private ParticleSystem[] externalAttackParticles = Array.Empty<ParticleSystem>();
         private float[] externalAttackRates = Array.Empty<float>();
         private bool playing = true;
@@ -30,19 +31,40 @@ namespace _Project.Develop.Editor
         private Bounds bounds;
         private string error;
 
+        protected virtual string[] PreviewStates => States;
+        protected virtual string[] PreviewLabels => Labels;
+        protected virtual string DefaultPrefabPath => PrefabFolder + "Guard.prefab";
+        protected virtual bool ShowBotPresets => true;
+        protected virtual bool UseAnimatedParticleActivation => false;
+        protected virtual Vector2 DefaultOrbit => new Vector2(30f, 12f);
+        protected virtual string EmptyMessage => "Выбери префаб бота.";
+
+        private string CurrentState => PreviewStates[stateIndex];
+
         [MenuItem("Tools/L1/Bot VFX Preview")]
         public static void Open()
         {
-            var window = GetWindow<BotVfxPreviewWindow>("Bot VFX Preview");
+            ShowBotPreview();
+        }
+
+        private static BotVfxPreviewWindow ShowBotPreview()
+        {
+            var window = Resources.FindObjectsOfTypeAll<BotVfxPreviewWindow>()
+                .FirstOrDefault(candidate => candidate.GetType() == typeof(BotVfxPreviewWindow));
+            if (window == null)
+                window = CreateInstance<BotVfxPreviewWindow>();
+
+            window.titleContent = new GUIContent("Bot VFX Preview");
             window.minSize = new Vector2(480f, 420f);
             window.Show();
+            window.Focus();
+            return window;
         }
 
         [MenuItem("Assets/Preview Bot VFX", false, 2000)]
         private static void OpenSelected()
         {
-            Open();
-            var window = GetWindow<BotVfxPreviewWindow>();
+            var window = ShowBotPreview();
             window.prefab = Selection.activeObject as GameObject;
             window.Rebuild();
         }
@@ -55,16 +77,18 @@ namespace _Project.Develop.Editor
                 && selected.GetComponentInChildren<Animator>(true) != null;
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             EditorApplication.update += Tick;
             AssemblyReloadEvents.beforeAssemblyReload += Cleanup;
             lastTick = EditorApplication.timeSinceStartup;
+            stateIndex = Mathf.Clamp(stateIndex, 0, PreviewStates.Length - 1);
+            orbit = DefaultOrbit;
             if (prefab == null)
-                prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + "Guard.prefab");
+                prefab = AssetDatabase.LoadAssetAtPath<GameObject>(DefaultPrefabPath);
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             EditorApplication.update -= Tick;
             AssemblyReloadEvents.beforeAssemblyReload -= Cleanup;
@@ -79,6 +103,7 @@ namespace _Project.Develop.Editor
             instance = null;
             animator = null;
             particles = Array.Empty<ParticleSystem>();
+            particleWasActive = Array.Empty<bool>();
             externalAttackParticles = Array.Empty<ParticleSystem>();
             externalAttackRates = Array.Empty<float>();
         }
@@ -104,7 +129,8 @@ namespace _Project.Develop.Editor
                 foreach (var behaviour in instance.GetComponentsInChildren<MonoBehaviour>(true))
                     DestroyImmediate(behaviour);
                 foreach (var behaviour in instance.GetComponentsInChildren<Behaviour>(true))
-                    if (!(behaviour is Animator)) behaviour.enabled = false;
+                    if (!(behaviour is Animator) && !(UseAnimatedParticleActivation && behaviour is Light))
+                        behaviour.enabled = false;
                 animator = instance.GetComponentInChildren<Animator>(true);
                 if (animator == null || animator.runtimeAnimatorController == null)
                     throw new InvalidOperationException("У префаба нет настроенного Animator.");
@@ -113,6 +139,7 @@ namespace _Project.Develop.Editor
                 animator.applyRootMotion = false;
                 animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 particles = instance.GetComponentsInChildren<ParticleSystem>(true);
+                particleWasActive = new bool[particles.Length];
                 for (int i = 0; i < particles.Length; i++)
                 {
                     particles[i].useAutoRandomSeed = false;
@@ -124,7 +151,8 @@ namespace _Project.Develop.Editor
                     skin.forceMatrixRecalculationPerRender = true;
                 }
                 var meshes = instance.GetComponentsInChildren<Renderer>(true)
-                    .Where(r => !(r is ParticleSystemRenderer) && !(r is LineRenderer)).ToArray();
+                    .Where(r => !(r is ParticleSystemRenderer) && !(r is LineRenderer)
+                        && (!UseAnimatedParticleActivation || r.gameObject.activeInHierarchy)).ToArray();
                 bounds = meshes.Length > 0 ? meshes[0].bounds : new Bounds(Vector3.up, Vector3.one * 2f);
                 foreach (var mesh in meshes.Skip(1)) bounds.Encapsulate(mesh.bounds);
                 preview.camera.orthographic = true;
@@ -172,7 +200,7 @@ namespace _Project.Develop.Editor
             float progress = time / duration;
             float warmup = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.12f, 0.22f, progress));
             float cooldown = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.78f, 0.90f, progress));
-            float intensity = stateIndex == 2 ? warmup * cooldown : 0f;
+            float intensity = CurrentState == "Attack" ? warmup * cooldown : 0f;
             for (int i = 0; i < externalAttackParticles.Length; i++)
             {
                 var emission = externalAttackParticles[i].emission;
@@ -184,16 +212,18 @@ namespace _Project.Develop.Editor
         {
             if (animator == null) return;
             var clip = animator.runtimeAnimatorController.animationClips
-                .FirstOrDefault(c => c.name.IndexOf(States[stateIndex], StringComparison.OrdinalIgnoreCase) >= 0);
+                .FirstOrDefault(c => c.name.IndexOf(CurrentState, StringComparison.OrdinalIgnoreCase) >= 0);
             duration = clip == null ? 1f : Mathf.Max(0.01f, clip.length);
             time = 0f;
             animator.Rebind();
-            animator.Play(States[stateIndex], 0, 0f);
+            animator.Play(CurrentState, 0, 0f);
             animator.Update(0f);
+            Array.Clear(particleWasActive, 0, particleWasActive.Length);
             foreach (var particle in particles)
             {
                 particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-                particle.Play(false);
+                if (!UseAnimatedParticleActivation)
+                    particle.Play(false);
             }
             UpdateExternalAttackPreview();
             lastTick = EditorApplication.timeSinceStartup;
@@ -208,11 +238,17 @@ namespace _Project.Develop.Editor
                 float step = Mathf.Min(1f / 60f, remaining);
                 time = Mathf.Min(duration, time + step);
                 // Explicit sampling keeps the selected pose visible instead of taking gameplay transitions.
-                animator.Play(States[stateIndex], 0, Mathf.Min(time / duration, 0.99999f));
+                animator.Play(CurrentState, 0, Mathf.Min(time / duration, 0.99999f));
                 animator.Update(0f);
                 UpdateExternalAttackPreview();
-                foreach (var particle in particles)
-                    particle.Simulate(step, false, false, true);
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    var particle = particles[i];
+                    bool active = particle.gameObject.activeInHierarchy;
+                    if (!UseAnimatedParticleActivation || active)
+                        particle.Simulate(step, false, UseAnimatedParticleActivation && !particleWasActive[i], !UseAnimatedParticleActivation);
+                    particleWasActive[i] = active;
+                }
                 remaining -= step;
             }
         }
@@ -233,7 +269,7 @@ namespace _Project.Develop.Editor
             Repaint();
         }
 
-        private void OnGUI()
+        protected virtual void OnGUI()
         {
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -242,14 +278,17 @@ namespace _Project.Develop.Editor
                 if (EditorGUI.EndChangeCheck()) { prefab = selected; Rebuild(); }
                 if (GUILayout.Button("Обновить", GUILayout.Width(85f))) Rebuild();
             }
-            using (new EditorGUILayout.HorizontalScope())
-                foreach (string bot in Bots)
-                    if (GUILayout.Button(bot, EditorStyles.miniButton))
-                    {
-                        prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + bot + ".prefab");
-                        Rebuild();
-                    }
-            int selectedState = GUILayout.Toolbar(stateIndex, Labels);
+            if (ShowBotPresets)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                    foreach (string bot in Bots)
+                        if (GUILayout.Button(bot, EditorStyles.miniButton))
+                        {
+                            prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabFolder + bot + ".prefab");
+                            Rebuild();
+                        }
+            }
+            int selectedState = GUILayout.Toolbar(stateIndex, PreviewLabels);
             if (selectedState != stateIndex)
             {
                 stateIndex = selectedState;
@@ -284,7 +323,7 @@ namespace _Project.Develop.Editor
                 if (Event.current.type == EventType.Repaint)
                 {
                     Bounds framing = bounds;
-                    if (stateIndex == 2)
+                    if (CurrentState == "Attack")
                     {
                         foreach (var line in instance.GetComponentsInChildren<LineRenderer>(true))
                             for (int i = 0; i < line.positionCount; i++)
@@ -311,7 +350,7 @@ namespace _Project.Develop.Editor
                     preview.EndAndDrawPreview(rect);
                 }
             }
-            else GUI.Label(rect, error ?? "Выбери префаб бота.", EditorStyles.centeredGreyMiniLabel);
+            else GUI.Label(rect, error ?? EmptyMessage, EditorStyles.centeredGreyMiniLabel);
             EditorGUILayout.LabelField("Мышь — вращение · Колесо — масштаб · Работает без Play Mode", EditorStyles.centeredGreyMiniLabel);
         }
 

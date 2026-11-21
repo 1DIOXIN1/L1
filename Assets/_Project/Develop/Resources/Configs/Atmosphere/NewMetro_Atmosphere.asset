@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a11e0001aabb00223344556677880071, type: 3}
+  m_Name: NewMetro_Atmosphere
+  m_EditorClassIdentifier: 
+  fogEnabled: 1
+  fogMode: 2
+  fogColor: {r: 0.146, g: 0.164, b: 0.179, a: 1}
+  fogDensity: 0.021
+  fogStartDistance: 9
+  fogEndDistance: 68
+  ambientSkyColor: {r: 0.455, g: 0.463, b: 0.48, a: 1}
+  ambientEquatorColor: {r: 0.379, g: 0.365, b: 0.35, a: 1}
+  ambientGroundColor: {r: 0.27, g: 0.244, b: 0.219, a: 1}
+  ambientIntensity: 1
+  postProcessEnabled: 1
+  postProcessResources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  saturation: -10
+  contrast: 5
+  postExposure: 0.69
+  colorFilter: {r: 1, g: 0.977, b: 0.945, a: 1}
+  vignetteIntensity: 0.095
+  grainIntensity: 0.11
+  bloomIntensity: 0.65
+  bloomThreshold: 1.27
+  dustEnabled: 1
+  dustEmissionRate: 30
+  dustSize: 0.022
+  dustColor: {r: 0.68, g: 0.63, b: 0.51, a: 0.19}
+  dustBoxSize: 13
