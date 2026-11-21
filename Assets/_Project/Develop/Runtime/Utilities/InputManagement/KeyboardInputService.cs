@@ -15,6 +15,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         public event Action<Vector3> Move;
         public event Action Shoot;
         public event Action Reload;
+        public event Action ToggleStunGun;
         public event Action UseGadget;
         public event Action Jump;
         public event Action Crouch;
@@ -153,6 +154,9 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
             IsShootHeld = Input.GetMouseButton(0);
             IsAimHeld = Input.GetMouseButton(1);
             IsArsenalHeld = Input.GetKey(KeyCode.E);
+
+            if (Input.GetKeyDown(KeyCode.V))
+                ToggleStunGun?.Invoke();
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 Shoot?.Invoke();

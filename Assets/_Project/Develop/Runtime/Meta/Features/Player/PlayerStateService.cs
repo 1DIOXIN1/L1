@@ -64,7 +64,7 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
                 throw new ArgumentNullException(nameof(weaponInventory));
 
             _health = player.CurrentHealth;
-            _selectedWeaponType = weaponInventory.CurrentWeaponType ?? _selectedWeaponType;
+            _selectedWeaponType = weaponInventory.SelectedWeaponType ?? _selectedWeaponType;
 
             _ammoByWeapon.Clear();
             _reserveAmmoByWeapon.Clear();
@@ -140,6 +140,8 @@ namespace _Project.Develop.Runtime.Meta.Features.Player
                 for (int i = 0; i < inventoryConfig.StartingWeapons.Count; i++)
                     _ownedWeapons.Add(inventoryConfig.StartingWeapons[i]);
             }
+
+            _ownedWeapons.RemoveAll(type => type == WeaponType.StunGun);
 
             if (_ownedWeapons.Count > 0 && _ownedWeapons.Contains(_selectedWeaponType) == false)
                 _selectedWeaponType = _ownedWeapons[0];

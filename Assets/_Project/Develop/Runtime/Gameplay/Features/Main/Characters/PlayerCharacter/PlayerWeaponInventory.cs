@@ -26,11 +26,14 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
         }
 
         public WeaponInventory CreatePlayerWeaponInventory(
-            Transform playerTransform,
+            Camera aimCamera,
             Transform firePoint,
             IDamageble attacker)
         {
-            var inventory = new WeaponInventory();
+            IWeapon stunGun = _factory.CreateWeapon(WeaponType.StunGun, firePoint, attacker);
+            stunGun.SetAimCamera(aimCamera);
+
+            var inventory = new WeaponInventory(stunGun);
             var inventoryConfig = _configsProviderService.GetConfig<PlayerWeaponInventoryConfig>();
 
             IReadOnlyList<WeaponType> owned = _playerStateService.OwnedWeapons;

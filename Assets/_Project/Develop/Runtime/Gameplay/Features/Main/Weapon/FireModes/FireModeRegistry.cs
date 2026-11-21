@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Project.Develop.Runtime.Gameplay.Features.Main.Characters;
 using _Project.Develop.Runtime.Configs.Meta.Weapon;
 
 namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
@@ -11,6 +12,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon.FireModes
             { WeaponFireMode.Projectile, new ProjectileFireMode() },
             { WeaponFireMode.Hitscan, new HitscanFireMode() }
         };
+
+        public FireModeRegistry(DamageableRegistry targets)
+        {
+            _fireModes.Add(WeaponFireMode.Stun, new StunFireMode(targets));
+        }
 
         public IFireMode Resolve(WeaponFireMode fireMode)
         {

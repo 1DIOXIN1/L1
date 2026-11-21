@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 365feab23ea848399d667e9ee9b807d6, type: 3}
+  m_Name: StunGunConfig
+  m_EditorClassIdentifier: 
+  <Type>k__BackingField: 4
+  <FireMode>k__BackingField: 2
+  <MagazineSize>k__BackingField: 1
+  <ReserveAmmo>k__BackingField: 0
+  <ReloadDuration>k__BackingField: 5
+  <Damage>k__BackingField: 0
+  <FireInterval>k__BackingField: 4
+  <ProjectileSpeed>k__BackingField: 100
+  <BulletLifeTime>k__BackingField: 0.8
+  <Range>k__BackingField: 15
+  <HipSpreadDegrees>k__BackingField: 0.3
+  <MaxHipSpreadDegrees>k__BackingField: 2.8
+  <AimSpreadDegrees>k__BackingField: 0.1
+  <MaxAimSpreadDegrees>k__BackingField: 1.1
+  <SpreadPerShotDegrees>k__BackingField: 0.45
+  <SpreadRecoveryPerSecond>k__BackingField: 5
+  <SpreadRecoveryDelay>k__BackingField: 0.15
+  <SpreadClimbBias>k__BackingField: 1
+  <SpreadSideRatio>k__BackingField: 0.3
+  <IsAutomatic>k__BackingField: 0
+  <HudIconActive>k__BackingField: {fileID: 21300000, guid: be2ad34e4253cbe409e3e7d607c90e68, type: 3}
+  <ViewPrefab>k__BackingField: {fileID: 11, guid: 7303dea8934a4e958f2c186bd6ba6c3f, type: 3}
+  <ViewLocalPosition>k__BackingField: {x: 0, y: -0.02, z: -0.08}
+  <ViewLocalEulerAngles>k__BackingField: {x: 0, y: 0, z: 0}
+  <ViewLocalScale>k__BackingField: {x: 1, y: 1, z: 1}
+  <StunDuration>k__BackingField: 2

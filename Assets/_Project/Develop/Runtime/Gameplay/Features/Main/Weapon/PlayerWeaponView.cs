@@ -97,6 +97,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         {
             _visualFollow.AddRecoil();
             _onFired?.Invoke();
+            if (_currentWeapon.Type == WeaponsType.WeaponType.StunGun)
+                return;
+
             PlayParticle(_muzzleVfx.MuzzleFlash);
             PlayParticle(_muzzleVfx.MuzzleSmoke);
             PlayParticle(_muzzleVfx.CasingEject);

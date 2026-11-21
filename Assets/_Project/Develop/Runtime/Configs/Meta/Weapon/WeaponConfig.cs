@@ -16,6 +16,8 @@ namespace _Project.Develop.Runtime.Configs.Meta.Weapon
         [field: SerializeField] public float ProjectileSpeed { get; private set; } = 30f;
         [field: SerializeField] public float BulletLifeTime { get; private set; } = 0.8f;
         [field: SerializeField] public float Range { get; private set; } = 50f;
+        [field: SerializeField, Min(0f)] public float StunDuration { get; private set; }
+
         [field: Header("Spread (bloom)")]
         [field: SerializeField] public float HipSpreadDegrees { get; private set; } = 0.4f;
         [field: SerializeField] public float MaxHipSpreadDegrees { get; private set; } = 4.5f;

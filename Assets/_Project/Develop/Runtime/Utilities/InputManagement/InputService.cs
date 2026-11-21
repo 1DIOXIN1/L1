@@ -14,6 +14,7 @@ namespace _Project.Develop.Runtime.Utilities.InputManagement
         event Action<Vector3> Move;
         event Action Shoot;
         event Action Reload;
+        event Action ToggleStunGun;
         event Action UseGadget;
         event Action Jump;
         event Action Crouch;

@@ -84,7 +84,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Arsenal
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
 
-            _view.Rebuild(_inventory.Weapons, _inventory.CurrentWeaponType);
+            _view.Rebuild(_inventory.Weapons, _inventory.SelectedWeaponType);
             _view.SetVisible(true);
         }
 

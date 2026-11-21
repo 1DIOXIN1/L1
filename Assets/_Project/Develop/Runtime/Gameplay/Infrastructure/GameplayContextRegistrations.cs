@@ -170,7 +170,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
                 container.Resolve<EnemyAIService>());
 
         private static FireModeRegistry CreateFireModeRegistry(DIContainer container)
-            => new FireModeRegistry();
+            => new FireModeRegistry(container.Resolve<DamageableRegistry>());
 
         private static WeaponFactory CreateWeaponFactory(DIContainer container)
             => new WeaponFactory(container);

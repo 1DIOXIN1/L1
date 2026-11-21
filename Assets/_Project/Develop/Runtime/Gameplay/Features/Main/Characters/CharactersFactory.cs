@@ -71,7 +71,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters
                 throw new InvalidOperationException("Player prefab is missing PlayerCamera.");
 
             var inventoryBuilder = _container.Resolve<PlayerWeaponInventory>();
-            var inventory = inventoryBuilder.CreatePlayerWeaponInventory(_playerTransform, player.FirePoint, player);
+            var inventory = inventoryBuilder.CreatePlayerWeaponInventory(_playerCamera.LookCamera, player.FirePoint, player);
             var gadgetInventoryBuilder = _container.Resolve<PlayerGadgetInventory>();
             var gadgetInventory = gadgetInventoryBuilder.CreatePlayerGadgetInventory(player.FirePoint, player);
 

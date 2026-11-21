@@ -60,6 +60,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Move += OnMove;
             _input.Shoot += OnShoot;
             _input.Reload += OnReload;
+            _input.ToggleStunGun += OnToggleStunGun;
             _input.UseGadget += OnUseGadget;
             _input.Crouch += OnCrouch;
         }
@@ -113,6 +114,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
             _input.Move -= OnMove;
             _input.Shoot -= OnShoot;
             _input.Reload -= OnReload;
+            _input.ToggleStunGun -= OnToggleStunGun;
             _input.UseGadget -= OnUseGadget;
             _input.Crouch -= OnCrouch;
         }
@@ -156,6 +158,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Characters.PlayerChara
                 return;
 
             _combat.OnShootPressed();
+        }
+
+        private void OnToggleStunGun()
+        {
+            if (!IsControlLocked && !IsDead)
+                _combat.Weapons.ToggleStunGun();
         }
 
         private void OnReload()

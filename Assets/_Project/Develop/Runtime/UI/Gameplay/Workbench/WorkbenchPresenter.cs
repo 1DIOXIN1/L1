@@ -83,7 +83,7 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
             _selected = 0;
 
             for (int i = 0; i < _config.Weapons.Count; i++)
-                if (_config.Weapons[i].Type == _player.Combat.Weapons.CurrentWeaponType)
+                if (_config.Weapons[i].Type == _player.Combat.Weapons.SelectedWeaponType)
                     _selected = i;
 
             Refresh();

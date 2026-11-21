@@ -58,11 +58,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         }
 
         public WeaponType Type => _config.Type;
-        public int Ammo => _ammo;
+        public int Ammo => _config.FireMode == WeaponFireMode.Stun && Time.time >= _nextShotTime ? MagazineSize : _ammo;
         public int ReserveAmmo => _reserveAmmo;
         public int MagazineSize => _config.MagazineSize + _magazineBonus;
         public int ReserveCapacity => _config.ReserveAmmo;
-        public bool CanShoot => IsReloading == false && _ammo > 0 && Time.time >= _nextShotTime;
+        public bool CanShoot => IsReloading == false && Ammo > 0 && Time.time >= _nextShotTime;
         public bool IsReloading => _reloadEndTime > 0f && Time.time < _reloadEndTime;
         public bool IsAutomatic => _config.IsAutomatic;
         public Sprite HudIconActive => _config.HudIconActive;
@@ -86,6 +86,9 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
         public void Tick(float deltaTime)
         {
             UpdateSpreadRecovery(deltaTime);
+
+            if (Ammo != _ammo)
+                SetAmmo(Ammo);
 
             if (_reloadEndTime <= 0f || IsReloading)
                 return;
@@ -119,7 +122,7 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
 
             ApplySpreadKick(isAiming);
             _lastShotTime = Time.time;
-            _ammo--;
+            _ammo = Ammo - 1;
             _nextShotTime = Time.time + _config.FireInterval;
             AmmoChanged?.Invoke();
             Fired?.Invoke();

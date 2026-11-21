@@ -7,18 +7,28 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
     public class WeaponInventory
     {
         private readonly List<IWeapon> _weapons = new();
-        private IWeapon _currentWeapon;
+        private readonly IWeapon _stunGun;
+        private IWeapon _selectedWeapon;
+        private bool _stunGunDrawn;
+
+        public WeaponInventory(IWeapon stunGun) => _stunGun = stunGun;
 
         public event Action<IWeapon> WeaponChanged;
         public event Action Changed;
 
-        public IWeapon CurrentWeapon => _currentWeapon;
-        public WeaponType? CurrentWeaponType => _currentWeapon?.Type;
+        public IWeapon CurrentWeapon => _stunGunDrawn ? _stunGun : _selectedWeapon;
+        public WeaponType? SelectedWeaponType => _selectedWeapon?.Type;
         public IReadOnlyList<IWeapon> Weapons => _weapons;
+
+        public void ToggleStunGun()
+        {
+            _stunGunDrawn = !_stunGunDrawn;
+            WeaponChanged?.Invoke(CurrentWeapon);
+        }
 
         public bool Add(IWeapon weapon)
         {
-            if (weapon == null)
+            if (weapon == null || weapon.Type == WeaponType.StunGun)
                 return false;
 
             if (Contains(weapon.Type))
@@ -27,8 +37,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             _weapons.Add(weapon);
             Changed?.Invoke();
 
-            if (_currentWeapon == null)
-                Equip(weapon.Type);
+            if (_selectedWeapon == null)
+            {
+                _selectedWeapon = weapon;
+                if (!_stunGunDrawn)
+                    WeaponChanged?.Invoke(weapon);
+            }
 
             return true;
         }
@@ -43,10 +57,11 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
             _weapons.RemoveAt(index);
             Changed?.Invoke();
 
-            if (_currentWeapon == removed)
+            if (_selectedWeapon == removed)
             {
-                _currentWeapon = _weapons.Count > 0 ? _weapons[0] : null;
-                WeaponChanged?.Invoke(_currentWeapon);
+                _selectedWeapon = _weapons.Count > 0 ? _weapons[0] : null;
+                if (!_stunGunDrawn)
+                    WeaponChanged?.Invoke(_selectedWeapon);
             }
 
             return true;
@@ -59,11 +74,12 @@ namespace _Project.Develop.Runtime.Gameplay.Features.Main.Weapon
                 return false;
 
             IWeapon weapon = _weapons[index];
-            if (_currentWeapon == weapon)
+            if (!_stunGunDrawn && _selectedWeapon == weapon)
                 return true;
 
-            _currentWeapon = weapon;
-            WeaponChanged?.Invoke(_currentWeapon);
+            _stunGunDrawn = false;
+            _selectedWeapon = weapon;
+            WeaponChanged?.Invoke(_selectedWeapon);
             return true;
         }
 

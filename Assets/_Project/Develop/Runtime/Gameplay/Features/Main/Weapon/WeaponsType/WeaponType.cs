@@ -6,5 +6,6 @@
         Usp = 1,
         Smg = Ak74,
         MP5 = 3,
+        StunGun = 4,
     }
 }
