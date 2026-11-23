@@ -12,6 +12,13 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
         [SerializeField] private GameObject selection;
 
         public Button Button => button;
+        public Color IconTint => icon.color;
+
+        public void SetIconStyle(Material material, Color tint)
+        {
+            icon.material = material;
+            icon.color = tint;
+        }
 
         public void Display(string label, string detail, Sprite sprite, bool selected)
         {

@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Metro.unity
     guid: 3a69ee3cdcc5a8a498de132ed184d35a
+  - enabled: 1
+    path: Assets/_Project/Scenes/NewMetro.unity
+    guid: e3e52f6816507d14d9c7f1e4b03af838
   m_configObjects: {}

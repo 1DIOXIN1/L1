@@ -24,6 +24,13 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
             public RectTransform fill;
         }
 
+        [Serializable]
+        private class SupplyArtwork
+        {
+            public SupplyType type;
+            public Sprite icon;
+        }
+
         [SerializeField] private Text headingLabel;
         [SerializeField] private Text weaponsLabel;
         [SerializeField] private Text suppliesLabel;
@@ -41,12 +48,19 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
         [SerializeField] private Text title;
         [SerializeField] private Image preview;
         [SerializeField] private Text details;
+        [SerializeField] private Material hologramMaterial;
+        [SerializeField] private Material monitorIconMaterial;
+        [SerializeField] private CanvasGroup monitorControls;
+        [SerializeField] private SupplyArtwork[] supplyArtwork = Array.Empty<SupplyArtwork>();
 
         [SerializeField] private GameObject statsPanel;
         [SerializeField] private StatRow[] stats;
         [SerializeField] private ActionRow[] actions;
 
         private readonly List<WorkbenchRowView> _rows = new();
+        private Vector2 _previewRestPosition;
+        private Color _previewTint;
+        private bool _showSupplies;
 
         public event Action<bool> TabSelected;
         public event Action<int> ItemSelected;
@@ -55,6 +69,8 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
 
         private void Awake()
         {
+            _previewRestPosition = preview.rectTransform.anchoredPosition;
+            _previewTint = preview.color;
             headingLabel.text = WorkbenchText.Heading;
             weaponsLabel.text = WorkbenchText.Weapons;
             suppliesLabel.text = WorkbenchText.Supplies;
@@ -75,8 +91,29 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
 
         public void SetVisible(bool visible) => gameObject.SetActive(visible);
 
+        public void SetInteractive(bool interactive)
+        {
+            if (monitorControls != null)
+            {
+                monitorControls.interactable = interactive;
+                monitorControls.blocksRaycasts = interactive;
+            }
+        }
+
+        private void Update()
+        {
+            if (hologramMaterial == null || preview.material != hologramMaterial)
+                return;
+
+            float phase = Time.unscaledTime;
+            RectTransform image = preview.rectTransform;
+            image.anchoredPosition = _previewRestPosition + Vector2.up * (4f * Mathf.Sin(phase * 1.45f));
+            image.localRotation = Quaternion.Euler(0f, 0f, 1.8f * Mathf.Sin(phase * 0.82f));
+        }
+
         public void SetCatalog(bool supplies, int count, int metal)
         {
+            _showSupplies = supplies;
             weaponsTab.interactable = supplies;
             suppliesTab.interactable = !supplies;
             balance.text = string.Format(WorkbenchText.Balance, metal);
@@ -93,14 +130,35 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
                 _rows[i].gameObject.SetActive(i < count);
         }
 
-        public void SetItem(int index, string label, string detail, Sprite icon, bool selected) =>
-            _rows[index].Display(label, detail, icon, selected);
+        public Sprite GetSupplyIcon(WorkbenchSupply supply)
+        {
+            foreach (SupplyArtwork art in supplyArtwork)
+                if (art.type == supply.type && art.icon != null)
+                    return art.icon;
+
+            return supply.icon;
+        }
+
+        public void SetItem(int index, string label, string detail, Sprite icon, bool selected)
+        {
+            WorkbenchRowView row = _rows[index];
+            row.Display(label, detail, icon, selected);
+            if (monitorIconMaterial != null)
+                row.SetIconStyle(_showSupplies ? null : monitorIconMaterial, _showSupplies ? Color.white : rowTemplate.IconTint);
+        }
 
         public void SetDetail(string group, string name, Sprite icon, string description, bool showStats)
         {
             category.text = group;
             title.text = name;
             preview.sprite = icon;
+            if (hologramMaterial != null)
+            {
+                preview.material = showStats ? hologramMaterial : null;
+                preview.color = showStats ? _previewTint : Color.white;
+                preview.rectTransform.anchoredPosition = _previewRestPosition;
+                preview.rectTransform.localRotation = Quaternion.identity;
+            }
             details.text = description;
 
             statsPanel.SetActive(showStats);

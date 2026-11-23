@@ -19,6 +19,7 @@ namespace _Project.Develop.Runtime.UI.Core
             {ViewIDs.GameplayScreen, "UI/Gameplay/GameplayScreenView"},
             {ViewIDs.EnemyDetectionIcon, "UI/Gameplay/EnemyDetectionIconView"},
             {ViewIDs.InteractionHint, "UI/Gameplay/InteractionHintView"},
+            {ViewIDs.WorkbenchHint, "UI/Gameplay/WorkbenchHintView"},
             {ViewIDs.Workbench, "UI/Gameplay/WorkbenchView"},
             {ViewIDs.WeaponArsenal, "UI/Gameplay/WeaponArsenalView"}
         };

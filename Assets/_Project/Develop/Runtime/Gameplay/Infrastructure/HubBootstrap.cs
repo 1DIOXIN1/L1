@@ -66,6 +66,7 @@ namespace _Project.Develop.Runtime.Gameplay.Infrastructure
 
             float deltaTime = Time.deltaTime;
             _input.Update(deltaTime);
+            _workbenchPresenter?.Tick(Time.unscaledDeltaTime);
             _hitImpactService.Tick(deltaTime);
             _bulletTracerService.Tick(deltaTime);
             _gameplayScreenPresenter.Tick();

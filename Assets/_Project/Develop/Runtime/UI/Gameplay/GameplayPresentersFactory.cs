@@ -43,13 +43,17 @@ namespace _Project.Develop.Runtime.UI.Gameplay
         public WorkbenchPresenter CreateWorkbenchPresenter(WorkbenchInteractable bench, Player player, PlayerCamera camera)
         {
             GameplayUIRoot root = _container.Resolve<GameplayUIRoot>();
-            var view = _container.Resolve<ViewsFactory>().Create<WorkbenchView>(
-                ViewIDs.Workbench, root.PopupsLayer);
+            WorkbenchView view = bench.MonitorView != null
+                ? bench.MonitorView
+                : _container.Resolve<ViewsFactory>().Create<WorkbenchView>(ViewIDs.Workbench, root.PopupsLayer);
+            if (bench.MonitorView != null)
+                view.GetComponent<Canvas>().worldCamera = camera.LookCamera;
+
             var shop = new WorkbenchService(_container.Resolve<WalletService>(), _container.Resolve<PlayerStateService>(),
                 _container.Resolve<WeaponFactory>(), player, camera,
                 _container.Resolve<ConfigsProviderService>().GetConfig<MissionSuppliesConfig>());
             return new WorkbenchPresenter(bench, view, root.HUDLayer.gameObject, _container.Resolve<ConfigsProviderService>().GetConfig<WorkbenchConfig>(),
-                shop, player, _container.Resolve<IInputService>(), _container.Resolve<PlayerDataProvider>(),
+                shop, player, camera.LookCamera, _container.Resolve<IInputService>(), _container.Resolve<PlayerDataProvider>(),
                 _container.Resolve<CoroutinesPerformer>());
         }
 
@@ -134,13 +138,11 @@ namespace _Project.Develop.Runtime.UI.Gameplay
             PlayerCamera playerCamera,
             InteractionService interactionService)
         {
-            InteractionHintView view =
-                _container.Resolve<ViewsFactory>().Create<InteractionHintView>(ViewIDs.InteractionHint);
+            ViewsFactory views = _container.Resolve<ViewsFactory>();
+            InteractionHintView view = views.Create<InteractionHintView>(ViewIDs.InteractionHint);
+            InteractionHintView workbenchHint = views.Create<InteractionHintView>(ViewIDs.WorkbenchHint);
 
-            return new InteractionHintPresenter(
-                interactionService,
-                view,
-                playerCamera);
+            return new InteractionHintPresenter(interactionService, view, workbenchHint, playerCamera);
         }
 
         public WeaponArsenalPresenter CreateWeaponArsenalPresenter(GameplayScreenView screenView)

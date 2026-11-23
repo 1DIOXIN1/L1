@@ -10,6 +10,7 @@ namespace _Project.Develop.Runtime.UI.Core
         public const string ResetProgressPopup = nameof(ResetProgressPopup);
         public const string EnemyDetectionIcon = nameof(EnemyDetectionIcon);
         public const string InteractionHint = nameof(InteractionHint);
+        public const string WorkbenchHint = nameof(WorkbenchHint);
         public const string WeaponArsenal = nameof(WeaponArsenal);
     }
 }

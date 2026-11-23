@@ -22,11 +22,13 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
         private readonly PlayerDataProvider _data;
         private readonly CoroutinesPerformer _coroutines;
 
+        private readonly WorkbenchCameraFocus _focus;
+        private bool _closing;
         private bool _supplies;
         private int _selected;
 
         public WorkbenchPresenter(WorkbenchInteractable bench, WorkbenchView view, GameObject hud, WorkbenchConfig config,
-            WorkbenchService shop, Player player, IInputService input, PlayerDataProvider data, CoroutinesPerformer coroutines)
+            WorkbenchService shop, Player player, Camera camera, IInputService input, PlayerDataProvider data, CoroutinesPerformer coroutines)
         {
             _bench = bench;
             _view = view;
@@ -37,11 +39,14 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
             _input = input;
             _data = data;
             _coroutines = coroutines;
+            if (bench.MonitorCameraPose != null)
+                _focus = new WorkbenchCameraFocus(camera, bench.MonitorCameraPose);
         }
 
         public void Initialize()
         {
             _view.SetVisible(false);
+            _view.SetInteractive(false);
 
             _bench.OpenRequested += Open;
 
@@ -63,6 +68,21 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
             _view.Closed -= Close;
 
             _input.WorkbenchClosePressed -= Close;
+            _focus?.Restore();
+        }
+
+        public void Tick(float deltaTime)
+        {
+            if (_focus == null || _input.CurrentContext != InputContext.Workbench)
+                return;
+
+            if (_focus.Tick(deltaTime, !_closing) == false)
+                return;
+
+            if (_closing)
+                FinishClose();
+            else
+                _view.SetInteractive(true);
         }
 
         private void Open()
@@ -76,9 +96,17 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
+            _closing = false;
             _hud.SetActive(false);
+            _focus?.Begin();
             _view.SetVisible(true);
+            _view.SetInteractive(_focus == null);
 
+            ShowEquippedWeapon();
+        }
+
+        private void ShowEquippedWeapon()
+        {
             _supplies = false;
             _selected = 0;
 
@@ -91,10 +119,25 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
 
         private void Close()
         {
-            if (_input.CurrentContext != InputContext.Workbench)
+            if (_input.CurrentContext != InputContext.Workbench || _closing)
                 return;
 
+            _closing = true;
+            _view.SetInteractive(false);
+            if (_focus != null)
+            {
+                Cursor.visible = false;
+                return;
+            }
+
+            FinishClose();
+        }
+
+        private void FinishClose()
+        {
+            _focus?.Restore();
             _view.SetVisible(false);
+
             _hud.SetActive(true);
             _player.SetControlMode(PlayerControlMode.Free);
             _input.SetContext(InputContext.Gameplay);
@@ -123,7 +166,10 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
                 : _shop.TryBuy(_config.Weapons[_selected], (WorkbenchAction)index);
 
             if (bought)
+            {
+                _bench.PlayFabrication();
                 _coroutines.StartPerform(_data.Save());
+            }
 
             Refresh();
         }
@@ -143,11 +189,11 @@ namespace _Project.Develop.Runtime.UI.Gameplay.Workbench
             for (int i = 0; i < _config.Supplies.Count; i++)
             {
                 WorkbenchSupply item = _config.Supplies[i];
-                _view.SetItem(i, item.title, string.Format(WorkbenchText.Stock, _shop.SupplyCount(item)), item.icon, i == _selected);
+                _view.SetItem(i, item.title, string.Format(WorkbenchText.Stock, _shop.SupplyCount(item)), _view.GetSupplyIcon(item), i == _selected);
             }
 
             WorkbenchSupply selected = _config.Supplies[_selected];
-            _view.SetDetail(WorkbenchText.Supplies, selected.title, selected.icon, string.Format(WorkbenchText.StockDetail, _shop.SupplyCount(selected)), false);
+            _view.SetDetail(WorkbenchText.Supplies, selected.title, _view.GetSupplyIcon(selected), string.Format(WorkbenchText.StockDetail, _shop.SupplyCount(selected)), false);
 
             ShowOffer(0, WorkbenchText.BuyOne, _shop.Quote(selected));
             _view.SetActionCount(1);
